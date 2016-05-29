@@ -1,0 +1,9 @@
+*.o
+*.d
+*.elf
+*.bin
+
+.DS_Store
+*~
+
+
