@@ -11,7 +11,7 @@ On the hardware side, the design is based on two Silicon Labs 4463 transceiver I
 The GPS is a GlobalTop "LadyBird" unit, but any decent GPS module with NMEA and PPS output would work.
 
 On the analog RF side, the receiver incorporates an active bandpass filter with an NXP BGA2869 LNA, and a SkyWorks 66100 Front End module (PA/switch).
-The transmitter output is nominally 0.5Watts (+27dbB) and it has a verified range of 5 nautical miles.
+The transmitter output is nominally 0.5Watts (+27dBm) and it has a verified range of 5 nautical miles.
 
 The system is powered entirely from a USB connection which also delivers NMEA (GPS + AIS) data to the host.
 
