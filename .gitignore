@@ -6,6 +6,7 @@
 .DS_Store
 *~
 
+*.s#*
 
 /Debug/
 /Release/
