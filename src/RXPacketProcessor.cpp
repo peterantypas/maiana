@@ -65,77 +65,72 @@ void RXPacketProcessor::processEvent(Event *e)
             }
 
 
-            if ( pe->mPacket->checkCRC() ) {
+            if (pe->mPacket->checkCRC ()) {
                 ++mGoodCount;
                 list<string> sentences;
 
-#ifdef ENABLE_TERMINAL
-                mEncoder.encode(*pe->mPacket, sentences);
-                for ( list<string>::iterator i = sentences.begin(); i != sentences.end(); ++i ) {
-                    DataTerminal::instance().write(i->c_str());
-                    DataTerminal::instance().write("\r\n");
-                }
-#endif
-
-
-                mUniqueMMSIs.insert(pe->mPacket->mmsi());
-                switch(pe->mPacket->messageType()) {
+                mUniqueMMSIs.insert (pe->mPacket->mmsi ());
+                switch (pe->mPacket->messageType ()) {
                     case 1:
                     case 2:
                     case 3: {
                         AISMessage123 msg;
-                        if ( msg.decode(*pe->mPacket) ) {
-                            double distance = Utils::haversineDistance(mLat, mLng, msg.latitude, msg.longitude);
+                        if (msg.decode (*pe->mPacket)) {
+                            double distance = Utils::haversineDistance (
+                                    mLat, mLng, msg.latitude, msg.longitude);
                             double miles = distance / METERS_PER_NAUTICAL_MILE;
 
-                            printf2("RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
-                                    pe->mPacket->rssi(),
-                                    AIS_CHANNELS[pe->mPacket->channel()].designation,
-                                    msg.messageType,
-                                    msg.mmsi,
-                                    msg.sog,
-                                    msg.latitude,
-                                    msg.longitude,
-                                    miles);
+                            printf2 (
+                                    "RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
+                                    pe->mPacket->rssi (),
+                                    AIS_CHANNELS[pe->mPacket->channel ()].designation,
+                                    msg.messageType, msg.mmsi, msg.sog,
+                                    msg.latitude, msg.longitude, miles);
 
                         }
                         break;
                     }
                     case 18: {
                         AISMessage18 msg;
-                        if ( msg.decode(*pe->mPacket) ) {
-                            double distance = Utils::haversineDistance(mLat, mLng, msg.latitude, msg.longitude);
+                        if (msg.decode (*pe->mPacket)) {
+                            double distance = Utils::haversineDistance (
+                                    mLat, mLng, msg.latitude, msg.longitude);
                             double miles = distance / METERS_PER_NAUTICAL_MILE;
 
-                            printf2("RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
-                                    pe->mPacket->rssi(),
-                                    AIS_CHANNELS[pe->mPacket->channel()].designation,
-                                    msg.messageType,
-                                    msg.mmsi,
-                                    msg.sog,
-                                    msg.latitude,
-                                    msg.longitude,
-                                    miles);
+                            printf2 (
+                                    "RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
+                                    pe->mPacket->rssi (),
+                                    AIS_CHANNELS[pe->mPacket->channel ()].designation,
+                                    msg.messageType, msg.mmsi, msg.sog,
+                                    msg.latitude, msg.longitude, miles);
 
                         }
                         break;
                     }
                     default: {
 
-                        printf2("RSSI: %.2x, Ch: %c, Type: %d, RI: %d, MMSI: %d\r\n",
-                                pe->mPacket->rssi(),
-                                AIS_CHANNELS[pe->mPacket->channel()].designation,
-                                pe->mPacket->messageType(),
-                                pe->mPacket->repeatIndicator(),
-                                pe->mPacket->mmsi());
-
+                        printf2 (
+                                "RSSI: %.2x, Ch: %c, Type: %d, RI: %d, MMSI: %d\r\n",
+                                pe->mPacket->rssi (),
+                                AIS_CHANNELS[pe->mPacket->channel ()].designation,
+                                pe->mPacket->messageType (),
+                                pe->mPacket->repeatIndicator (),
+                                pe->mPacket->mmsi ());
 
                         break;
                     }
                 }
 
+#ifdef ENABLE_TERMINAL
+                mEncoder.encode (*pe->mPacket, sentences);
+                for (list<string>::iterator i = sentences.begin ();
+                        i != sentences.end (); ++i) {
+                    DataTerminal::instance ().write (i->c_str ());
+                    DataTerminal::instance ().write ("\r\n");
+                }
+#endif
                 // TODO: Move this out of here
-                switch(pe->mPacket->messageType()) {
+                switch (pe->mPacket->messageType ()) {
                     case 15:
                         // TODO: This is an interrogation. Check if we are any of the 3 possible recipients and respond with message 18
                         break;
