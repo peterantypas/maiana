@@ -103,10 +103,18 @@ main(int argc, char* argv[])
 
     configureUnusedPins();
 
-    // Dispatch events issued by ISRs
+    // Configure the watchdog timer
+    IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
+    IWDG_SetPrescaler(IWDG_Prescaler_32);
+    IWDG_SetReload(4095); // Max 12-bit value
+
+    IWDG_Enable();
+
+    // Dispatch events issued by ISRs and keep the watchdog happy
     printf2("Starting main event loop\r\n");
     while (true) {
         EventQueue::instance().dispatch();
+        IWDG_ReloadCounter();
     }
 
     // If execution jumps here, something is seriously fucked up!!!

@@ -61,7 +61,6 @@
 // Maximum allowed backlog in TX queue
 #define MAX_TX_PACKETS_IN_QUEUE        4
 
-
 // Define this to set BT=0.4 for GMSK (as per ITU spec for AIS). Default is 0.5
 #define USE_BT_04
 
@@ -70,9 +69,6 @@
 
 // Default interval for message 24 A&B (static data report)
 #define MSG_24_TX_INTERVAL           180
-
-// Maximum number of seconds to spend in CCA mode before giving up transmission of current packet (must be less than DEFAULT_TX_INTERVAL)
-#define MAX_CCA_TIME                  20
 
 #define CCA_SLOT_BIT                   8
 

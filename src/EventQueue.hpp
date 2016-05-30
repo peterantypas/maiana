@@ -37,7 +37,7 @@ public:
     void push(Event* event);
 
     /*
-     * This method must be called repeatedly either by main() or some timer ISR.
+     * This method must be called repeatedly by main() (never an ISR!!!!!!)
      */
     void dispatch();
 private:
