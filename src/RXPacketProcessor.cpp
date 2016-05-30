@@ -84,7 +84,7 @@ void RXPacketProcessor::processEvent(Event *e)
                                     "RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
                                     pe->mPacket->rssi (),
                                     AIS_CHANNELS[pe->mPacket->channel ()].designation,
-                                    msg.messageType, msg.mmsi, msg.sog,
+                                    msg.type(), msg.mmsi(), msg.sog,
                                     msg.latitude, msg.longitude, miles);
 
                         }
@@ -97,11 +97,10 @@ void RXPacketProcessor::processEvent(Event *e)
                                     mLat, mLng, msg.latitude, msg.longitude);
                             double miles = distance / METERS_PER_NAUTICAL_MILE;
 
-                            printf2 (
-                                    "RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
+                            printf2 ("RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
                                     pe->mPacket->rssi (),
                                     AIS_CHANNELS[pe->mPacket->channel ()].designation,
-                                    msg.messageType, msg.mmsi, msg.sog,
+                                    msg.type(), msg.mmsi(), msg.sog,
                                     msg.latitude, msg.longitude, miles);
 
                         }

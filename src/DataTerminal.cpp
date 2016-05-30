@@ -147,13 +147,14 @@ void DataTerminal::showScreen(MenuScreen screen)
             _write(buff);
             sprintf(buff, "Software revision: %s\r\n", REVISION);
             _write(buff);
+#if 0
             sprintf(buff, "MMSI: %d\r\n", STATION_MMSI);
             _write(buff);
             sprintf(buff, "Name: %s\r\n", STATION_NAME);
             _write(buff);
             sprintf(buff, "Call sign: %s\r\n", STATION_CALLSIGN);
             _write(buff);
-
+#endif
             _write("\r\n");
             _write("****************************** AIS Transponder Menu ******************************\r\n\r\n");
             _write("\t\033[1mP\033[0m\tProgram MMSI, station name and call sign \r\n");

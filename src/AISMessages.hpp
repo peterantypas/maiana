@@ -12,7 +12,8 @@
 #include "RXPacket.hpp"
 #include <time.h>
 #include <string>
-#include "globals.h"
+#include "StationData.h"
+
 
 using namespace std;
 
@@ -29,12 +30,18 @@ public:
     virtual ~AISMessage ();
 
     virtual bool decode(RXPacket &packet);
-    virtual void encode(TXPacket &packet);
+    virtual void encode(const StationData &station, TXPacket &packet);
 
-    uint8_t messageType;
-    uint8_t repeatIndicator;
-    uint32_t mmsi;
+    uint8_t type() const;
+    uint8_t repeatIndicator() const;
+    uint32_t mmsi() const;
 protected:
+    // Every AIS message has these attributes at a minimum
+    uint8_t mType;
+    uint8_t mRI;
+    uint32_t mMMSI;
+protected:
+
     void appendCRC(uint8_t *buff, uint16_t &size);
     void addBits(uint8_t *buff, uint16_t &size, uint32_t value, uint8_t numBits);
     void putBits(uint8_t *buff, uint32_t value, uint8_t numBits);
@@ -73,16 +80,16 @@ public:
     AISMessage18();
 
     bool decode(RXPacket &packet);
-    void encode(TXPacket &packet);
+    void encode(const StationData &data, TXPacket &packet);
 };
 
 class AISMessage24A : public AISMessage
 {
 public:
-    string name;
+    //string name;
     AISMessage24A();
 
-    void encode(TXPacket &packet);
+    void encode(const StationData &data, TXPacket &packet);
 };
 
 class AISMessage24B : public AISMessage
@@ -90,10 +97,10 @@ class AISMessage24B : public AISMessage
 public:
     AISMessage24B();
 
-    string vendorId;
-    string callSign;
+    //string vendorId;
+    //string callSign;
 
-    void encode(TXPacket &packet);
+    void encode(const StationData &data, TXPacket &packet);
 
 };
 

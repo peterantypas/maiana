@@ -92,9 +92,9 @@
  * an open-source fashion, so they are (as usual) at least a decade behind the technology curve.
  */
 
-#define STATION_MMSI                987654321
-#define STATION_NAME        "TEST STATION 01"
-#define STATION_CALLSIGN             "N0NNNN"
+//#define STATION_MMSI                987654321
+//#define STATION_NAME        "TEST STATION 01"
+//#define STATION_CALLSIGN             "N0NNNN"
 
 
 #endif /* GLOBALS_H_ */

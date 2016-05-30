@@ -19,13 +19,28 @@
 
 AISMessage::AISMessage ()
 {
-    mmsi = STATION_MMSI;
-    repeatIndicator = 0;
-    messageType = 0;
+    mMMSI = 0;
+    mRI = 0;
+    mType = 0;
 }
 
 AISMessage::~AISMessage ()
 {
+}
+
+uint8_t AISMessage::type() const
+{
+    return mType;
+}
+
+uint8_t AISMessage::repeatIndicator() const
+{
+    return mRI;
+}
+
+uint32_t AISMessage::mmsi() const
+{
+    return mMMSI;
 }
 
 bool AISMessage::decode(RXPacket &)
@@ -37,10 +52,9 @@ bool AISMessage::decode(RXPacket &)
     return false;
 }
 
-void AISMessage::encode(TXPacket &)
+void AISMessage::encode(const StationData &station, TXPacket &)
 {
-    // The base class method should never be called
-    ASSERT(false);
+    mMMSI = station.mmsi;
 }
 
 void AISMessage::addBits(uint8_t *bitVector, uint16_t &size, uint32_t value, uint8_t numBits)
@@ -199,9 +213,9 @@ AISMessage123::AISMessage123()
 
 bool AISMessage123::decode(RXPacket &packet)
 {
-    messageType = packet.messageType();
-    repeatIndicator = packet.repeatIndicator();
-    mmsi = packet.mmsi();
+    mType = packet.messageType();
+    mRI = packet.repeatIndicator();
+    mMMSI = packet.mmsi();
     sog = packet.bits(50, 10) / 10.0f;
     longitude = Utils::coordinateFromUINT32(packet.bits(61, 28), 28);
     latitude = Utils::coordinateFromUINT32(packet.bits(89, 27), 27);
@@ -216,23 +230,25 @@ bool AISMessage123::decode(RXPacket &packet)
 
 AISMessage18::AISMessage18()
 {
-    messageType = 18;
+    mType = 18;
 }
 
-void AISMessage18::encode(TXPacket &packet)
+void AISMessage18::encode(const StationData &station, TXPacket &packet)
 {
+    AISMessage::encode(station, packet);
+
     // TODO: Perhaps this shouldn't live on the stack?
     uint8_t payload[MAX_AIS_TX_PACKET_SIZE];
     uint16_t size = 0;
     uint32_t value;
 
-    value = messageType;
+    value = mType;
     addBits(payload, size, value, 6);   // Message type
 
-    value = repeatIndicator;
+    value = mRI;
     addBits(payload, size, value, 2);   // Repeat Indicator
 
-    value = mmsi;
+    value = mMMSI;
     addBits(payload, size, value, 30);  // MMSI
 
     value = 0;
@@ -298,9 +314,9 @@ void AISMessage18::encode(TXPacket &packet)
 
 bool AISMessage18::decode(RXPacket &packet)
 {
-    messageType = packet.messageType();
-    repeatIndicator = packet.repeatIndicator();
-    mmsi = packet.mmsi();
+    mType = packet.messageType();
+    mRI = packet.repeatIndicator();
+    mMMSI = packet.mmsi();
 
     sog = packet.bits(46, 10) / 10.0f;
     longitude = Utils::coordinateFromUINT32(packet.bits(57, 28), 28);
@@ -315,28 +331,29 @@ bool AISMessage18::decode(RXPacket &packet)
 ///////////////////////////////////////////////////////////////////////////////
 AISMessage24A::AISMessage24A()
 {
-    messageType = 24;
-    name = STATION_NAME;
+    mType = 24;
 }
 
-void AISMessage24A::encode(TXPacket &packet)
+void AISMessage24A::encode(const StationData &station, TXPacket &packet)
 {
+    AISMessage::encode(station, packet);
+
     uint8_t payload[MAX_AIS_TX_PACKET_SIZE];
     uint16_t size = 0;
     uint32_t value;
 
-    value = messageType;
+    value = mType;
     addBits(payload, size, value, 6);   // Message type
 
-    value = repeatIndicator;
+    value = mRI;
     addBits(payload, size, value, 2);   // Repeat Indicator
 
-    value = mmsi;
+    value = mMMSI;
     addBits(payload, size, value, 30);  // MMSI
 
     value = 0;
     addBits(payload, size, value, 2);   // Part number (0 for 24A)
-    addString(payload, size, name, 20); // Station name
+    addString(payload, size, station.name, 20); // Station name
 
     finalize(payload, size, packet);
 }
@@ -348,24 +365,24 @@ void AISMessage24A::encode(TXPacket &packet)
 ///////////////////////////////////////////////////////////////////////////////
 AISMessage24B::AISMessage24B()
 {
-    messageType = 24;
-    vendorId = "";
-    callSign = "";
+    mType = 24;
 }
 
-void AISMessage24B::encode(TXPacket &packet)
+void AISMessage24B::encode(const StationData &station, TXPacket &packet)
 {
+    AISMessage::encode(station, packet);
+
     uint8_t payload[MAX_AIS_TX_PACKET_SIZE];
     uint16_t size = 0;
     uint32_t value;
 
-    value = messageType;
+    value = mType;
     addBits(payload, size, value, 6);   // Message type
 
-    value = repeatIndicator;
+    value = mRI;
     addBits(payload, size, value, 2);   // Repeat Indicator
 
-    value = mmsi;
+    value = mMMSI;
     addBits(payload, size, value, 30);  // MMSI
 
     value = 1;
@@ -374,8 +391,8 @@ void AISMessage24B::encode(TXPacket &packet)
     value = 0;
     addBits(payload, size, value, 8);   // Type of ship unknown
 
-    addString(payload, size, vendorId, 7);
-    addString(payload, size, callSign, 7);
+    addString(payload, size, "", 7);
+    addString(payload, size, station.callsign, 7);
 
     value = 0;
     addBits(payload, size, value, 30);  // No dimension information

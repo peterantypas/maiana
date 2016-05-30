@@ -12,7 +12,6 @@
 #include <vector>
 #include <string>
 #include <sstream>
-//#include <diag/Trace.h>
 #include <stdlib.h>
 #include "RadioManager.hpp"
 #include "ChannelManager.hpp"
@@ -85,7 +84,7 @@ void TXScheduler::processEvent(Event *event)
                 msg.cog         = gfe->mCOG;
                 msg.utc         = gfe->mUTC;
 
-                msg.encode (*p1);
+                msg.encode (mStationData, *p1);
                 RadioManager::instance ().scheduleTransmission (p1);
 
                 // Our next position report should be on the other channel
@@ -100,7 +99,7 @@ void TXScheduler::processEvent(Event *event)
                     break;
                 }
                 AISMessage24A msg2;
-                msg2.encode(*p2);
+                msg2.encode(mStationData, *p2);
                 RadioManager::instance().scheduleTransmission(p2);
 
                 TXPacket *p3 = TXPacketPool::instance().newTXPacket(mStaticDataChannel, mUTC+7);
@@ -110,7 +109,7 @@ void TXScheduler::processEvent(Event *event)
                 }
 
                 AISMessage24B msg3;
-                msg3.encode(*p3);
+                msg3.encode(mStationData, *p3);
                 RadioManager::instance().scheduleTransmission(p3);
 
                 // Our next static data report should be on the other channel

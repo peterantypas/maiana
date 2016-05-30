@@ -10,6 +10,11 @@
 #include <stm32f30x_i2c.h>
 #include "Utils.hpp"
 
+#define EEPROM_STATION_ADDR         0x00    // A StationData structure starts here
+#define EEPROM_REGION_CNT_ADDR      0x24    // Number of active special regions goes here (single byte)
+#define EEPROM_REGION_ADDR          0x25    // Special region data array starts here
+
+
 /*
  * The Microchip EEPROM doesn't really expect to share the I2C bus with any other EEPROM.
  * So the four high bits of the address are 1010 (same for most EEPROMs) and the lower 3 don't matter.
