@@ -47,7 +47,7 @@ private:
     void spiOn();
     void spiOff();
 protected:
-    SPI_TypeDef     *mSPI   ;           // The SPI bus we use
+    SPI_TypeDef     *mSPI;              // The SPI bus we use
     GPIO_TypeDef    *mSDNP;             // The MCU GPIO assigned to SDN for this IC (GPIOA, GPIOB or GPIOC)
     GPIO_TypeDef    *mCSP;              // The MCU GPIO assigned to CS for SPI
     GPIO_TypeDef    *mGPIO1P;           // The MCU GPIO assigned to GPIO1 of the IC

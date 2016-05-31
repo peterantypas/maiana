@@ -22,8 +22,8 @@
 <layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
-<layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
+<layer number="29" name="tStop" color="7" fill="3" visible="yes" active="yes"/>
+<layer number="30" name="bStop" color="7" fill="6" visible="yes" active="yes"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
 <layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
 <layer number="33" name="tFinish" color="6" fill="3" visible="no" active="yes"/>
@@ -146,7 +146,7 @@
 <wire x1="73.6475" y1="0" x2="73.6475" y2="36.82" width="0" layer="20"/>
 <wire x1="73.6475" y1="36.82" x2="0" y2="36.82" width="0" layer="20"/>
 <wire x1="0" y1="36.82" x2="0" y2="0" width="0" layer="20"/>
-<rectangle x1="55.88" y1="22.225" x2="59.055" y2="25.4" layer="29"/>
+<rectangle x1="55.88" y1="22.225" x2="59.055" y2="25.4" layer="30"/>
 <text x="47.9425" y="21.2725" size="0.6096" layer="25" font="vector" ratio="10">5V</text>
 <text x="40.9575" y="21.2725" size="0.6096" layer="25" font="vector" ratio="10">GND</text>
 <text x="0.9525" y="33.9725" size="0.6096" layer="25" font="vector" ratio="10" rot="R90">5V</text>
@@ -160,9 +160,10 @@
 <text x="73.3425" y="9.2075" size="0.6096" layer="25" font="vector" ratio="10" rot="R90">3V</text>
 <text x="73.3425" y="9.2075" size="0.6096" layer="25" font="vector" ratio="10" rot="R90">3V</text>
 <text x="53.0225" y="35.8775" size="0.6096" layer="25" font="vector" ratio="10">3V</text>
-<text x="44.7675" y="9.525" size="0.8128" layer="25" font="vector" ratio="10">AIS Logic State
-Rev 3.1
+<text x="44.7675" y="9.525" size="0.8128" layer="25" font="vector" ratio="10">AIS Logic Stage
+Rev 3.2
 (c) 2016 Peter Antypas</text>
+<rectangle x1="55.88" y1="22.225" x2="59.055" y2="25.4" layer="29"/>
 </plain>
 <libraries>
 <library name="adafruit">
@@ -1256,6 +1257,8 @@ design rules under a new name.</description>
 <attribute name="NAME" x="7.5438" y="6.5913" size="0.6096" layer="25" font="vector" ratio="10"/>
 <attribute name="VALUE" x="6.985" y="5.3975" size="1.27" layer="27"/>
 </element>
+<element name="R9" library="SparkFun-Passives" package="0603-RES" value="10K" x="23.495" y="10.795"/>
+<element name="R10" library="SparkFun-Passives" package="0603-RES" value="10K" x="23.495" y="6.0325"/>
 </elements>
 <signals>
 <signal name="GND">
@@ -1370,7 +1373,7 @@ design rules under a new name.</description>
 <via x="39.0525" y="31.4325" extent="1-16" drill="0.3302"/>
 <via x="40.9575" y="29.5275" extent="1-16" drill="0.3302"/>
 <via x="22.86" y="18.0975" extent="1-16" drill="0.3302"/>
-<via x="25.0825" y="10.795" extent="1-16" drill="0.3302"/>
+<via x="24.765" y="8.255" extent="1-16" drill="0.3302"/>
 <via x="23.1775" y="13.97" extent="1-16" drill="0.3302"/>
 <via x="50.8" y="20.955" extent="1-16" drill="0.3302"/>
 <via x="31.4325" y="9.8425" extent="1-16" drill="0.3302"/>
@@ -1497,7 +1500,8 @@ design rules under a new name.</description>
 <wire x1="32.7025" y1="27.725" x2="32.805" y2="27.6225" width="0.254" layer="1"/>
 <wire x1="24.695" y1="7.305" x2="27.9425" y2="7.305" width="0.254" layer="1"/>
 <wire x1="27.9425" y1="7.305" x2="28.575" y2="7.9375" width="0.254" layer="1"/>
-<wire x1="28.575" y1="7.9375" x2="28.575" y2="12.28" width="0.254" layer="1"/>
+<wire x1="28.575" y1="7.9375" x2="28.575" y2="10.795" width="0.254" layer="1"/>
+<wire x1="28.575" y1="10.795" x2="28.575" y2="12.28" width="0.254" layer="1"/>
 <wire x1="28.575" y1="12.28" x2="28.4725" y2="12.3825" width="0.254" layer="1"/>
 <wire x1="53.2375" y1="20.955" x2="54.2925" y2="20.955" width="0.254" layer="1"/>
 <wire x1="6.6675" y1="32.2825" x2="6.6675" y2="33.44" width="0.254" layer="1"/>
@@ -1513,6 +1517,11 @@ design rules under a new name.</description>
 <wire x1="53.0225" y1="18.415" x2="53.0225" y2="20.74" width="0.254" layer="1"/>
 <wire x1="53.0225" y1="20.74" x2="53.2375" y2="20.955" width="0.254" layer="1"/>
 <wire x1="24.695" y1="7.305" x2="24.695" y2="6.3825" width="0.254" layer="1"/>
+<contactref element="R9" pad="2"/>
+<contactref element="R10" pad="2"/>
+<wire x1="24.345" y1="6.0325" x2="24.695" y2="6.0325" width="0.4064" layer="1"/>
+<wire x1="24.695" y1="6.0325" x2="24.695" y2="6.3825" width="0.4064" layer="1"/>
+<wire x1="24.345" y1="10.795" x2="28.575" y2="10.795" width="0.254" layer="1"/>
 </signal>
 <signal name="N$3">
 <contactref element="C10" pad="1"/>
@@ -1914,10 +1923,14 @@ design rules under a new name.</description>
 <signal name="I2C_SCL">
 <contactref element="U$1" pad="P$42"/>
 <contactref element="U$2" pad="1"/>
-<wire x1="22.295" y1="9.205" x2="22.295" y2="14.9925" width="0.254" layer="1"/>
+<wire x1="22.295" y1="9.205" x2="22.295" y2="10.4775" width="0.254" layer="1"/>
+<wire x1="22.295" y1="10.795" x2="22.295" y2="14.9925" width="0.254" layer="1"/>
 <wire x1="22.295" y1="14.9925" x2="23.495" y2="16.51" width="0.254" layer="1"/>
 <wire x1="23.495" y1="16.51" x2="26.5632375" y2="16.51" width="0.254" layer="1"/>
 <wire x1="26.5632375" y1="16.51" x2="27.29801875" y2="17.24478125" width="0.254" layer="1"/>
+<contactref element="R9" pad="1"/>
+<wire x1="22.645" y1="10.795" x2="22.295" y2="10.795" width="0.254" layer="1"/>
+<wire x1="22.295" y1="10.795" x2="22.295" y2="10.4775" width="0.254" layer="1"/>
 </signal>
 <signal name="I2C_SDA">
 <contactref element="U$1" pad="P$43"/>
@@ -1931,6 +1944,9 @@ design rules under a new name.</description>
 <wire x1="24.4475" y1="15.24" x2="26.00034375" y2="15.24" width="0.254" layer="1"/>
 <wire x1="26.00034375" y1="15.24" x2="27.651571875" y2="16.891228125" width="0.254" layer="1"/>
 <wire x1="22.295" y1="7.305" x2="22.295" y2="6.3825" width="0.254" layer="1"/>
+<contactref element="R10" pad="1"/>
+<wire x1="22.645" y1="6.0325" x2="22.295" y2="6.0325" width="0.4064" layer="1"/>
+<wire x1="22.295" y1="6.0325" x2="22.295" y2="6.3825" width="0.4064" layer="1"/>
 </signal>
 <signal name="VDD1">
 <contactref element="C13" pad="1"/>

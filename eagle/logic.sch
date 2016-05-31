@@ -4656,6 +4656,9 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <part name="PPS" library="adafruit" deviceset="PINHD-1X1" device=""/>
 <part name="GPS" library="adafruit" deviceset="PINHD-1X1" device=""/>
 <part name="FRAME1" library="SparkFun-Retired" deviceset="FRAME-A3" device=""/>
+<part name="R9" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="R10" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="10K"/>
+<part name="+3V7" library="supply1" deviceset="+3V3" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -4867,6 +4870,11 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <attribute name="VALUE" x="-64.77" y="-73.025" size="1.778" layer="96" rot="R270"/>
 </instance>
 <instance part="FRAME1" gate="G$1" x="-190.5" y="-114.3"/>
+<instance part="R9" gate="G$1" x="-67.31" y="-10.16" rot="R90"/>
+<instance part="R10" gate="G$1" x="-71.12" y="-25.4" rot="R90"/>
+<instance part="+3V7" gate="G$1" x="-67.31" y="0" smashed="yes">
+<attribute name="VALUE" x="-63.5" y="3.81" size="1.778" layer="96" rot="R180"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -5209,6 +5217,15 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <wire x1="-77.47" y1="-53.34" x2="-80.645" y2="-53.34" width="0.1524" layer="91"/>
 <pinref part="+3V6" gate="G$1" pin="+3V3"/>
 </segment>
+<segment>
+<pinref part="R10" gate="G$1" pin="2"/>
+<wire x1="-71.12" y1="-20.32" x2="-71.12" y2="-5.08" width="0.1524" layer="91"/>
+<pinref part="R9" gate="G$1" pin="2"/>
+<wire x1="-71.12" y1="-5.08" x2="-67.31" y2="-5.08" width="0.1524" layer="91"/>
+<wire x1="-67.31" y1="-5.08" x2="-67.31" y2="-2.54" width="0.1524" layer="91"/>
+<junction x="-67.31" y="-5.08"/>
+<pinref part="+3V7" gate="G$1" pin="+3V3"/>
+</segment>
 </net>
 <net name="N$3" class="0">
 <segment>
@@ -5505,8 +5522,11 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 </segment>
 <segment>
 <pinref part="U$2" gate="G$1" pin="SCL"/>
-<wire x1="-60.96" y1="-15.24" x2="-73.66" y2="-15.24" width="0.1524" layer="91"/>
+<wire x1="-60.96" y1="-15.24" x2="-67.31" y2="-15.24" width="0.1524" layer="91"/>
 <label x="-74.93" y="-15.24" size="1.778" layer="95" rot="R180" xref="yes"/>
+<pinref part="R9" gate="G$1" pin="1"/>
+<wire x1="-67.31" y1="-15.24" x2="-73.66" y2="-15.24" width="0.1524" layer="91"/>
+<junction x="-67.31" y="-15.24"/>
 </segment>
 </net>
 <net name="I2C_SDA" class="0">
@@ -5518,7 +5538,10 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <segment>
 <pinref part="U$2" gate="G$1" pin="SDA"/>
 <label x="-75.565" y="-30.48" size="1.778" layer="95" rot="R180" xref="yes"/>
-<wire x1="-60.96" y1="-30.48" x2="-74.93" y2="-30.48" width="0.1524" layer="91"/>
+<wire x1="-60.96" y1="-30.48" x2="-71.12" y2="-30.48" width="0.1524" layer="91"/>
+<pinref part="R10" gate="G$1" pin="1"/>
+<wire x1="-71.12" y1="-30.48" x2="-74.93" y2="-30.48" width="0.1524" layer="91"/>
+<junction x="-71.12" y="-30.48"/>
 </segment>
 </net>
 <net name="VDD1" class="0">

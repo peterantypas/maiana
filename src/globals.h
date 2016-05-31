@@ -70,31 +70,12 @@
 // Default interval for message 24 A&B (static data report)
 #define MSG_24_TX_INTERVAL           180
 
-#define CCA_SLOT_BIT                   8
+// The spec calls for Class B transmitters to listen for the first 20 bits of each frame before transmitting.
+// It takes the Si4463 a few bits' time to switch from RX to TX, so I arbitrarily picked the 12th bit.
+#define CCA_SLOT_BIT                  11
 
 // Extra debugging using halting assertions
 #define DEV_MODE                       1
-
-
-
-
-/*
- * Ideally, these should come from some non-volatile storage on board, but for now
- * we just define them here.
- *
- * NOTE: It is against US Coast Guard regulations to transmit AIS messages with an invalid MMSI. Consider yourself warned.
- * That said, just about everyone developing AIS equipment does this at some point, typically in lab environments.
- *
- * Also, manufacturers of AIS transmitters must program the MMSI, station name and other metadata on behalf of
- * their customers prior to shipping to a US address, as users are prohibited from altering those.
- *
- * Of course, regulations were written at a time when none would design and build their own AIS equipment in
- * an open-source fashion, so they are (as usual) at least a decade behind the technology curve.
- */
-
-//#define STATION_MMSI                987654321
-//#define STATION_NAME        "TEST STATION 01"
-//#define STATION_CALLSIGN             "N0NNNN"
 
 
 #endif /* GLOBALS_H_ */

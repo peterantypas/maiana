@@ -85,6 +85,20 @@ void Transceiver::transmitCW(VHFChannel channel)
 
 }
 
+void Transceiver::setTXPower(tx_power_level powerLevel)
+{
+    const pa_params &pwr = POWER_TABLE[powerLevel];
+    SET_PROPERTY_PARAMS p;
+    p.Group = 0x22;
+    p.NumProperties = 3;
+    p.StartProperty = 0x00;
+    p.Data[0] = pwr.pa_mode;
+    p.Data[1] = pwr.pa_level;
+    p.Data[2] = pwr.pa_bias_clkduty;
+    sendCmd(SET_PROPERTY, &p, 6, NULL, 0);
+}
+
+
 void Transceiver::configureForTX(tx_power_level powerLevel)
 {
     /*
@@ -117,17 +131,9 @@ void Transceiver::configureForTX(tx_power_level powerLevel)
     gpiocfg.GENCFG = 0x00;      // No change
     sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, &gpiocfg, sizeof gpiocfg);
 
-    const pa_params &pwr = POWER_TABLE[powerLevel];
-    SET_PROPERTY_PARAMS p;
-    p.Group = 0x22;
-    p.NumProperties = 3;
-    p.StartProperty = 0x00;
-    p.Data[0] = pwr.pa_mode;
-    p.Data[1] = pwr.pa_level;
-    p.Data[2] = pwr.pa_bias_clkduty;
-    sendCmd(SET_PROPERTY, &p, 6, NULL, 0);
+    setTXPower(powerLevel);
 
-    // BYP setting is in table
+    const pa_params &pwr = POWER_TABLE[powerLevel];
     if ( pwr.bypass )
         GPIO_SetBits(mBYPPort, mBYPPin);
     else
@@ -155,7 +161,8 @@ void Transceiver::onBitClock()
 
         // If we have an assigned packet and we're on the correct channel, at the right bit of the time slot,
         // and the RSSI is within 6dB of the noise floor for this channel, then fire!!!
-        if ( mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel && mRXPacket->rssi() < NoiseFloorDetector::instance().getNoiseFloor(mChannel) + 12 ) {
+        uint8_t noiseFloor = NoiseFloorDetector::instance().getNoiseFloor(mChannel);
+        if ( mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel && mRXPacket->rssi() < noiseFloor + 12 ) {
             startTransmitting();
         }
     }

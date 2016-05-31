@@ -37,10 +37,10 @@ public:
     void transmitCW(VHFChannel channel);
 protected:
     void configure();
-
 private:
     void startTransmitting();
     void configureForTX(tx_power_level pwr);
+    void setTXPower(tx_power_level pwr);
 private:
     TXPacket    *mTXPacket;
     GPIO_TypeDef *mCTXPort;
