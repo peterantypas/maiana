@@ -34,8 +34,7 @@ Instead of using ST Micro's semihosting for debug output, I implemented *printf2
 a very high speed (230400 bps). This allowed me to identify issues when running "release" code with no debugger attached,
 which as you might suspect behaves quite differently with respect to timing.
 
-Lastly, I opted for the Standard Peripheral Library instead of HAL/CubeMX because it is very stable. I would consider migrating to libopencm3 or something similar to open up *more* microcontroller options.
-
+Lastly, I opted for the Standard Peripheral Library instead of HAL/CubeMX because I found it to be more stable. The library is included here.
  
 
 
