@@ -21,7 +21,7 @@ public:
 
 
     // Called directly by each receiver to report every RSSI reading at every SOTDMA slot, returns latest noise floor or 0xff if not enough data exists
-    uint8_t report(VHFChannel channel, uint8_t rssi);
+    void report(VHFChannel channel, uint8_t rssi);
 
     void reset();
 
@@ -40,7 +40,7 @@ private:
 
 private:
     NoiseFloorDetector();
-    uint8_t processSample(ChannelReadings &window, uint8_t rssi);
+    void processSample(ChannelReadings &window, uint8_t rssi);
     uint8_t medianValue(ChannelReadings &window);
     void dump();
 private:
@@ -48,6 +48,8 @@ private:
     time_t          mStartTime;
     time_t          mLastDumpTime;
     ChannelData     mData;
+    vector<uint8_t> mSorted;
 };
+
 
 #endif /* NOISEFLOORDETECTOR_HPP_ */

@@ -22,14 +22,15 @@ NoiseFloorDetector &NoiseFloorDetector::instance()
 NoiseFloorDetector::NoiseFloorDetector()
     : mUTC(0), mStartTime(0), mLastDumpTime(0)
 {
+    mSorted.reserve(WINDOW_SIZE);
     EventQueue::instance().addObserver(this, CLOCK_EVENT);
 }
 
-uint8_t NoiseFloorDetector::report(VHFChannel channel, uint8_t rssi)
+void NoiseFloorDetector::report(VHFChannel channel, uint8_t rssi)
 {
     // If we don't have time yet, we certainly don't have fix so we can't be transmitting anyway, so no data collection
     if ( mUTC == 0 )
-        return 0xff;
+        return;
 
     if ( mData.find(channel) == mData.end() ) {
         ChannelReadings r;
@@ -38,7 +39,7 @@ uint8_t NoiseFloorDetector::report(VHFChannel channel, uint8_t rssi)
     }
 
     ChannelReadings &window = mData[channel];
-    return processSample(window, rssi);
+    processSample(window, rssi);
 }
 
 uint8_t NoiseFloorDetector::getNoiseFloor(VHFChannel channel)
@@ -69,7 +70,7 @@ void NoiseFloorDetector::processEvent(Event *e)
     }
 }
 
-uint8_t NoiseFloorDetector::processSample(ChannelReadings &window, uint8_t rssi)
+void NoiseFloorDetector::processSample(ChannelReadings &window, uint8_t rssi)
 {
     while ( window.size() >= WINDOW_SIZE )
         window.pop_back();
@@ -79,7 +80,7 @@ uint8_t NoiseFloorDetector::processSample(ChannelReadings &window, uint8_t rssi)
         r.timestamp = mUTC;
         r.reading = rssi;
         window.push_back(r);
-        return 0xff;
+        return;
     }
 
     // Insert the reading at the start if it qualifies
@@ -92,11 +93,6 @@ uint8_t NoiseFloorDetector::processSample(ChannelReadings &window, uint8_t rssi)
             break;
         }
     }
-
-    if ( mUTC - mStartTime < 30 )
-        return 0xff;
-
-    return medianValue(window);
 }
 
 uint8_t NoiseFloorDetector::medianValue(ChannelReadings &window)
@@ -104,13 +100,12 @@ uint8_t NoiseFloorDetector::medianValue(ChannelReadings &window)
     if ( window.empty() )
         return 0xff;
 
-    vector<uint8_t> sorted;
-    sorted.reserve(WINDOW_SIZE);
+    mSorted.clear();
     for ( ChannelReadings::iterator i = window.begin(); i != window.end(); ++i )
-        sorted.push_back(i->reading);
+        mSorted.push_back(i->reading);
 
-    sort(sorted.begin(), sorted.end());
-    return sorted[sorted.size()/2];
+    sort(mSorted.begin(), mSorted.end());
+    return mSorted[mSorted.size()/2];
 }
 
 

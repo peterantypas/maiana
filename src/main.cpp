@@ -15,8 +15,9 @@
 #include "TXScheduler.hpp"
 #include "Utils.hpp"
 #include "system_stm32f30x.h"
+#include "core_cm4.h"
 #include "stm32f30x.h"
-
+#include <diag/Trace.h>
 #include "DataTerminal.hpp"
 #include "TXScheduler.hpp"
 #include "DebugPrinter.hpp"
@@ -56,6 +57,13 @@ main(int argc, char* argv[])
     // At this stage the system clock should have already been configured
     // at high speed.
     printf2_Init(230400);
+
+#ifdef DEBUG
+    // Disable buffered memory writes to debug imprecise bus faults
+    SCnSCB->ACTLR |= SCnSCB_ACTLR_DISDEFWBUF_Msk;
+    trace_printf("ACTLR: %.8x\n", SCnSCB->ACTLR);
+#endif
+
 
     EEPROM::instance().init();
     /*

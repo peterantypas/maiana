@@ -17,8 +17,8 @@
 
 
 /*
- * If this is defined, the device transmits low-power carrier at a nominal frequency of 162.075Mhz,
- * two channels above AIS. This is meant to be used for crystal calibration only
+ * If this is defined, the device transmits low-power carrier on channel 86 (161.925MHz).
+ * This is meant to be used for crystal calibration only
  */
 //#define CALIBRATION_MODE               1
 
@@ -36,7 +36,7 @@
 #ifdef TX_TEST_MODE
 #define TX_POWER_LEVEL              PWR_P16
 #else
-#define TX_POWER_LEVEL              PWR_M10
+#define TX_POWER_LEVEL              PWR_M27
 #endif
 #endif
 
@@ -44,7 +44,7 @@
 #define OUTPUT_GPS_NMEA
 #define ENABLE_PRINTF2
 
-// Some AIS messages can occupy 5 time slots (5x256 = 1280). We call it quits at 2 slots.
+// Some AIS messages can occupy 5 time slots (5x256 = 1280). Nothing we care about exceeds 2 slots.
 #define MAX_AIS_RX_PACKET_SIZE      512
 
 
@@ -54,7 +54,7 @@
 // For testing, it's necessary to transmit longer packets for a basic RTL-SDR receiver to not "miss" them.
 #define MAX_AIS_TX_PACKET_SIZE      1280
 #else
-// As a class B transponder, we never transmit anything bigger than 256 bits
+// As a class B transponder, we never transmit anything bigger than 240 bits.
 #define MAX_AIS_TX_PACKET_SIZE       300
 #endif
 
