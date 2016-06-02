@@ -11,7 +11,8 @@
 #include "Events.hpp"
 #include "NMEAEncoder.hpp"
 #include <set>
-
+#include "EEPROM.hpp"
+#include <vector>
 
 class RXPacketProcessor : public EventConsumer
 {
@@ -30,6 +31,8 @@ private:
     double mLat;
     double mLng;
     std::set<uint32_t> mUniqueMMSIs;
+    std::vector<std::string> mSentences;
+    StationData mStationData;
 };
 
 #endif /* RXPACKETPROCESSOR_HPP_ */

@@ -20,6 +20,8 @@
 RXPacketProcessor::RXPacketProcessor ()
     : mLastDumpTime(0), mGoodCount(0), mBadCRCCount(0), mInvalidCount(0), mLat(-200), mLng(-200)
 {
+    mSentences.reserve(4); // We're not going to need more than 2 sentences for the longest AIS message we report ...
+    EEPROM::instance().readStationData(mStationData);
     EventQueue::instance().addObserver(this, AIS_PACKET_EVENT | CLOCK_EVENT | GPS_FIX_EVENT);
 }
 
@@ -67,7 +69,6 @@ void RXPacketProcessor::processEvent(Event *e)
 
             if (pe->mPacket->checkCRC ()) {
                 ++mGoodCount;
-                list<string> sentences;
 
                 mUniqueMMSIs.insert (pe->mPacket->mmsi ());
                 switch (pe->mPacket->messageType ()) {
@@ -121,17 +122,16 @@ void RXPacketProcessor::processEvent(Event *e)
                 }
 
 #ifdef ENABLE_TERMINAL
-                mEncoder.encode (*pe->mPacket, sentences);
-                for (list<string>::iterator i = sentences.begin ();
-                        i != sentences.end (); ++i) {
-                    DataTerminal::instance ().write (i->c_str ());
-                    DataTerminal::instance ().write ("\r\n");
+                mSentences.clear();
+                mEncoder.encode(*pe->mPacket, mSentences);
+                for (vector<string>::iterator i = mSentences.begin(); i != mSentences.end(); ++i) {
+                    DataTerminal::instance().write(i->c_str());
+                    DataTerminal::instance().write("\r\n");
                 }
 #endif
-                // TODO: Move this out of here
-                switch (pe->mPacket->messageType ()) {
+                switch (pe->mPacket->messageType()) {
                     case 15:
-                        // TODO: This is an interrogation. Check if we are any of the 3 possible recipients and respond with message 18
+                        // TODO: This is an interrogation. If we are a target, push an appropriate event into the queue
                         break;
                     case 20:
                         // TODO: This is a time slot reservation from a base station. Possibly use this information to augment CCA?

@@ -25,13 +25,29 @@ using namespace std;
  */
 class Event
 {
+    friend class EventPool;
 public:
-    Event () {};
-    virtual ~Event () {};
-    virtual void prepare() {}
-    virtual void clear() {}
+    Event()
+        : mType(UNKNOWN_EVENT) {
+    }
 
-    virtual EventType type() = 0;
+    Event (EventType type): mType(type) {
+    }
+
+    virtual ~Event () {
+    }
+
+    virtual void prepare() {
+    }
+
+    virtual void clear() {
+    }
+
+    virtual EventType type() {
+        return mType;
+    }
+protected:
+    EventType mType;
 };
 
 /*
@@ -48,10 +64,9 @@ public:
 class GPSNMEASentence : public Event
 {
 public:
-    EventType type() {
-        return GPS_NMEA_SENTENCE;
+    GPSNMEASentence()
+        : Event(GPS_NMEA_SENTENCE){
     }
-
 
     char mSentence[100];
 };
@@ -59,8 +74,8 @@ public:
 class GPSFIXEvent: public Event
 {
 public:
-    EventType type() {
-        return GPS_FIX_EVENT;
+    GPSFIXEvent()
+        : Event(GPS_FIX_EVENT) {
     }
 
     time_t mUTC;
@@ -73,9 +88,10 @@ public:
 class ClockEvent : public Event
 {
 public:
-    EventType type() {
-        return CLOCK_EVENT;
+    ClockEvent()
+        : Event(CLOCK_EVENT) {
     }
+
 
     time_t mTime;
 };
@@ -83,9 +99,10 @@ public:
 class AISPacketEvent: public Event
 {
 public:
-    EventType type() {
-        return AIS_PACKET_EVENT;
+    AISPacketEvent()
+        : Event(AIS_PACKET_EVENT) {
     }
+
 
     void prepare()
     {
@@ -102,23 +119,12 @@ public:
     RXPacket *mPacket;
 };
 
-class AISPacketSentEvent : public Event
-{
-public:
-    EventType type() {
-        return PACKET_SENT_EVENT;
-    }
-
-    uint8_t mChannel;
-    uint16_t mSize;
-};
-
 
 class DebugEvent: public Event
 {
 public:
-    EventType type() {
-        return DEBUG_EVENT;
+    DebugEvent()
+        : Event(DEBUG_EVENT) {
     }
 
     char mBuffer[256];
@@ -127,9 +133,10 @@ public:
 class KeyPressEvent : public Event
 {
 public:
-    EventType type() {
-        return KEYPRESS_EVENT;
+    KeyPressEvent()
+        : Event(KEYPRESS_EVENT) {
     }
+
 
     char key;
 };
@@ -144,11 +151,11 @@ public:
     void deleteEvent(Event *event);
 
 private:
+    ObjectPool<Event> *mGenericPool;
     ObjectPool<AISPacketEvent> *mAISPacketPool;
     ObjectPool<GPSNMEASentence> *mGPSNMEAPool;
     ObjectPool<GPSFIXEvent> *mGPSFixPool;
     ObjectPool<ClockEvent> *mClockPool;
-    ObjectPool<AISPacketSentEvent> *mAISPacketSentPool;
     ObjectPool<DebugEvent> *mDebugEventPool;
     ObjectPool<KeyPressEvent> *mKeyPressPool;
 };

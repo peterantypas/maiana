@@ -25,7 +25,7 @@ NMEAEncoder::~NMEAEncoder()
 {
 }
 
-void NMEAEncoder::encode(RXPacket &packet, list<string> &sentences)
+void NMEAEncoder::encode(RXPacket &packet, vector<string> &sentences)
 {
     static uint16_t MAX_SENTENCE_BYTES = 56;
     static uint16_t MAX_SENTENCE_BITS = MAX_SENTENCE_BYTES * 6;

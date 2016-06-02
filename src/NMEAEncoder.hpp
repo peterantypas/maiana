@@ -8,7 +8,7 @@
 #ifndef NMEAENCODER_HPP_
 #define NMEAENCODER_HPP_
 
-#include <list>
+#include <vector>
 #include <string>
 #include "RXPacket.hpp"
 using namespace std;
@@ -20,7 +20,7 @@ public:
     NMEAEncoder();
     virtual ~NMEAEncoder();
 
-    void encode(RXPacket &packet, list<string> &sentences);
+    void encode(RXPacket &packet, vector<string> &sentences);
 private:
     uint8_t nmeaCRC(const char* buff);
 private:

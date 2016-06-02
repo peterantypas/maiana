@@ -17,11 +17,11 @@ EventPool &EventPool::instance()
 
 void EventPool::init()
 {
-    mAISPacketPool = new ObjectPool<AISPacketEvent>(20);
+    mGenericPool = new ObjectPool<Event>(10);
+    mAISPacketPool = new ObjectPool<AISPacketEvent>(40);
     mGPSNMEAPool = new ObjectPool<GPSNMEASentence>(20);
     mGPSFixPool = new ObjectPool<GPSFIXEvent>(10);
     mClockPool = new ObjectPool<ClockEvent>(10);
-    mAISPacketSentPool = new ObjectPool<AISPacketSentEvent>(5);
     mDebugEventPool = new ObjectPool<DebugEvent>(2);
     mKeyPressPool = new ObjectPool<KeyPressEvent>(20);
 }
@@ -43,10 +43,6 @@ Event *EventPool::newEvent(EventType type)
             result = mAISPacketPool->get();
             break;
         }
-        case PACKET_SENT_EVENT: {
-            result = mAISPacketSentPool->get();
-            break;
-        }
         case DEBUG_EVENT: {
             result = mDebugEventPool->get();
             break;
@@ -56,7 +52,9 @@ Event *EventPool::newEvent(EventType type)
             break;
         }
         default:
-            result = NULL;
+            result = mGenericPool->get();
+            result->mType = type;
+            break;
     }
 
     if ( result )
@@ -89,11 +87,6 @@ void EventPool::deleteEvent(Event *event)
             mAISPacketPool->put(p);
             break;
         }
-        case PACKET_SENT_EVENT: {
-            AISPacketSentEvent *p = static_cast<AISPacketSentEvent*>(event);
-            mAISPacketSentPool->put(p);
-            break;
-        }
         case DEBUG_EVENT: {
             DebugEvent *e = static_cast<DebugEvent*>(event);
             mDebugEventPool->put(e);
@@ -105,6 +98,7 @@ void EventPool::deleteEvent(Event *event)
             break;
         }
         default:
+            mGenericPool->put(event);
             break;
     }
 }

@@ -46,7 +46,6 @@ void TXScheduler::startTXTesting()
 
 void TXScheduler::processEvent(Event *event)
 {
-    //printf2("-> TXScheduler::processEvent()\r\n");
 #ifndef ENABLE_TX
     return;
 #endif
@@ -55,9 +54,6 @@ void TXScheduler::processEvent(Event *event)
         case GPS_FIX_EVENT: {
             if ( mTesting )
                 return;
-
-            //if ( Radio::instance().isCalibratingRSSI() )
-              //  return;
 
             GPSFIXEvent *gfe = static_cast<GPSFIXEvent*> (event);
 
@@ -132,7 +128,6 @@ void TXScheduler::processEvent(Event *event)
             break;
     }
 
-    //printf2("<- TXScheduler::processEvent()\r\n");
 }
 
 void TXScheduler::scheduleTestPacket()
