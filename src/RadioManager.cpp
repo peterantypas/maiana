@@ -63,7 +63,7 @@ void RadioManager::init()
     // PB8 is SDN2
     gpio.GPIO_Pin = GPIO_Pin_8;
     gpio.GPIO_Mode = GPIO_Mode_OUT;
-    gpio.GPIO_Speed = GPIO_Speed_Level_3;
+    gpio.GPIO_Speed = GPIO_Speed_Level_1;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(GPIOB, &gpio);
@@ -71,7 +71,7 @@ void RadioManager::init()
     // PC13 starts as input, used for POR status (RFIC2 GPIO1 -> MCU), then switched between RX/TX DATA as necessary
     gpio.GPIO_Pin = GPIO_Pin_13;
     gpio.GPIO_Mode = GPIO_Mode_IN;
-    gpio.GPIO_Speed = GPIO_Speed_Level_3;
+    gpio.GPIO_Speed = GPIO_Speed_Level_1;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOC, &gpio);
@@ -79,7 +79,7 @@ void RadioManager::init()
     // PB9 is input for bit clock, both RX and TX (RFIC2 GPIO3 -> MCU)
     gpio.GPIO_Pin = GPIO_Pin_9;
     gpio.GPIO_Mode = GPIO_Mode_IN;
-    gpio.GPIO_Speed = GPIO_Speed_Level_3;
+    gpio.GPIO_Speed = GPIO_Speed_Level_1;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOB, &gpio);
@@ -96,7 +96,7 @@ void RadioManager::init()
     // PA3 will be the SDN1 pin
     gpio.GPIO_Pin = GPIO_Pin_3;
     gpio.GPIO_Mode = GPIO_Mode_OUT;
-    gpio.GPIO_Speed = GPIO_Speed_Level_3;
+    gpio.GPIO_Speed = GPIO_Speed_Level_1;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(GPIOA, &gpio);
@@ -104,7 +104,7 @@ void RadioManager::init()
     // PB2 starts as input, used for POR status (RFIC1 GPIO1 -> MCU), then switched between RX/TX DATA as necessary
     gpio.GPIO_Pin = GPIO_Pin_2;
     gpio.GPIO_Mode = GPIO_Mode_IN;
-    gpio.GPIO_Speed = GPIO_Speed_Level_3;
+    gpio.GPIO_Speed = GPIO_Speed_Level_1;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOB, &gpio);
@@ -112,7 +112,7 @@ void RadioManager::init()
     // PA1 is input for bit clock, both RX and TX (RFIC1 GPIO3 -> MCU)
     gpio.GPIO_Pin = GPIO_Pin_1;
     gpio.GPIO_Mode = GPIO_Mode_IN;
-    gpio.GPIO_Speed = GPIO_Speed_Level_3;
+    gpio.GPIO_Speed = GPIO_Speed_Level_1;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOA, &gpio);
@@ -122,7 +122,7 @@ void RadioManager::init()
     // PA8 will be CTX
     gpio.GPIO_Pin = GPIO_Pin_8;
     gpio.GPIO_Mode = GPIO_Mode_OUT;
-    gpio.GPIO_Speed = GPIO_Speed_Level_2;
+    gpio.GPIO_Speed = GPIO_Speed_Level_1;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOA, &gpio);
@@ -130,7 +130,7 @@ void RadioManager::init()
     // PA9 will be BYP
     gpio.GPIO_Pin = GPIO_Pin_9;
     gpio.GPIO_Mode = GPIO_Mode_OUT;
-    gpio.GPIO_Speed = GPIO_Speed_Level_2;
+    gpio.GPIO_Speed = GPIO_Speed_Level_1;
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOA, &gpio);

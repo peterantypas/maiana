@@ -35,7 +35,7 @@ void DataTerminal::init()
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_3;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_1;
     GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
