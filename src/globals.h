@@ -31,7 +31,7 @@
 
 
 #ifdef CALIBRATION_MODE
-#define TX_POWER_LEVEL              PWR_M27
+#define TX_POWER_LEVEL              PWR_M16
 #else
 #ifdef TX_TEST_MODE
 #define TX_POWER_LEVEL              PWR_P16

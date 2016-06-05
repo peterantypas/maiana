@@ -84,13 +84,13 @@ void GPS::init()
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_2;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_3;
     GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* PA0 is connected to EXTI_Line0  -- currently the PPS signal from the GPS */
     GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_1;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_3;
     GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOA, &GPIO_InitStruct);

@@ -56,7 +56,7 @@ main(int argc, char* argv[])
 {
     // At this stage the system clock should have already been configured
     // at high speed.
-    printf2_Init(230400);
+    printf2_Init(38400);
 
 #ifdef DEBUG
     // Disable buffered memory writes to debug imprecise bus faults
