@@ -111,6 +111,25 @@ void write_char(USART_TypeDef* USARTx, char c)
     USART_SendData(USARTx, c);
 }
 
+#ifdef MULTIPLEXED_OUTPUT
+
+void DataTerminal::write(const char *cls, const char* s, bool interactive)
+{
+    if ( mInteractive && !interactive )
+        return;
+
+    write_char(USART3, '[');
+    for ( size_t i = 0; i < strlen(cls); ++i )
+        write_char(USART3, cls[i]);
+    write_char(USART3, ']');
+
+    for ( int i = 0; s[i] != 0; ++i )
+        write_char(USART3, s[i]);
+
+}
+
+#else
+
 void DataTerminal::write(const char* s, bool interactive)
 {
     if ( mInteractive && !interactive )
@@ -119,6 +138,7 @@ void DataTerminal::write(const char* s, bool interactive)
     for ( int i = 0; s[i] != 0; ++i )
         write_char(USART3, s[i]);
 }
+#endif
 
 void DataTerminal::clearScreen()
 {
@@ -128,7 +148,11 @@ void DataTerminal::clearScreen()
 
 void DataTerminal::_write(const char *s)
 {
+#ifdef MULTIPLEXED_OUTPUT
+    write("", s, true);
+#else
     write(s, true);
+#endif
 }
 
 void DataTerminal::showScreen(MenuScreen screen)

@@ -248,7 +248,11 @@ void GPS::parseSentence(const char *buff)
     if ( sentence.code().find("RMC") == 2 ) {
 #ifdef ENABLE_TERMINAL
 #ifdef OUTPUT_GPS_NMEA
-                DataTerminal::instance().write(buff);
+#ifdef MULTIPLEXED_OUTPUT
+        DataTerminal::instance().write("NMEA", buff);
+#else
+        DataTerminal::instance().write(buff);
+#endif
 #endif
 #endif
 

@@ -132,8 +132,10 @@ void TXScheduler::processEvent(Event *event)
 
 void TXScheduler::scheduleTestPacket()
 {
-/*
-    TXPacket *p = TXPacketPool::instance().newTXPacket(AIS_CHANNELS[rand() % 2 + 18].vhf, mUTC);
+    VHFChannel channel = CH_84;
+    if ( rand() % 2 == 0 )
+        channel = CH_85;
+    TXPacket *p = TXPacketPool::instance().newTXPacket(channel, mUTC);
     if ( !p )
         return;
 
@@ -141,7 +143,6 @@ void TXScheduler::scheduleTestPacket()
         p->addBit(rand() % 2);
     }
     RadioManager::instance().scheduleTransmission(p);
-*/
 }
 
 

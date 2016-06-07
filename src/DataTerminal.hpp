@@ -21,8 +21,11 @@ public:
     void init();
 
     void processEvent(Event *e);
-
+#ifdef MULTIPLEXED_OUTPUT
+    void write(const char* cls, const char* line, bool interactive=false);
+#else
     void write(const char* line, bool interactive = false);
+#endif
     void processCharacter(char c);
 private:
     DataTerminal();

@@ -31,12 +31,12 @@
 
 
 #ifdef CALIBRATION_MODE
-#define TX_POWER_LEVEL              PWR_M16
+#define TX_POWER_LEVEL              PWR_M10
 #else
 #ifdef TX_TEST_MODE
-#define TX_POWER_LEVEL              PWR_P16
+#define TX_POWER_LEVEL              PWR_P27
 #else
-#define TX_POWER_LEVEL              PWR_M27
+#define TX_POWER_LEVEL              PWR_M10
 #endif
 #endif
 
@@ -77,5 +77,16 @@
 // Extra debugging using halting assertions
 #define DEV_MODE                       1
 
+/*
+ * Defining this symbol forces all output (NMEA + printf2 + LED status) to the high-speed UART3 for tunneling to an application that demuxes it.
+ * Multiplexed output is still ASCII, but every line of text begins with a message class in square brackets. Examples:
+ *
+ * [NMEA]!AIVDM,....
+ * [DEBUG]GPS Initialized
+ * [LED]0:BLINK
+ * [ASSERT]...
+ *
+*/
+#define MULTIPLEXED_OUTPUT             1
 
 #endif /* GLOBALS_H_ */

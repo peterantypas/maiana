@@ -95,10 +95,10 @@ main(int argc, char* argv[])
     RadioManager::instance().init();
     RadioManager::instance().transmitCW(CH_86);
 #elif defined TX_TEST_MODE
-    Radio::instance().init();
+    RadioManager::instance().init();
     GPS::instance().init();
-    Radio::instance().start();
-    Radio::instance().startReceiving(4);
+    RadioManager::instance().start();
+    //Radio::instance().startReceiving(4);
     txScheduler.startTXTesting();
 #else
     RXPacketProcessor packetProcessor;

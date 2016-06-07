@@ -16,6 +16,7 @@
 #include "printf2.h"
 #include "AISChannels.h"
 
+static char __buff[100];
 
 RXPacketProcessor::RXPacketProcessor ()
     : mLastDumpTime(0), mGoodCount(0), mBadCRCCount(0), mInvalidCount(0), mLat(-200), mLng(-200)
@@ -48,8 +49,10 @@ void RXPacketProcessor::processEvent(Event *e)
             else if ( pe->mTime - mLastDumpTime >= 60 ) {
                 mLastDumpTime = pe->mTime;
                 float yield = (float)mGoodCount / (float)(mGoodCount+mBadCRCCount+mInvalidCount);
-                printf2("\n[Yield: %.1fpct, Valid: %d, Wrong CRC: %d, Malformed: %d]\r\n", yield*100.0, mGoodCount, mBadCRCCount, mInvalidCount);
-                printf2("[Unique MMSIs: %d]\r\n\n", mUniqueMMSIs.size());
+                printf2("\r\n");
+                printf2("[Yield: %.1fpct, Valid: %d, Wrong CRC: %d, Malformed: %d]\r\n", yield*100.0, mGoodCount, mBadCRCCount, mInvalidCount);
+                printf2("[Unique MMSIs: %d]\r\n", mUniqueMMSIs.size());
+                printf2("\r\n");
                 mUniqueMMSIs.clear();
                 mBadCRCCount = 0;
                 mInvalidCount = 0;
@@ -125,8 +128,13 @@ void RXPacketProcessor::processEvent(Event *e)
                 mSentences.clear();
                 mEncoder.encode(*pe->mPacket, mSentences);
                 for (vector<string>::iterator i = mSentences.begin(); i != mSentences.end(); ++i) {
+#ifdef MULTIPLEXED_OUTPUT
+                    sprintf(__buff, "%s\r\n", i->c_str());
+                    DataTerminal::instance().write("NMEA", __buff);
+#else
                     DataTerminal::instance().write(i->c_str());
                     DataTerminal::instance().write("\r\n");
+#endif
                 }
 #endif
                 switch (pe->mPacket->messageType()) {
