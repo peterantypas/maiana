@@ -1,6 +1,6 @@
 # Bootloader
 The bootloader is a small (~10K) application that occupies the first few pages of flash at 0x0800000.
-Its only purpose is to determine whether an application is installed by inspecting a certain flash page. 
+Its only purpose is to determine whether an application is installed by inspecting a specific Flash page for special metadata. 
 If the application is installed it just passes control to it, otherwise it enters UART software upload mode.
 
 When an upload completes, the bootloader writes the special metadata page and resets the system, which will 
