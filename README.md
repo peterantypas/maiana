@@ -31,12 +31,6 @@ install those.
 There are two programs that need to be installed on the flash. The bootloader and the main application. The bootloader is
 optional, but it allows for software update via a very simple (albeit proprietary) serial protocol.
 
-On the software side, unlike most examples you see online the microcontroller runs in _both_ thread and interrupt mode. After hardware initialization,
-*main()* dispatches events while keeping the watchdog happy. Interrupt code performs as little work as possible 
-and queues up events for non-real time operations to be processed in thread mode. There is no operating system, and I could never
-justify the overhead of one.
-
-Lastly, I opted for the Standard Peripheral Library instead of HAL/CubeMX because I found it to be more stable. The library is included here.
  
 
 
