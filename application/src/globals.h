@@ -12,7 +12,7 @@
 #include "TXPowerSettings.h"
 
 #define MODEL    "SEAWAIS_02"
-#define REVISION "0.5.1"
+#define REVISION "0.6.0"
 
 
 

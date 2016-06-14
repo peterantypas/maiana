@@ -8,5 +8,6 @@
 
 *.s#*
 
-/Debug/
-/Release/
+*.bin
+*.map
+
