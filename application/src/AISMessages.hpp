@@ -29,7 +29,7 @@ public:
     AISMessage ();
     virtual ~AISMessage ();
 
-    virtual bool decode(RXPacket &packet);
+    virtual bool decode(const RXPacket &packet);
     virtual void encode(const StationData &station, TXPacket &packet);
 
     uint8_t type() const;
@@ -65,7 +65,7 @@ public:
 
     AISMessage123();
 
-    bool decode(RXPacket &packet);
+    bool decode(const RXPacket &packet);
 };
 
 class AISMessage18 : public AISMessage
@@ -79,7 +79,7 @@ public:
 
     AISMessage18();
 
-    bool decode(RXPacket &packet);
+    bool decode(const RXPacket &packet);
     void encode(const StationData &data, TXPacket &packet);
 };
 

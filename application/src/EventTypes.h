@@ -22,7 +22,9 @@ typedef enum {
     AIS_PACKET_EVENT     =   8,         // A packet was just decoded (not necessarily valid, must still be CRC checked, etc)
     INTERROGATION_EVENT  =   16,
     DEBUG_EVENT          =   32,
-    KEYPRESS_EVENT       =   64
+    KEYPRESS_EVENT       =   64,
+    REQUEST_EVENT        =  128,
+    RESPONSE_EVENT       =  256
     //GPS_ERROR_EVENT      =   64,        // A GPS failure
     //TRX_ERROR_EVENT      =   128         // A radio failure
 }

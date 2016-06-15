@@ -10,6 +10,11 @@
 
 #include "globals.h"
 #include "EventQueue.hpp"
+#include <vector>
+#include <string>
+
+using namespace std;
+
 #ifdef ENABLE_TERMINAL
 
 
@@ -20,31 +25,22 @@ public:
 
     void init();
 
-    void processEvent(Event *e);
+    void processEvent(const Event &e);
 #ifdef MULTIPLEXED_OUTPUT
-    void write(const char* cls, const char* line, bool interactive=false);
+    void write(const char* cls, const char* line);
 #else
-    void write(const char* line, bool interactive = false);
+    void write(const char* line);
 #endif
     void processCharacter(char c);
 private:
     DataTerminal();
+    void processCommand();
 
-    typedef enum {
-        MAIN_SCREEN = 0,
-        PROGRAMMING_SCREEN = 1
-    }
-    MenuScreen;
-
-    void showScreen(MenuScreen s);
-
-    void clearScreen();
     void _write(const char* s);
 private:
-    //uint32_t mTimeSlot;
-    uint8_t mEscapes;
-    MenuScreen mCurrentScreen;
-    bool mInteractive;
+    char mCmdBuffer[64];
+    size_t mCmdBuffPos;
+    vector<string> mCmdTokens;
 };
 #endif
 

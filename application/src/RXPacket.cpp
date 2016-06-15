@@ -26,7 +26,7 @@ void RXPacket::setChannel(VHFChannel channel)
     mChannel = channel;
 }
 
-VHFChannel RXPacket::channel()
+VHFChannel RXPacket::channel() const
 {
     return mChannel;
 }
@@ -75,7 +75,7 @@ void RXPacket::setSlot(uint32_t slot)
     mSlot = slot;
 }
 
-uint32_t RXPacket::slot()
+uint32_t RXPacket::slot() const
 {
     return mSlot;
 }
@@ -86,7 +86,7 @@ void RXPacket::setRSSI(uint8_t rssi)
     mRSSI = rssi;
 }
 
-uint8_t RXPacket::rssi()
+uint8_t RXPacket::rssi() const
 {
     return mRSSI;
 }
@@ -107,7 +107,7 @@ void RXPacket::addBit(uint8_t bit)
     ++mSize;
 }
 
-uint8_t RXPacket::bit(uint16_t pos)
+uint8_t RXPacket::bit(uint16_t pos) const
 {
     if ( pos < mSize ) {
         uint16_t index = pos / 8;
@@ -119,7 +119,7 @@ uint8_t RXPacket::bit(uint16_t pos)
         return 0;
 }
 
-uint32_t RXPacket::bits(uint16_t pos, uint8_t count)
+uint32_t RXPacket::bits(uint16_t pos, uint8_t count) const
 {
     ASSERT(count <= 32);
     uint32_t result = 0;
@@ -166,13 +166,13 @@ void RXPacket::addByte(uint8_t byte)
 }
 
 
-uint16_t RXPacket::size()
+uint16_t RXPacket::size() const
 {
     return mSize;
 }
 
 
-bool RXPacket::isBad()
+bool RXPacket::isBad() const
 {
     /*
      * We don't anticipate anything less than 168 + 16 = 184 bits
@@ -182,7 +182,7 @@ bool RXPacket::isBad()
     return mSize < 64;
 }
 
-uint16_t RXPacket::crc()
+uint16_t RXPacket::crc() const
 {
     return mCRC;
 }
@@ -203,7 +203,7 @@ void RXPacket::addFillBits(uint8_t numBits)
 
 
 
-bool RXPacket::checkCRC()
+bool RXPacket::checkCRC() const
 {
     //uint16_t rcrc = ((mCRC & 0xff00) >> 8) | ((mCRC & 0x00ff) << 8);
     //trace_printf("%.4x %.4x %.4x\n", mCRC, ~(mCRC), ~(rcrc));
@@ -211,7 +211,7 @@ bool RXPacket::checkCRC()
 
 }
 
-uint8_t RXPacket::messageType()
+uint8_t RXPacket::messageType() const
 {
     if ( mType )
         return mType;
@@ -224,7 +224,7 @@ uint8_t RXPacket::messageType()
     return mType;
 }
 
-uint8_t RXPacket::repeatIndicator()
+uint8_t RXPacket::repeatIndicator() const
 {
     if ( mRI )
         return mRI;
@@ -233,7 +233,7 @@ uint8_t RXPacket::repeatIndicator()
     return mRI;
 }
 
-uint32_t RXPacket::mmsi()
+uint32_t RXPacket::mmsi() const
 {
     if ( mMMSI )
         return mMMSI;
@@ -253,6 +253,7 @@ uint32_t RXPacket::mmsi()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 0
 RXPacketPool &RXPacketPool::instance()
 {
     static RXPacketPool __instance;
@@ -274,6 +275,6 @@ void RXPacketPool::deleteRXPacket(RXPacket *p)
     ASSERT(p);
     mPool->put(p);
 }
-
+#endif
 
 

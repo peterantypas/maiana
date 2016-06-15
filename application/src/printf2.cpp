@@ -57,13 +57,13 @@ void USART_puts(USART_TypeDef* USARTx, const char *s)
 }
 #endif
 
-static char __buffer[256];
+static char __buffer[128];
 
 void printf2_now(const char *format, ...)
 {
     va_list list;
     va_start(list, format);
-    vsnprintf(__buffer, 255, format, list);
+    vsnprintf(__buffer, 128, format, list);
     va_end(list);
 #ifdef MULTIPLEXED_OUTPUT
     DataTerminal::instance().write("DEBUG", __buffer);
@@ -76,13 +76,13 @@ void printf2_now(const char *format, ...)
 void printf2(const char *format, ...)
 {
     if ( Utils::inISR() ) {
-        DebugEvent *e = static_cast<DebugEvent*>(EventPool::instance().newEvent(DEBUG_EVENT));
+        Event *e = EventPool::instance().newEvent(DEBUG_EVENT);
         if ( e == NULL )
             return;
 
         va_list list;
         va_start(list, format);
-        vsnprintf(e->mBuffer, 255, format, list);
+        vsnprintf(e->debugMessage.buffer, 128, format, list);
         va_end(list);
 
         EventQueue::instance().push(e);
@@ -90,7 +90,7 @@ void printf2(const char *format, ...)
     else {
         va_list list;
         va_start(list, format);
-        vsnprintf(__buffer, 255, format, list);
+        vsnprintf(__buffer, 128, format, list);
         va_end(list);
 #ifdef MULTIPLEXED_OUTPUT
         DataTerminal::instance().write("DEBUG", __buffer);

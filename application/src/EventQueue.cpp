@@ -58,11 +58,11 @@ void EventQueue::dispatch()
 
         for ( map<EventConsumer*, uint32_t>::iterator c = mConsumers.begin(); c != mConsumers.end(); ++c ) {
            // Utils::delay(1000);
-            if ( c->second & e->type() )
-                c->first->processEvent(e);
+            if ( c->second & e->type )
+                c->first->processEvent(*e);
         }
         EventPool::instance().deleteEvent(e);
-        if ( e->type() == AIS_PACKET_EVENT )
+        if ( e->type == AIS_PACKET_EVENT )
             LEDManager::instance().blink(LEDManager::GREEN_LED);
     }
 }

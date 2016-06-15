@@ -17,7 +17,7 @@ public:
     static ChannelManager &instance();
     virtual ~ChannelManager();
 
-    void processEvent(Event *e);
+    void processEvent(const Event &e);
 
     const ais_channel &channelA();
     const ais_channel &channelB();

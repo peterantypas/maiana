@@ -28,7 +28,7 @@ public:
     // Returns the current noise floor of the channel, 0xff if unknown
     uint8_t getNoiseFloor(VHFChannel channelIndex);
 
-    void processEvent(Event *e);
+    void processEvent(const Event &e);
 private:
     typedef struct {
         time_t timestamp;

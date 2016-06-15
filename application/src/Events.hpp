@@ -19,36 +19,63 @@
 
 using namespace std;
 
+typedef struct {
+    char sentence[100];
+} NMEABuffer;
 
-/*
- * All events extend this class
- */
+typedef struct {
+    time_t utc;
+    double lat;
+    double lng;
+    double speed;
+    double cog;
+} GPSFix;
+
+typedef struct {
+    time_t utc;
+} ClockTick;
+
+typedef struct {
+    char buffer[128];
+} DebugMessage;
+
+typedef enum {
+    OP_GET,
+    OP_SET
+} Operation;
+
+
+typedef struct {
+    Operation operation;
+    char field[16];
+    char value[64];
+} Request;
+
+typedef struct {
+    bool success;
+    char data[64];
+} Response;
+
 class Event
 {
-    friend class EventPool;
 public:
+    EventType type;
+
     Event()
-        : mType(UNKNOWN_EVENT) {
+        : type(UNKNOWN_EVENT) {
     }
 
-    Event (EventType type): mType(type) {
-    }
-
-    virtual ~Event () {
-    }
-
-    virtual void prepare() {
-    }
-
-    virtual void clear() {
-    }
-
-    virtual EventType type() {
-        return mType;
-    }
-protected:
-    EventType mType;
+    union {
+        NMEABuffer nmeaBuffer;
+        GPSFix gpsFix;
+        DebugMessage debugMessage;
+        RXPacket rxPacket;
+        ClockTick clock;
+        Request request;
+        Response response;
+    };
 };
+
 
 /*
  * Event consumer abstract definition.
@@ -58,87 +85,7 @@ class EventConsumer
 {
 public:
     virtual ~EventConsumer() {}
-    virtual void processEvent(Event *event)=0;
-};
-
-class GPSNMEASentence : public Event
-{
-public:
-    GPSNMEASentence()
-        : Event(GPS_NMEA_SENTENCE){
-    }
-
-    char mSentence[100];
-};
-
-class GPSFIXEvent: public Event
-{
-public:
-    GPSFIXEvent()
-        : Event(GPS_FIX_EVENT) {
-    }
-
-    time_t mUTC;
-    double mLat;
-    double mLng;
-    double mSpeed;
-    double mCOG;
-};
-
-class ClockEvent : public Event
-{
-public:
-    ClockEvent()
-        : Event(CLOCK_EVENT) {
-    }
-
-
-    time_t mTime;
-};
-
-class AISPacketEvent: public Event
-{
-public:
-    AISPacketEvent()
-        : Event(AIS_PACKET_EVENT) {
-    }
-
-
-    void prepare()
-    {
-        //mPacket = RXPacketPool::instance().newRXPacket();
-        //mPacket->reset();
-    }
-
-    void clear()
-    {
-        RXPacketPool::instance().deleteRXPacket(mPacket);
-        mPacket = NULL;
-    }
-
-    RXPacket *mPacket;
-};
-
-
-class DebugEvent: public Event
-{
-public:
-    DebugEvent()
-        : Event(DEBUG_EVENT) {
-    }
-
-    char mBuffer[256];
-};
-
-class KeyPressEvent : public Event
-{
-public:
-    KeyPressEvent()
-        : Event(KEYPRESS_EVENT) {
-    }
-
-
-    char key;
+    virtual void processEvent(const Event &event)=0;
 };
 
 class EventPool
@@ -152,12 +99,6 @@ public:
 
 private:
     ObjectPool<Event> *mGenericPool;
-    ObjectPool<AISPacketEvent> *mAISPacketPool;
-    ObjectPool<GPSNMEASentence> *mGPSNMEAPool;
-    ObjectPool<GPSFIXEvent> *mGPSFixPool;
-    ObjectPool<ClockEvent> *mClockPool;
-    ObjectPool<DebugEvent> *mDebugEventPool;
-    ObjectPool<KeyPressEvent> *mKeyPressPool;
 };
 
 

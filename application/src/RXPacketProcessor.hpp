@@ -21,7 +21,7 @@ public:
     virtual
     ~RXPacketProcessor ();
 
-    void processEvent(Event *e);
+    void processEvent(const Event &e);
 private:
     NMEAEncoder mEncoder;
     time_t mLastDumpTime;

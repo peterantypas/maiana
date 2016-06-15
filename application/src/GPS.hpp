@@ -43,7 +43,7 @@ public:
 	void setDelegate(GPSDelegate *delegate);
 
 	void onIRQ(uint32_t mask, void *data);
-	void processEvent(Event *event);
+	void processEvent(const Event &event);
 private:
 	GPS();
 	void reset();

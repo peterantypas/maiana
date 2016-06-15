@@ -31,23 +31,23 @@ RXPacketProcessor::~RXPacketProcessor ()
     // Should never be called
 }
 
-void RXPacketProcessor::processEvent(Event *e)
+void RXPacketProcessor::processEvent(const Event &e)
 {
     //printf2("-> RXPacketProcessor::processEvent()\r\n");
-    switch(e->type()) {
+    switch(e.type) {
         case GPS_FIX_EVENT: {
-            GPSFIXEvent *gfe = static_cast<GPSFIXEvent*> (e);
-            mLat = gfe->mLat;
-            mLng = gfe->mLng;
+            //GPSFIXEvent *gfe = static_cast<GPSFIXEvent*> (e);
+            mLat = e.gpsFix.lat;
+            mLng = e.gpsFix.lng;
             break;
         }
         case CLOCK_EVENT: {
-            ClockEvent *pe = static_cast<ClockEvent*>(e);
+            //ClockEvent *pe = static_cast<ClockEvent*>(e);
             if ( mLastDumpTime == 0 ) {
-                mLastDumpTime = pe->mTime;
+                mLastDumpTime = e.clock.utc;
             }
-            else if ( pe->mTime - mLastDumpTime >= 60 ) {
-                mLastDumpTime = pe->mTime;
+            else if ( e.clock.utc - mLastDumpTime >= 60 ) {
+                mLastDumpTime = e.clock.utc;
                 float yield = (float)mGoodCount / (float)(mGoodCount+mBadCRCCount+mInvalidCount);
                 printf2("\r\n");
                 printf2("[Yield: %.1fpct, Valid: %d, Wrong CRC: %d, Malformed: %d]\r\n", yield*100.0, mGoodCount, mBadCRCCount, mInvalidCount);
@@ -63,31 +63,30 @@ void RXPacketProcessor::processEvent(Event *e)
             break;
         }
         case AIS_PACKET_EVENT: {
-            AISPacketEvent *pe = static_cast<AISPacketEvent*>(e);
-            if ( pe->mPacket->isBad() ) {
+            //AISPacketEvent *pe = static_cast<AISPacketEvent*>(e);
+            if ( e.rxPacket.isBad() ) {
                 ++mInvalidCount;
                 break;
             }
 
 
-            if (pe->mPacket->checkCRC ()) {
+            if (e.rxPacket.checkCRC ()) {
                 ++mGoodCount;
 
-                mUniqueMMSIs.insert (pe->mPacket->mmsi ());
-                switch (pe->mPacket->messageType ()) {
+                mUniqueMMSIs.insert (e.rxPacket.mmsi ());
+                switch (e.rxPacket.messageType()) {
                     case 1:
                     case 2:
                     case 3: {
                         AISMessage123 msg;
-                        if (msg.decode (*pe->mPacket)) {
-                            double distance = Utils::haversineDistance (
-                                    mLat, mLng, msg.latitude, msg.longitude);
+                        if (msg.decode (e.rxPacket)) {
+                            double distance = Utils::haversineDistance (mLat, mLng, msg.latitude, msg.longitude);
                             double miles = distance / METERS_PER_NAUTICAL_MILE;
 
                             printf2 (
                                     "RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
-                                    pe->mPacket->rssi (),
-                                    AIS_CHANNELS[pe->mPacket->channel ()].designation,
+                                    e.rxPacket.rssi(),
+                                    AIS_CHANNELS[e.rxPacket.channel()].designation,
                                     msg.type(), msg.mmsi(), msg.sog,
                                     msg.latitude, msg.longitude, miles);
 
@@ -96,14 +95,13 @@ void RXPacketProcessor::processEvent(Event *e)
                     }
                     case 18: {
                         AISMessage18 msg;
-                        if (msg.decode (*pe->mPacket)) {
-                            double distance = Utils::haversineDistance (
-                                    mLat, mLng, msg.latitude, msg.longitude);
+                        if (msg.decode (e.rxPacket)) {
+                            double distance = Utils::haversineDistance (mLat, mLng, msg.latitude, msg.longitude);
                             double miles = distance / METERS_PER_NAUTICAL_MILE;
 
                             printf2 ("RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
-                                    pe->mPacket->rssi (),
-                                    AIS_CHANNELS[pe->mPacket->channel ()].designation,
+                                    e.rxPacket.rssi (),
+                                    AIS_CHANNELS[e.rxPacket.channel()].designation,
                                     msg.type(), msg.mmsi(), msg.sog,
                                     msg.latitude, msg.longitude, miles);
 
@@ -114,11 +112,11 @@ void RXPacketProcessor::processEvent(Event *e)
 
                         printf2 (
                                 "RSSI: %.2x, Ch: %c, Type: %d, RI: %d, MMSI: %d\r\n",
-                                pe->mPacket->rssi (),
-                                AIS_CHANNELS[pe->mPacket->channel ()].designation,
-                                pe->mPacket->messageType (),
-                                pe->mPacket->repeatIndicator (),
-                                pe->mPacket->mmsi ());
+                                e.rxPacket.rssi (),
+                                AIS_CHANNELS[e.rxPacket.channel()].designation,
+                                e.rxPacket.messageType (),
+                                e.rxPacket.repeatIndicator (),
+                                e.rxPacket.mmsi ());
 
                         break;
                     }
@@ -126,7 +124,8 @@ void RXPacketProcessor::processEvent(Event *e)
 
 #ifdef ENABLE_TERMINAL
                 mSentences.clear();
-                mEncoder.encode(*pe->mPacket, mSentences);
+                RXPacket p(e.rxPacket);
+                mEncoder.encode(p, mSentences);
                 for (vector<string>::iterator i = mSentences.begin(); i != mSentences.end(); ++i) {
 #ifdef MULTIPLEXED_OUTPUT
                     sprintf(__buff, "%s\r\n", i->c_str());
@@ -137,7 +136,7 @@ void RXPacketProcessor::processEvent(Event *e)
 #endif
                 }
 #endif
-                switch (pe->mPacket->messageType()) {
+                switch (e.rxPacket.messageType()) {
                     case 15:
                         // TODO: This is an interrogation. If we are a target, push an appropriate event into the queue
                         break;

@@ -22,7 +22,7 @@ public:
     virtual
     ~TXScheduler ();
 
-    void processEvent(Event *event);
+    void processEvent(const Event &event);
     void startTXTesting();
 private:
     void scheduleTestPacket();

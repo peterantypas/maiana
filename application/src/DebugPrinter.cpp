@@ -18,9 +18,9 @@ DebugPrinter::~DebugPrinter()
 {
 }
 
-void DebugPrinter::processEvent(Event *e)
+void DebugPrinter::processEvent(const Event &e)
 {
-    DebugEvent *event = static_cast<DebugEvent*>(e);
-    printf2(event->mBuffer);
+    //DebugEvent *event = static_cast<DebugEvent*>(e);
+    printf2(e.debugMessage.buffer);
 }
 

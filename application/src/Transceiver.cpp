@@ -162,7 +162,7 @@ void Transceiver::onBitClock()
         // If we have an assigned packet and we're on the correct channel, at the right bit of the time slot,
         // and the RSSI is within 6dB of the noise floor for this channel, then fire!!!
         uint8_t noiseFloor = NoiseFloorDetector::instance().getNoiseFloor(mChannel);
-        if ( mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel && mRXPacket->rssi() < noiseFloor + 12 ) {
+        if ( mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel && mRXPacket.rssi() < noiseFloor + 12 ) {
             startTransmitting();
         }
     }

@@ -33,7 +33,6 @@ bool Receiver::init()
 {
     printf2("Configuring IC\r\n");
     configure();
-    mRXPacket = RXPacketPool::instance().newRXPacket();
     resetBitScanner();
     return true;
 }
@@ -75,8 +74,7 @@ void Receiver::resetBitScanner()
     mRXByte = 0;
     mBitState = BIT_STATE_PREAMBLE_SYNC;
 
-    ASSERT(mRXPacket);
-    mRXPacket->reset();
+    mRXPacket.reset();
 }
 
 void Receiver::onBitClock()
@@ -93,7 +91,7 @@ void Receiver::onBitClock()
         rssi = readRSSI();
         rssi += mRSSIAdjustment;
         NoiseFloorDetector::instance().report(mChannel, rssi);
-        mRXPacket->setRSSI(rssi);
+        mRXPacket.setRSSI(rssi);
     }
 }
 
@@ -108,7 +106,7 @@ void Receiver::timeSlotStarted(uint32_t slot)
     if ( mBitState == BIT_STATE_IN_PACKET )
         return;
 
-    mRXPacket->setSlot(slot);
+    mRXPacket.setSlot(slot);
     if ( mSwitchAtNextSlot ) {
         mSwitchAtNextSlot = false;
         startReceiving(mSwitchToChannel);
@@ -136,13 +134,13 @@ void Receiver::processNRZIBit(uint8_t bit)
              */
             if ( mBitWindow == 0b1010101001111110 || mBitWindow == 0b0101010101111110 ) {
                 mBitState = BIT_STATE_IN_PACKET;
-                mRXPacket->setChannel(mChannel);
+                mRXPacket.setChannel(mChannel);
             }
 
             break;
         }
         case BIT_STATE_IN_PACKET: {
-            if ( mRXPacket->size() >= MAX_AIS_RX_PACKET_SIZE ) {
+            if ( mRXPacket.size() >= MAX_AIS_RX_PACKET_SIZE ) {
                 // Start over
                 startReceiving(mChannel);
                 //resetBitScanner();
@@ -200,7 +198,7 @@ bool Receiver::addBit(uint8_t bit)
 
     if ( mBitCount == 8 ) {
         // Commit to the packet!
-        mRXPacket->addByte(mRXByte);
+        mRXPacket.addByte(mRXByte);
         mBitCount = 0;
         mRXByte = 0;
     }
@@ -210,15 +208,16 @@ bool Receiver::addBit(uint8_t bit)
 
 void Receiver::pushPacket()
 {
-    AISPacketEvent *p = static_cast<AISPacketEvent*>(EventPool::instance().newEvent(AIS_PACKET_EVENT));
+    Event *p = EventPool::instance().newEvent(AIS_PACKET_EVENT);
     if ( p == NULL ) {
         printf2("AISPacket allocation failed\r\n");
         return;
     }
 
-    p->mPacket = mRXPacket;
-    mRXPacket = RXPacketPool::instance().newRXPacket();
-    ASSERT(mRXPacket);
+    p->rxPacket = mRXPacket;
+    mRXPacket.reset();
+    //mRXPacket = RXPacketPool::instance().newRXPacket();
+    //ASSERT(mRXPacket);
     EventQueue::instance().push(p);
 }
 

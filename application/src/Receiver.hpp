@@ -43,7 +43,7 @@ private:
     void resetBitScanner();
     void configureGPIOs();
 protected:
-    RXPacket *mRXPacket;
+    RXPacket mRXPacket;
     uint16_t mBitWindow;
     uint8_t mLastNRZIBit;
     uint32_t mBitCount;

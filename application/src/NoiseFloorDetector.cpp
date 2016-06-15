@@ -51,15 +51,14 @@ uint8_t NoiseFloorDetector::getNoiseFloor(VHFChannel channel)
 }
 
 
-void NoiseFloorDetector::processEvent(Event *e)
+void NoiseFloorDetector::processEvent(const Event &e)
 {
-    ClockEvent *ce = static_cast<ClockEvent*>(e);
-    if ( mUTC == 0 ) {
+    if ( e.clock.utc == 0 ) {
         printf2("Starting RSSI sample collection\r\n");
-        mStartTime = ce->mTime;
+        mStartTime = e.clock.utc;
         mLastDumpTime = mStartTime;
     }
-    mUTC = ce->mTime;
+    mUTC = e.clock.utc;
 
     if ( mUTC - mLastDumpTime >= 30 )
         dump();

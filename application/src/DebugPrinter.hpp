@@ -16,7 +16,7 @@ public:
     DebugPrinter();
     virtual ~DebugPrinter();
 
-    void processEvent(Event* e);
+    void processEvent(const Event &e);
 };
 
 #endif /* DEBUGPRINTER_HPP_ */

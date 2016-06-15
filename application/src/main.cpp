@@ -79,7 +79,7 @@ main(int argc, char* argv[])
     EventQueue::instance().init();
     EventPool::instance().init();
     TXPacketPool::instance().init();
-    RXPacketPool::instance().init();
+
 
     LEDManager::instance().clear();
     TXScheduler txScheduler;

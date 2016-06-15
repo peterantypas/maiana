@@ -43,7 +43,7 @@ uint32_t AISMessage::mmsi() const
     return mMMSI;
 }
 
-bool AISMessage::decode(RXPacket &)
+bool AISMessage::decode(const RXPacket &)
 {
     // The base class method should never be called
     ASSERT(false);
@@ -211,7 +211,7 @@ AISMessage123::AISMessage123()
 {
 }
 
-bool AISMessage123::decode(RXPacket &packet)
+bool AISMessage123::decode(const RXPacket &packet)
 {
     mType = packet.messageType();
     mRI = packet.repeatIndicator();
@@ -312,7 +312,7 @@ void AISMessage18::encode(const StationData &station, TXPacket &packet)
     finalize(payload, size, packet);
 }
 
-bool AISMessage18::decode(RXPacket &packet)
+bool AISMessage18::decode(const RXPacket &packet)
 {
     mType = packet.messageType();
     mRI = packet.repeatIndicator();

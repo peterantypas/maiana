@@ -44,18 +44,18 @@ void TXScheduler::startTXTesting()
     mTesting = true;
 }
 
-void TXScheduler::processEvent(Event *event)
+void TXScheduler::processEvent(const Event &e)
 {
 #ifndef ENABLE_TX
     return;
 #endif
 
-    switch(event->type()) {
+    switch(e.type) {
         case GPS_FIX_EVENT: {
             if ( mTesting )
                 return;
 
-            GPSFIXEvent *gfe = static_cast<GPSFIXEvent*> (event);
+            //GPSFIXEvent *gfe = static_cast<GPSFIXEvent*> (event);
 
             //printf2("UTC: %d\r\n", mUTC);
 
@@ -74,11 +74,11 @@ void TXScheduler::processEvent(Event *event)
                 }
                 AISMessage18 msg;
 
-                msg.latitude    = gfe->mLat;
-                msg.longitude   = gfe->mLng;
-                msg.sog         = gfe->mSpeed;
-                msg.cog         = gfe->mCOG;
-                msg.utc         = gfe->mUTC;
+                msg.latitude    = e.gpsFix.lat;
+                msg.longitude   = e.gpsFix.lng;
+                msg.sog         = e.gpsFix.speed;
+                msg.cog         = e.gpsFix.cog;
+                msg.utc         = e.gpsFix.utc;
 
                 msg.encode (mStationData, *p1);
                 RadioManager::instance ().scheduleTransmission (p1);
@@ -116,8 +116,8 @@ void TXScheduler::processEvent(Event *event)
         }
         case CLOCK_EVENT: {
             // This is reliable and independent of GPS update frequency which could change to something other than 1Hz
-            ClockEvent *c = static_cast<ClockEvent*>(event);
-            mUTC = c->mTime;
+            //ClockEvent *c = static_cast<ClockEvent*>(event);
+            mUTC = e.clock.utc;
             if ( RadioManager::instance().initialized() && mTesting && mUTC % 1 == 0 ) {
                 scheduleTestPacket();
                 printf2("Scheduled test packet\r\n");

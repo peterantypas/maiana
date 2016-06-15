@@ -30,7 +30,7 @@ public:
     void scheduleTransmission(TXPacket *p);
     bool initialized();
 
-    void processEvent(Event *e);
+    void processEvent(const Event &e);
     void transmitCW(VHFChannel channel);
     VHFChannel alternateChannel(VHFChannel channel);
 private:

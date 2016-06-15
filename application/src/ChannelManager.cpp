@@ -44,7 +44,7 @@ bool ChannelManager::channelsDetermined()
     return true;
 }
 
-void ChannelManager::processEvent(Event *)
+void ChannelManager::processEvent(const Event &)
 {
     //AISPacketEvent *pe = static_cast<AISPacketEvent*>(e);
 }

@@ -228,10 +228,10 @@ void RadioManager::configureInterrupts()
 
 }
 
-void RadioManager::processEvent(Event *e)
+void RadioManager::processEvent(const Event &e)
 {
-    ClockEvent *ce = static_cast<ClockEvent*>(e);
-    mUTC = ce->mTime;
+    //ClockEvent *ce = static_cast<ClockEvent*>(e);
+    mUTC = e.clock.utc;
 
     // Evaluate the state of the transceiver IC and our queue ...
     if ( mTransceiverIC->assignedTXPacket() == NULL ) {
