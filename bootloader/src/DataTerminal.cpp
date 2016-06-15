@@ -28,18 +28,17 @@ void DataTerminal::init()
     GPIO_InitTypeDef GPIO_InitStruct;
     NVIC_InitTypeDef NVIC_InitStruct;
 
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE); // For USART2
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_7);
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_7);
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); // For USART3, LEDs
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_7);
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_7);
 
     // Initialize pins as alternative function 7 (USART)
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_1;
-    GPIO_Init(GPIOA, &GPIO_InitStruct);
+    GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     // These two pins are LEDs. Just turn them on to indicate we have entered "update" mode.
     GPIO_InitStruct.GPIO_Pin = GPIO_Pin_14 | GPIO_Pin_15;
@@ -49,24 +48,24 @@ void DataTerminal::init()
     //GPIO_SetBits(GPIOB, GPIO_Pin_14);
     //GPIO_SetBits(GPIOB, GPIO_Pin_15);
 
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
 
 
     USART_InitTypeDef USART_InitStructure;
     USART_StructInit(&USART_InitStructure);
 
     USART_InitStructure.USART_BaudRate = 38400;
-    USART_Init(USART2, &USART_InitStructure);
+    USART_Init(USART3, &USART_InitStructure);
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode                = USART_Mode_Rx | USART_Mode_Tx;
     USART_InitStructure.USART_Parity              = USART_Parity_No;
     USART_InitStructure.USART_StopBits            = USART_StopBits_1;
     USART_InitStructure.USART_WordLength          = USART_WordLength_8b;
 
-    USART_Cmd(USART2, ENABLE);
+    USART_Cmd(USART3, ENABLE);
 
-    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-    NVIC_InitStruct.NVIC_IRQChannel = USART2_IRQn;
+    USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+    NVIC_InitStruct.NVIC_IRQChannel = USART3_IRQn;
     NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
     NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
     NVIC_Init(&NVIC_InitStruct);
@@ -199,6 +198,7 @@ void DataTerminal::fail()
     mState = STATE_WAITING;
     GPIO_ResetBits(GPIOB, GPIO_Pin_14|GPIO_Pin_15);
     FLASH_Lock();
+    trace_printf("Resetting\n");
     writeCmd(NACK);
 }
 
@@ -269,12 +269,12 @@ void write_char(USART_TypeDef* USARTx, char c)
 void DataTerminal::write(const char* s)
 {
     for ( int i = 0; s[i] != 0; ++i )
-        write_char(USART2, s[i]);
+        write_char(USART3, s[i]);
 }
 
 void DataTerminal::writeCmd(uint8_t cmd)
 {
-    write_char(USART2, (char)cmd);
+    write_char(USART3, (char)cmd);
 }
 
 void DataTerminal::clearScreen()
@@ -291,10 +291,10 @@ void DataTerminal::_write(const char *s)
 
 extern "C" {
 
-void USART2_IRQHandler(void)
+void USART3_IRQHandler(void)
 {
-    if ( USART_GetITStatus(USART2, USART_IT_RXNE) ) {
-        uint8_t byte = (uint8_t)USART2->RDR;
+    if ( USART_GetITStatus(USART3, USART_IT_RXNE) ) {
+        uint8_t byte = (uint8_t)USART3->RDR;
         DataTerminal::instance().processByte(byte);
     }
 }
