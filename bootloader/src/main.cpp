@@ -124,6 +124,9 @@ void enterUARTMode()
 
 bool verifyApplicationChecksum(const ApplicationMetadata &metadata)
 {
+#ifdef DEBUG
+    return true;
+#endif
     uint8_t hash[16];
     uint8_t *p = (uint8_t*)APPLICATION_ADDRESS;
     MD5_CTX ctx;
