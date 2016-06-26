@@ -12,7 +12,7 @@
 #include "TXPowerSettings.h"
 
 #define MODEL    "SEAWAIS_02"
-#define REVISION "0.6.0"
+#define REVISION "0.6.2"
 
 
 
@@ -88,5 +88,8 @@
  *
 */
 #define MULTIPLEXED_OUTPUT             1
+
+#define METADATA_ADDRESS                0x08003800
+#define APPLICATION_ADDRESS             0x08004000
 
 #endif /* GLOBALS_H_ */

@@ -70,7 +70,7 @@ void DataTerminal::init()
     NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
     NVIC_Init(&NVIC_InitStruct);
 
-    //write("[SYSTEM][Waiting for transfer]\r\n");
+    write("[DFU]Waiting for transfer\r\n");
 }
 
 DataTerminal::DataTerminal()
@@ -208,7 +208,7 @@ void DataTerminal::unlockFlash()
     trace_printf("Mock flash unlock\n");
 #else
     FLASH_Unlock();
-    FLASH_WaitForLastOperation(0);
+    FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
 #endif
 }
 
@@ -218,7 +218,7 @@ void DataTerminal::lockFlash()
     trace_printf("Mock flash lock\n");
 #else
     FLASH_Lock();
-    FLASH_WaitForLastOperation(0);
+    FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
 #endif
 }
 
@@ -230,11 +230,11 @@ void DataTerminal::flushPage()
 #else
     trace_printf("Writing Flash page at %.8x\n", mWriteAddress);
     FLASH_ErasePage(mWriteAddress);
-    FLASH_WaitForLastOperation(0);
+    FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
     char *p = mCurrPage;
     for ( size_t i = 0; i < FLASH_PAGE_SIZE; i += 4, p += 4) {
         FLASH_ProgramWord(mWriteAddress + i, *(uint32_t*)p);
-        FLASH_WaitForLastOperation(0);
+        FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
     }
 
     trace_printf("Wrote Flash page at %.8x\n", mWriteAddress);
@@ -249,11 +249,11 @@ void DataTerminal::flushMetadata()
     trace_printf("Mock write for metadata page at %.8x\n", METADATA_ADDRESS);
 #else
     FLASH_ErasePage(METADATA_ADDRESS);
-    FLASH_WaitForLastOperation(0);
+    FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
     char *p = (char*)&mMetadata;
     for ( size_t i = 0; i < sizeof mMetadata; i += 4, p += 4 ) {
         FLASH_ProgramWord(METADATA_ADDRESS + i, *(uint32_t*)p);
-        FLASH_WaitForLastOperation(0);
+        FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
     }
 #endif
 }

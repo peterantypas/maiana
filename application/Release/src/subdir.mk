@@ -9,6 +9,7 @@ C_SRCS += \
 CPP_SRCS += \
 ../src/AISMessages.cpp \
 ../src/ChannelManager.cpp \
+../src/CommandProcessor.cpp \
 ../src/DataTerminal.cpp \
 ../src/DebugPrinter.cpp \
 ../src/EEPROM.cpp \
@@ -35,6 +36,7 @@ CPP_SRCS += \
 OBJS += \
 ./src/AISMessages.o \
 ./src/ChannelManager.o \
+./src/CommandProcessor.o \
 ./src/DataTerminal.o \
 ./src/DebugPrinter.o \
 ./src/EEPROM.o \
@@ -65,6 +67,7 @@ C_DEPS += \
 CPP_DEPS += \
 ./src/AISMessages.d \
 ./src/ChannelManager.d \
+./src/CommandProcessor.d \
 ./src/DataTerminal.d \
 ./src/DebugPrinter.d \
 ./src/EEPROM.d \

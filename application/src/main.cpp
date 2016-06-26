@@ -22,6 +22,7 @@
 #include "TXScheduler.hpp"
 #include "DebugPrinter.hpp"
 #include "EEPROM.hpp"
+#include "CommandProcessor.hpp"
 
 // ----------------------------------------------------------------------------
 //
@@ -61,12 +62,14 @@ main(int argc, char* argv[])
 #ifdef DEBUG
     // Disable buffered memory writes to debug imprecise bus faults
     SCnSCB->ACTLR |= SCnSCB_ACTLR_DISDEFWBUF_Msk;
-    trace_printf("ACTLR: %.8x\n", SCnSCB->ACTLR);
+    //trace_printf("ACTLR: %.8x\n", SCnSCB->ACTLR);
 #endif
 
+    printf2("Software revision: %s\r\n", REVISION);
 
     EEPROM::instance().init();
     /*
+     * TODO: Move this out of here
     struct StationData __d;
     __d.mmsi = 987654321;
     __d.len = 0;
@@ -79,7 +82,7 @@ main(int argc, char* argv[])
     EventQueue::instance().init();
     EventPool::instance().init();
     TXPacketPool::instance().init();
-
+    CommandProcessor::instance().init();
 
     LEDManager::instance().clear();
     TXScheduler txScheduler;
@@ -124,9 +127,6 @@ main(int argc, char* argv[])
         EventQueue::instance().dispatch();
         IWDG_ReloadCounter();
     }
-
-    // If execution jumps here, something is seriously fucked up!!!
-    assert(false);
 }
 
 

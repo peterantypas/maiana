@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../system/src/stm32f3-stdperiph/stm32f30x_exti.c \
+../system/src/stm32f3-stdperiph/stm32f30x_flash.c \
 ../system/src/stm32f3-stdperiph/stm32f30x_gpio.c \
 ../system/src/stm32f3-stdperiph/stm32f30x_i2c.c \
 ../system/src/stm32f3-stdperiph/stm32f30x_iwdg.c \
@@ -17,6 +18,7 @@ C_SRCS += \
 
 OBJS += \
 ./system/src/stm32f3-stdperiph/stm32f30x_exti.o \
+./system/src/stm32f3-stdperiph/stm32f30x_flash.o \
 ./system/src/stm32f3-stdperiph/stm32f30x_gpio.o \
 ./system/src/stm32f3-stdperiph/stm32f30x_i2c.o \
 ./system/src/stm32f3-stdperiph/stm32f30x_iwdg.o \
@@ -29,6 +31,7 @@ OBJS += \
 
 C_DEPS += \
 ./system/src/stm32f3-stdperiph/stm32f30x_exti.d \
+./system/src/stm32f3-stdperiph/stm32f30x_flash.d \
 ./system/src/stm32f3-stdperiph/stm32f30x_gpio.d \
 ./system/src/stm32f3-stdperiph/stm32f30x_i2c.d \
 ./system/src/stm32f3-stdperiph/stm32f30x_iwdg.d \

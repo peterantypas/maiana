@@ -50,12 +50,11 @@ Timer __timer;
 void erase()
 {
     FLASH_Unlock();
-    FLASH_WaitForLastOperation(0);
+    FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
     FLASH_ErasePage(METADATA_ADDRESS);
-    FLASH_WaitForLastOperation(0);
+    FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
     FLASH_Lock();
-    FLASH_WaitForLastOperation(0);
-
+    FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
 }
 
 int
@@ -74,13 +73,15 @@ main(int argc, char* argv[])
        enterUARTMode();
 
    }
+#if 0
    else {
+
        if ( !verifyApplicationChecksum(*metadata) ) {
            trace_printf("The software is corrupt. Entering UART mode\n");
            enterUARTMode();
        }
    }
-
+#endif
 
    trace_printf("Found software rev. %s\n", metadata->revision);
 #endif

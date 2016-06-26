@@ -86,7 +86,7 @@ void DataTerminal::processEvent(const Event &e)
 
 void DataTerminal::processCharacter(char c)
 {
-    if ( c == 13 ) {
+    if ( c == '\n' ) {
         mCmdBuffer[mCmdBuffPos] = 0;
         mCmdBuffPos = 0;
         processCommand();
@@ -104,22 +104,26 @@ void DataTerminal::processCommand()
     string s(mCmdBuffer);
     Utils::trim(s);
     Utils::tokenize(s, ' ', mCmdTokens);
+    printf2("Got command: %s\r\n", s.c_str());
 
-    if ( mCmdTokens[0] == "set" && mCmdTokens.size() >= 3 ) {
-        // TODO: Extract field and value and queue a command event
+    if ( mCmdTokens[0] == "set" && mCmdTokens.size() >= 2 ) {
         Event *e = EventPool::instance().newEvent(REQUEST_EVENT);
         e->request.operation = OP_SET;
         strncpy(e->request.field, mCmdTokens[1].c_str(), sizeof e->request.field);
-        strncpy(e->request.value, mCmdTokens[2].c_str(), sizeof e->request.value);
+        if ( mCmdTokens.size() > 2 )
+          strncpy(e->request.value, mCmdTokens[2].c_str(), sizeof e->request.value);
+        else
+          e->request.value[0] = 0;
+
         EventQueue::instance().push(e);
     }
     else if ( mCmdTokens[0] == "get" && mCmdTokens.size() >= 2 ) {
-        // TODO: Extract field
         Event *e = EventPool::instance().newEvent(REQUEST_EVENT);
         e->request.operation = OP_GET;
         strncpy(e->request.field, mCmdTokens[1].c_str(), sizeof e->request.field);
         EventQueue::instance().push(e);
     }
+
 }
 
 void write_char(USART_TypeDef* USARTx, char c)

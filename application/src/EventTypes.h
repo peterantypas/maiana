@@ -15,18 +15,17 @@
  */
 
 typedef enum {
-    UNKNOWN_EVENT        =   0,         // Invalid, not a real event id
-    GPS_NMEA_SENTENCE    =   1,         // A NMEA sentence was received from the GPS.
-    GPS_FIX_EVENT        =   2,         // The GPS obtained a fix.
-    CLOCK_EVENT          =   4,         // One pulse per second as triggered by GPS. This is a convenient 1 Hz "wall" clock, as it carries UTC.
-    AIS_PACKET_EVENT     =   8,         // A packet was just decoded (not necessarily valid, must still be CRC checked, etc)
-    INTERROGATION_EVENT  =   16,
-    DEBUG_EVENT          =   32,
-    KEYPRESS_EVENT       =   64,
-    REQUEST_EVENT        =  128,
-    RESPONSE_EVENT       =  256
-    //GPS_ERROR_EVENT      =   64,        // A GPS failure
-    //TRX_ERROR_EVENT      =   128         // A radio failure
+    UNKNOWN_EVENT        =   0x0000,         // Invalid, not a real event id
+    GPS_NMEA_SENTENCE    =   0x0001,         // A NMEA sentence was received from the GPS.
+    GPS_FIX_EVENT        =   0x0002,         // The GPS obtained a fix.
+    CLOCK_EVENT          =   0x0004,         // One pulse per second as triggered by GPS. This is a convenient 1 Hz "wall" clock, as it carries UTC.
+    AIS_PACKET_EVENT     =   0x0008,         // A packet was just decoded (not necessarily valid, must still be CRC checked, etc)
+    INTERROGATION_EVENT  =   0x0010,         // Received AIS message 15
+    DEBUG_EVENT          =   0x0020,
+    KEYPRESS_EVENT       =   0x0040,
+    REQUEST_EVENT        =   0x0080,
+    RESPONSE_EVENT       =   0x00100,
+    RESET_EVENT          =   0x00200
 }
 EventType;
 
