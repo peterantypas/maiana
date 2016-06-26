@@ -73,7 +73,7 @@ main(int argc, char* argv[])
        enterUARTMode();
 
    }
-#if 0
+//#if 0
    else {
 
        if ( !verifyApplicationChecksum(*metadata) ) {
@@ -81,7 +81,7 @@ main(int argc, char* argv[])
            enterUARTMode();
        }
    }
-#endif
+//#endif
 
    trace_printf("Found software rev. %s\n", metadata->revision);
 #endif
