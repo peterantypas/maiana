@@ -57,23 +57,20 @@ void erase()
     FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
 }
 
-int
-main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
-    //erase();
   /*
    *  - Read page at METADATA_ADDRESS, look for software metadata
    *  - If no metadata is present, enter UART interactive mode and wait for software upload
    *  - If metadata is present, jump to software start address (APPLICATION_ADDRESS)
    */
-#if 1
+
    ApplicationMetadata *metadata = (ApplicationMetadata*)METADATA_ADDRESS;
    if ( metadata == NULL || metadata->magic != METADATA_MAGIC ) {
        trace_printf("There is no software installed. Entering UART mode\n");
        enterUARTMode();
 
    }
-//#if 0
    else {
 
        if ( !verifyApplicationChecksum(*metadata) ) {
@@ -81,21 +78,17 @@ main(int argc, char* argv[])
            enterUARTMode();
        }
    }
-//#endif
 
-   trace_printf("Found software rev. %s\n", metadata->revision);
-#endif
 
    pFunction start = (pFunction)(*(__IO uint32_t*) (APPLICATION_ADDRESS + 4));
-   trace_printf("Application address: 0x%.8x\n", APPLICATION_ADDRESS);
-   trace_printf("Jump address: 0x%.8x\n", start);
-
    __timer.start();
 
    Timer::sleep(2000);
 
    jump();
-   //while(1);
+
+   // This should never be reached
+   while(1);
 }
 
 void jump()
