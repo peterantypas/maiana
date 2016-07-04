@@ -25,13 +25,10 @@ TXScheduler::TXScheduler ()
     mPositionReportChannel = CH_87;
     mStaticDataChannel = CH_87;
     mUTC = 0;
+    mAvgSpeed = 0.0;
     mTesting = false;
-
-    EEPROM::instance().readStationData(mStationData);
-    printf2("Read station data from EEPROM:\r\n");
-    printf2("MMSI: %d\r\n", mStationData.mmsi);
-    printf2("CS: %s\r\n", mStationData.callsign);
-    printf2("Name: %s\r\n", mStationData.name);
+    mLast18Time = 0;
+    mLast24Time = 0;
 }
 
 
@@ -55,18 +52,24 @@ void TXScheduler::processEvent(const Event &e)
             if ( mTesting )
                 return;
 
-            //GPSFIXEvent *gfe = static_cast<GPSFIXEvent*> (event);
-
-            //printf2("UTC: %d\r\n", mUTC);
-
             // We do not schedule transmissions if the ChannelManager is not sure what channels are in use yet
             if ( !ChannelManager::instance().channelsDetermined() )
                 return;
 
-            // TODO: This is UGLY. Stop using modulus and start counting from previous timestamps
+            // A class B transponder only transmits when its internal GPS is working, so we tie these to GPS updates.
+            if ( !RadioManager::instance().initialized() || mUTC == 0 )
+              return;
 
-            // A class B only transmits when its internal GPS is working, so we tie these to GPS updates.
-            if ( RadioManager::instance().initialized() && mUTC && (mUTC % DEFAULT_TX_INTERVAL) == 0) {
+            StationData stationData;
+            EEPROM::instance().readStationData(stationData);
+            if ( stationData.flags & STATION_RX_ONLY )
+                return;
+
+            // Using a moving average to determine transmission rate
+            double alpha = 0.2;
+            mAvgSpeed = mAvgSpeed * (1.0 - alpha) + e.gpsFix.speed * alpha;
+
+            if ( mUTC - mLast18Time > positionReportTimeInterval() ) {
                 TXPacket *p1 = TXPacketPool::instance().newTXPacket(mPositionReportChannel, mUTC);
                 if ( !p1 ) {
                     printf2("Unable to allocate TX packet for message 18, will try again later\r\n");
@@ -80,22 +83,23 @@ void TXScheduler::processEvent(const Event &e)
                 msg.cog         = e.gpsFix.cog;
                 msg.utc         = e.gpsFix.utc;
 
-                msg.encode (mStationData, *p1);
+                msg.encode (stationData, *p1);
                 RadioManager::instance ().scheduleTransmission (p1);
 
                 // Our next position report should be on the other channel
                 mPositionReportChannel = RadioManager::instance().alternateChannel(mPositionReportChannel);
+                mLast18Time = mUTC;
             }
 
 
-            if ( RadioManager::instance().initialized() && mUTC && (mUTC % MSG_24_TX_INTERVAL) == 0 ) {
+            if ( mUTC - mLast24Time > MSG_24_TX_INTERVAL ) {
                 TXPacket *p2 = TXPacketPool::instance().newTXPacket(mStaticDataChannel, mUTC+2);
                 if ( !p2 ) {
                     printf2("Unable to allocate TX packet for 24A\r\n");
                     break;
                 }
                 AISMessage24A msg2;
-                msg2.encode(mStationData, *p2);
+                msg2.encode(stationData, *p2);
                 RadioManager::instance().scheduleTransmission(p2);
 
                 TXPacket *p3 = TXPacketPool::instance().newTXPacket(mStaticDataChannel, mUTC+7);
@@ -105,18 +109,18 @@ void TXScheduler::processEvent(const Event &e)
                 }
 
                 AISMessage24B msg3;
-                msg3.encode(mStationData, *p3);
+                msg3.encode(stationData, *p3);
                 RadioManager::instance().scheduleTransmission(p3);
 
                 // Our next static data report should be on the other channel
                 mStaticDataChannel = RadioManager::instance().alternateChannel(mStaticDataChannel);
+                mLast24Time = mUTC;
             }
 
             break;
         }
         case CLOCK_EVENT: {
             // This is reliable and independent of GPS update frequency which could change to something other than 1Hz
-            //ClockEvent *c = static_cast<ClockEvent*>(event);
             mUTC = e.clock.utc;
             if ( RadioManager::instance().initialized() && mTesting && mUTC % 1 == 0 ) {
                 scheduleTestPacket();
@@ -128,6 +132,15 @@ void TXScheduler::processEvent(const Event &e)
             break;
     }
 
+}
+
+time_t TXScheduler::positionReportTimeInterval()
+{
+    // As a class B "CS" transponder, we transmit every 3 minutes if speed is < 2 knots, otherwise 30 seconds.
+    if ( mAvgSpeed < 2.0 )
+        return 180;
+
+    return DEFAULT_TX_INTERVAL;
 }
 
 void TXScheduler::scheduleTestPacket()

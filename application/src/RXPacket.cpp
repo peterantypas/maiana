@@ -247,34 +247,5 @@ uint32_t RXPacket::mmsi() const
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// RXPacketPool
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#if 0
-RXPacketPool &RXPacketPool::instance()
-{
-    static RXPacketPool __instance;
-    return __instance;
-}
-
-void RXPacketPool::init()
-{
-    mPool = new ObjectPool<RXPacket>(40);
-}
-
-RXPacket *RXPacketPool::newRXPacket()
-{
-    return mPool->get();
-}
-
-void RXPacketPool::deleteRXPacket(RXPacket *p)
-{
-    ASSERT(p);
-    mPool->put(p);
-}
-#endif
 
 

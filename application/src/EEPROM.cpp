@@ -9,6 +9,7 @@
 #include "printf2.h"
 #include <stm32f30x_i2c.h>
 #include "Utils.hpp"
+#include <cstring>
 
 #define EEPROM_STATION_ADDR         0x00    // A StationData structure starts here
 #define EEPROM_REGION_CNT_ADDR      0x24    // Number of active special regions goes here (single byte)
@@ -76,6 +77,7 @@ void EEPROM::init()
     I2C_Init(I2C1, &i2c);
     I2C_Cmd(I2C1, ENABLE);
 
+    readStationData(mData);
 }
 
 uint8_t EEPROM::readByte(uint8_t addr)
@@ -133,6 +135,8 @@ void EEPROM::writeByte(uint8_t address, uint8_t byte)
 
 void EEPROM::writeStationData(const StationData &data)
 {
+    memcpy(&mData, &data, sizeof data);
+
     uint8_t addr = EEPROM_STATION_ADDR;
     const uint8_t *p = (uint8_t*)&data;
     for ( size_t i = 0; i < sizeof data; ++i )
@@ -141,12 +145,15 @@ void EEPROM::writeStationData(const StationData &data)
 
 void EEPROM::readStationData(StationData &data)
 {
+    memcpy(&data, &mData, sizeof mData);
+    /*
     uint8_t addr = EEPROM_STATION_ADDR;
     uint8_t *p = (uint8_t*)&data;
     for ( size_t i = 0; i < sizeof data; ++i ) {
         uint8_t byte = readByte(addr++);
         *p++ = byte;
     }
+    */
 }
 
 

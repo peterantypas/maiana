@@ -9,7 +9,7 @@
 #define RXPACKET_HPP_
 
 #include <inttypes.h>
-#include "ObjectPool.hpp"
+#include "_assert.h"
 #include "globals.h"
 #include "AISChannels.h"
 
@@ -69,22 +69,5 @@ private:
     VHFChannel mChannel;
     uint8_t mRSSI;
 };
-
-#if 0
-class RXPacketPool
-{
-public:
-    static RXPacketPool &instance();
-
-    void init();
-
-    RXPacket *newRXPacket();
-    void deleteRXPacket(RXPacket*);
-
-private:
-    ObjectPool<RXPacket> *mPool;
-
-};
-#endif
 
 #endif /* RXPACKET_HPP_ */

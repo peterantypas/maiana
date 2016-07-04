@@ -64,11 +64,11 @@
 // Define this to set BT=0.4 for GMSK (as per ITU spec for AIS). Default is 0.5
 #define USE_BT_04
 
-// Default interval for message 18 (position report)
+// Default interval for message 18 (position report) is 30 seconds when under way
 #define DEFAULT_TX_INTERVAL           30
 
-// Default interval for message 24 A&B (static data report)
-#define MSG_24_TX_INTERVAL           180
+// Default interval for message 24 A&B (static data report) is 6 minutes
+#define MSG_24_TX_INTERVAL           360
 
 // The spec calls for Class B transmitters to listen for the first 20 bits of each frame before transmitting.
 // It takes the Si4463 a few bits' time to switch from RX to TX, so I arbitrarily picked the 12th bit.

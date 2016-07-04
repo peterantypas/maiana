@@ -13,11 +13,14 @@
 #include <time.h>
 #include "AISChannels.h"
 
+// Station flags
+#define     STATION_RX_ONLY         0x01
+#define     STATION_PRIVACY_MODE    0x02
 
 struct StationData {
     uint32_t        mmsi;           // Vessel MMSI (should be 30 bit)
     char            name[21];       // Vessel name (all caps)
-    char            callsign[8];    // Radio station call sign assigned with MMSI
+    char            callsign[8];    // Radio station call sign assigned with MMSI (if applicable)
     uint8_t         len;            // Length in meters (default: 0)
     uint8_t         beam;           // Beam in meters   (default: 0)
     uint8_t         flags;          // Reserved - 0 for now

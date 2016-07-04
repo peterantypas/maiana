@@ -26,6 +26,7 @@ public:
 
 private:
     EEPROM();
+    StationData mData;
 };
 
 #endif /* EEPROM_HPP_ */

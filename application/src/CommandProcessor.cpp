@@ -225,9 +225,17 @@ void CommandProcessor::setLength(uint8_t len)
   sendEmptyReply(true);
 }
 
-void CommandProcessor::setVesselData(const char *data)
+void CommandProcessor::setVesselData(const char *s)
 {
-  sendEmptyReply(true);
+  StationData data;
+  EEPROM::instance().readStationData(data);
+  int items = sscanf(s, "%lu,%s,%s,%cu,%cu", &data.mmsi, data.name, data.callsign, &data.beam, &data.len);
+  if ( items < 5 )
+      sendEmptyReply(false);
+  else {
+      EEPROM::instance().writeStationData(data);
+      sendEmptyReply(true);
+  }
 }
 
 void CommandProcessor::setMode(const char *mode)
@@ -259,6 +267,20 @@ void CommandProcessor::setMode(const char *mode)
       Event *e = EventPool::instance().newEvent(RESET_EVENT);
       EventQueue::instance().push(e);
     }
+  else if ( strcmp(mode, "rx") == 0 ) {
+      StationData data;
+      EEPROM::instance().readStationData(data);
+      data.flags |= STATION_RX_ONLY;
+      EEPROM::instance().writeStationData(data);
+      sendEmptyReply(true);
+  }
+  else if ( strcmp(mode, "trx") == 0 ) {
+      StationData data;
+      EEPROM::instance().readStationData(data);
+      data.flags &= ~(STATION_RX_ONLY);
+      EEPROM::instance().writeStationData(data);
+      sendEmptyReply(true);
+  }
   else
       sendError("Unrecognized mode");
 }

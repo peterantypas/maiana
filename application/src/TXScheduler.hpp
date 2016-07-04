@@ -26,12 +26,15 @@ public:
     void startTXTesting();
 private:
     void scheduleTestPacket();
+    time_t positionReportTimeInterval();
 private:
     VHFChannel mPositionReportChannel;
     VHFChannel mStaticDataChannel;
     time_t mUTC;
+    time_t mLast18Time;
+    time_t mLast24Time;
+    double mAvgSpeed;
     bool mTesting;
-    StationData mStationData;
 };
 
 #endif /* TXSCHEDULER_HPP_ */
