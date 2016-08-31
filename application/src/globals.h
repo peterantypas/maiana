@@ -55,7 +55,7 @@
 #define MAX_AIS_TX_PACKET_SIZE      1280
 #else
 // As a class B transponder, we never transmit anything bigger than 240 bits.
-#define MAX_AIS_TX_PACKET_SIZE       300
+#define MAX_AIS_TX_PACKET_SIZE       256
 #endif
 
 // Maximum allowed backlog in TX queue
@@ -71,7 +71,7 @@
 #define MSG_24_TX_INTERVAL           360
 
 // The spec calls for Class B transmitters to listen for the first 20 bits of each frame before transmitting.
-// It takes the Si4463 a few bits' time to switch from RX to TX, so I arbitrarily picked the 12th bit.
+// It takes the Si4463 a few bits' time to switch from RX to TX, so I arbitrarily picked the 12th bit instead.
 #define CCA_SLOT_BIT                  11
 
 // Extra debugging using halting assertions

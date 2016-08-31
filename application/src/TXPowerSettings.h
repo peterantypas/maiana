@@ -23,7 +23,7 @@
 #include <inttypes.h>
 
 /*
- * Table settings derived from Silabs AN 900. Enumeration is for convenience and type safety. PWR_PXX = +XXdBm, PWR_MXX = -XXdBm
+ * Table settings derived from Silabs AN900. Enumeration is for convenience and type safety. PWR_PXX = +XXdBm, PWR_MXX = -XXdBm
  */
 
 typedef enum {

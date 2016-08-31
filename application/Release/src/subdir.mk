@@ -17,7 +17,6 @@ CPP_SRCS += \
 ../src/Events.cpp \
 ../src/GPS.cpp \
 ../src/LEDManager.cpp \
-../src/MenuScreens.cpp \
 ../src/NMEAEncoder.cpp \
 ../src/NMEASentence.cpp \
 ../src/NoiseFloorDetector.cpp \
@@ -44,7 +43,6 @@ OBJS += \
 ./src/Events.o \
 ./src/GPS.o \
 ./src/LEDManager.o \
-./src/MenuScreens.o \
 ./src/NMEAEncoder.o \
 ./src/NMEASentence.o \
 ./src/NoiseFloorDetector.o \
@@ -75,7 +73,6 @@ CPP_DEPS += \
 ./src/Events.d \
 ./src/GPS.d \
 ./src/LEDManager.d \
-./src/MenuScreens.d \
 ./src/NMEAEncoder.d \
 ./src/NMEASentence.d \
 ./src/NoiseFloorDetector.d \
