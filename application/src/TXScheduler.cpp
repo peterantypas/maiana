@@ -65,7 +65,7 @@ void TXScheduler::processEvent(const Event &e)
             if ( stationData.flags & STATION_RX_ONLY )
                 return;
 
-            // Using a moving average to determine transmission rate
+            // Using a moving average of SOG to determine transmission rate
             double alpha = 0.2;
             mAvgSpeed = mAvgSpeed * (1.0 - alpha) + e.gpsFix.speed * alpha;
 
@@ -75,14 +75,13 @@ void TXScheduler::processEvent(const Event &e)
                     printf2("Unable to allocate TX packet for message 18, will try again later\r\n");
                     break;
                 }
-                AISMessage18 msg;
 
+                AISMessage18 msg;
                 msg.latitude    = e.gpsFix.lat;
                 msg.longitude   = e.gpsFix.lng;
                 msg.sog         = e.gpsFix.speed;
                 msg.cog         = e.gpsFix.cog;
                 msg.utc         = e.gpsFix.utc;
-
                 msg.encode (stationData, *p1);
                 RadioManager::instance ().scheduleTransmission (p1);
 
@@ -98,6 +97,7 @@ void TXScheduler::processEvent(const Event &e)
                     printf2("Unable to allocate TX packet for 24A\r\n");
                     break;
                 }
+
                 AISMessage24A msg2;
                 msg2.encode(stationData, *p2);
                 RadioManager::instance().scheduleTransmission(p2);

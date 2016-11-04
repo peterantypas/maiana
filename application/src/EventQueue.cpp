@@ -57,11 +57,13 @@ void EventQueue::dispatch()
     if (mQueue->pop(e)) {
 
         for ( map<EventConsumer*, uint32_t>::iterator c = mConsumers.begin(); c != mConsumers.end(); ++c ) {
-           // Utils::delay(1000);
             if ( c->second & e->type )
                 c->first->processEvent(*e);
         }
+
         EventPool::instance().deleteEvent(e);
+
+        // TODO: Make LEDManager an EventConsumer instead
         if ( e->type == AIS_PACKET_EVENT )
             LEDManager::instance().blink(LEDManager::GREEN_LED);
     }
