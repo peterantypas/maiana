@@ -64,15 +64,13 @@ int main(int argc, char* argv[])
    *  - If no metadata is present, enter UART interactive mode and wait for software upload
    *  - If metadata is present, jump to software start address (APPLICATION_ADDRESS)
    */
-
-   ApplicationMetadata *metadata = (ApplicationMetadata*)METADATA_ADDRESS;
-   if ( metadata == NULL || metadata->magic != METADATA_MAGIC ) {
+    trace_printf("ClockSpeed: %d\n", SystemCoreClock);
+    ApplicationMetadata *metadata = (ApplicationMetadata*)METADATA_ADDRESS;
+    if ( metadata == NULL || metadata->magic != METADATA_MAGIC ) {
        trace_printf("There is no software installed. Entering UART mode\n");
        enterUARTMode();
-
    }
    else {
-
        if ( !verifyApplicationChecksum(*metadata) ) {
            trace_printf("The software is corrupt. Entering UART mode\n");
            enterUARTMode();
