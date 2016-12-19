@@ -15,6 +15,8 @@
 
 using namespace std;
 
+#define ENABLE_TERMINAL
+
 #ifdef ENABLE_TERMINAL
 
 

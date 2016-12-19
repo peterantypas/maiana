@@ -14,11 +14,13 @@ TXPacket::TXPacket ()
     reset();
 }
 
+
 void TXPacket::configure(VHFChannel channel, time_t txTime)
 {
     mChannel  = channel;
     mTXTime   = txTime;
 }
+
 
 TXPacket::~TXPacket ()
 {

@@ -21,8 +21,8 @@
 #include "DataTerminal.hpp"
 #include "TXScheduler.hpp"
 #include "DebugPrinter.hpp"
-#include "EEPROM.hpp"
 #include "CommandProcessor.hpp"
+#include "Configuration.hpp"
 
 // ----------------------------------------------------------------------------
 //
@@ -65,33 +65,37 @@ main(int argc, char* argv[])
     //trace_printf("ACTLR: %.8x\n", SCnSCB->ACTLR);
 #endif
 
-    printf2("Software revision: %s\r\n", REVISION);
+    #ifdef ENABLE_TERMINAL
+    DataTerminal::instance().init();
+#endif
 
-    EEPROM::instance().init();
-    /*
-     * TODO: Move this out of here
+
+    printf2("Software revision: %s\r\n", REVISION);
+    Configuration::instance().init();
+
+
+    // TODO: Move this out of here
     struct StationData __d;
+    memset(&__d, 0, sizeof __d);
+    __d.magic = STATION_DATA_MAGIC;
     __d.mmsi = 987654321;
     __d.len = 0;
     __d.beam = 0;
     strcpy(__d.callsign, "0N0000");
     strcpy(__d.name, "TEST STATION 01");
-    EEPROM::instance().writeStationData(__d);
-    */
+
+    Configuration::instance().writeStationData(__d);
 
     EventQueue::instance().init();
     EventPool::instance().init();
+#ifdef ENABLE_TX
     TXPacketPool::instance().init();
+    TXScheduler::instance().init();
+#endif
     CommandProcessor::instance().init();
-
     LEDManager::instance().clear();
-    TXScheduler txScheduler;
-
     DebugPrinter __db;
 
-#ifdef ENABLE_TERMINAL
-    DataTerminal::instance().init();
-#endif
 
 
 #if defined CALIBRATION_MODE
@@ -101,8 +105,8 @@ main(int argc, char* argv[])
     RadioManager::instance().init();
     GPS::instance().init();
     RadioManager::instance().start();
-    //Radio::instance().startReceiving(4);
-    txScheduler.startTXTesting();
+    TXScheduler::instance().init();
+    TXScheduler::instance().startTXTesting();
 #else
     RXPacketProcessor packetProcessor;
 
@@ -112,20 +116,24 @@ main(int argc, char* argv[])
 #endif
 
 
-    configureUnusedPins();
-
+    //configureUnusedPins();
+#ifndef TX_TEST_MODE
     // Configure the watchdog timer
     IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
     IWDG_SetPrescaler(IWDG_Prescaler_32);
     IWDG_SetReload(4095); // Max 12-bit value
 
     IWDG_Enable();
+#endif
 
     // Dispatch events issued by ISRs and keep the watchdog happy
     printf2("Starting main event loop\r\n");
     while (true) {
         EventQueue::instance().dispatch();
+#ifndef TX_TEST_MODE
         IWDG_ReloadCounter();
+        __WFI(); // We get interrupted at a minimum frequency of 19.2Khz (2 x RF bit clocks)
+#endif
     }
 }
 

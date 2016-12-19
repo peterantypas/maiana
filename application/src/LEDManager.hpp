@@ -18,7 +18,7 @@ public:
     static const uint8_t GREEN_LED  = 0;
     //static const uint8_t ORANGE_LED = 1;
     //static const uint8_t RED_LED    = 2;
-    static const uint8_t BLUE_LED   = 1;
+    //static const uint8_t BLUE_LED   = 1;
 
     static LEDManager &instance();
     virtual ~LEDManager();

@@ -38,6 +38,7 @@ void printf2_Init(int baudrate)
 
     USART_Cmd(USART2, ENABLE);
 #endif
+
 }
 
 

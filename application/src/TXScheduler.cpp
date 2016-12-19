@@ -19,6 +19,12 @@
 
 using namespace std;
 
+TXScheduler &TXScheduler::instance()
+{
+    static TXScheduler __instance;
+    return __instance;
+}
+
 TXScheduler::TXScheduler ()
 {
     EventQueue::instance().addObserver(this, GPS_FIX_EVENT | CLOCK_EVENT);
@@ -29,8 +35,17 @@ TXScheduler::TXScheduler ()
     mTesting = false;
     mLast18Time = 0;
     mLast24Time = 0;
+    if ( Configuration::instance().readStationData(mStationData) ) {
+        printf2("Successfully loaded Station Data from Flash\r\n");
+    }
+    else {
+        printf2("Failed to read Station Data from Flash!!!\r\n");
+    }
 }
 
+void TXScheduler::init()
+{
+}
 
 TXScheduler::~TXScheduler ()
 {
@@ -38,6 +53,7 @@ TXScheduler::~TXScheduler ()
 
 void TXScheduler::startTXTesting()
 {
+    printf2("TX Scheduler starting testing\r\n");
     mTesting = true;
 }
 
@@ -60,13 +76,18 @@ void TXScheduler::processEvent(const Event &e)
             if ( !RadioManager::instance().initialized() || mUTC == 0 )
               return;
 
-            StationData stationData;
-            EEPROM::instance().readStationData(stationData);
-            if ( stationData.flags & STATION_RX_ONLY )
+#ifdef TX_TEST_MODE
+            return;
+#endif
+
+            // If we don't have valid station data or transmission is explicitly disabled, we don't do anything
+
+            // TODO: MOVE STATION_RX_ONLY to user-defined configuration, not static station data
+            if ( mStationData.magic != STATION_DATA_MAGIC )
                 return;
 
             // Using a moving average of SOG to determine transmission rate
-            double alpha = 0.2;
+            static double alpha = 0.2;
             mAvgSpeed = mAvgSpeed * (1.0 - alpha) + e.gpsFix.speed * alpha;
 
             if ( mUTC - mLast18Time > positionReportTimeInterval() ) {
@@ -82,7 +103,8 @@ void TXScheduler::processEvent(const Event &e)
                 msg.sog         = e.gpsFix.speed;
                 msg.cog         = e.gpsFix.cog;
                 msg.utc         = e.gpsFix.utc;
-                msg.encode (stationData, *p1);
+                msg.encode (mStationData, *p1);
+
                 RadioManager::instance ().scheduleTransmission (p1);
 
                 // Our next position report should be on the other channel
@@ -92,24 +114,25 @@ void TXScheduler::processEvent(const Event &e)
 
 
             if ( mUTC - mLast24Time > MSG_24_TX_INTERVAL ) {
-                TXPacket *p2 = TXPacketPool::instance().newTXPacket(mStaticDataChannel, mUTC+2);
+                TXPacket *p2 = TXPacketPool::instance().newTXPacket(mStaticDataChannel, mUTC+5);
                 if ( !p2 ) {
                     printf2("Unable to allocate TX packet for 24A\r\n");
                     break;
                 }
 
                 AISMessage24A msg2;
-                msg2.encode(stationData, *p2);
+                msg2.encode(mStationData, *p2);
+
                 RadioManager::instance().scheduleTransmission(p2);
 
-                TXPacket *p3 = TXPacketPool::instance().newTXPacket(mStaticDataChannel, mUTC+7);
+                TXPacket *p3 = TXPacketPool::instance().newTXPacket(mStaticDataChannel, mUTC+10);
                 if ( !p3 ) {
                     printf2("Unable to allocate TX packet for 24B\r\n");
                     break;
                 }
 
                 AISMessage24B msg3;
-                msg3.encode(stationData, *p3);
+                msg3.encode(mStationData, *p3);
                 RadioManager::instance().scheduleTransmission(p3);
 
                 // Our next static data report should be on the other channel
@@ -122,10 +145,12 @@ void TXScheduler::processEvent(const Event &e)
         case CLOCK_EVENT: {
             // This is reliable and independent of GPS update frequency which could change to something other than 1Hz
             mUTC = e.clock.utc;
+#ifdef TX_TEST_MODE
             if ( RadioManager::instance().initialized() && mTesting && mUTC % 1 == 0 ) {
                 scheduleTestPacket();
                 printf2("Scheduled test packet\r\n");
             }
+#endif
             break;
         }
         default:
@@ -140,22 +165,26 @@ time_t TXScheduler::positionReportTimeInterval()
     if ( mAvgSpeed < 2.0 )
         return 180;
 
-    return DEFAULT_TX_INTERVAL;
+    return MSG_18_TX_INTERVAL;
 }
 
+#ifdef TX_TEST_MODE
 void TXScheduler::scheduleTestPacket()
 {
     VHFChannel channel = CH_84;
     if ( rand() % 2 == 0 )
         channel = CH_85;
     TXPacket *p = TXPacketPool::instance().newTXPacket(channel, mUTC);
-    if ( !p )
+    if ( !p ) {
+        printf2("Ooops! Out of TX packets :(\r\n");
         return;
+    }
 
     for ( int i = 0; i < MAX_AIS_TX_PACKET_SIZE; ++i ) {
         p->addBit(rand() % 2);
     }
     RadioManager::instance().scheduleTransmission(p);
 }
+#endif
 
 

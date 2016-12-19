@@ -29,36 +29,36 @@ void DataTerminal::init()
     GPIO_InitTypeDef GPIO_InitStruct;
     NVIC_InitTypeDef NVIC_InitStruct;
 
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); // For USART3
-    GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_7);
-    GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_7);
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE); // For USART2
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_7);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_7);
 
     // Initialize pins as alternative function 7 (USART)
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_1;
-    GPIO_Init(GPIOB, &GPIO_InitStruct);
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 
 
     USART_InitTypeDef USART_InitStructure;
     USART_StructInit(&USART_InitStructure);
 
     USART_InitStructure.USART_BaudRate = 38400;
-    USART_Init(USART3, &USART_InitStructure);
+    USART_Init(USART2, &USART_InitStructure);
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode                = USART_Mode_Rx | USART_Mode_Tx;
     USART_InitStructure.USART_Parity              = USART_Parity_No;
     USART_InitStructure.USART_StopBits            = USART_StopBits_1;
     USART_InitStructure.USART_WordLength          = USART_WordLength_8b;
 
-    USART_Cmd(USART3, ENABLE);
+    USART_Cmd(USART2, ENABLE);
 
-    USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
-    NVIC_InitStruct.NVIC_IRQChannel = USART3_IRQn;
+    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+    NVIC_InitStruct.NVIC_IRQChannel = USART2_IRQn;
     NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
     NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 5;
     NVIC_Init(&NVIC_InitStruct);
@@ -137,13 +137,13 @@ void write_char(USART_TypeDef* USARTx, char c)
 
 void DataTerminal::write(const char *cls, const char* s)
 {
-    write_char(USART3, '[');
+    write_char(USART2, '[');
     for ( size_t i = 0; i < strlen(cls); ++i )
-        write_char(USART3, cls[i]);
-    write_char(USART3, ']');
+        write_char(USART2, cls[i]);
+    write_char(USART2, ']');
 
     for ( int i = 0; s[i] != 0; ++i )
-        write_char(USART3, s[i]);
+        write_char(USART2, s[i]);
 
 }
 
@@ -155,7 +155,7 @@ void DataTerminal::write(const char* s, bool interactive)
         return;
 
     for ( int i = 0; s[i] != 0; ++i )
-        write_char(USART3, s[i]);
+        write_char(USART2, s[i]);
 }
 #endif
 
@@ -173,10 +173,10 @@ void DataTerminal::_write(const char *s)
 
 extern "C" {
 
-void USART3_IRQHandler(void)
+void USART2_IRQHandler(void)
 {
-    if ( USART_GetITStatus(USART3, USART_IT_RXNE) ) {
-        char c = (char) USART3->RDR; // This clears the interrupt right away
+    if ( USART_GetITStatus(USART2, USART_IT_RXNE) ) {
+        char c = (char) USART2->RDR; // This clears the interrupt right away
         DataTerminal::instance().processCharacter(c);
     }
 }

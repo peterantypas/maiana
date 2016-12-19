@@ -12,7 +12,7 @@
 #include "TXPowerSettings.h"
 
 #define MODEL    "SEAWAIS_02"
-#define REVISION "0.6.2"
+#define REVISION "0.7"
 
 
 
@@ -31,23 +31,33 @@
 
 
 #ifdef CALIBRATION_MODE
-#define TX_POWER_LEVEL              PWR_M10
+#define TX_POWER_LEVEL              PWR_P33
 #else
 #ifdef TX_TEST_MODE
-#define TX_POWER_LEVEL              PWR_P27
+#define TX_POWER_LEVEL              PWR_P24
 #else
-#define TX_POWER_LEVEL              PWR_M10
+#define TX_POWER_LEVEL              PWR_P24
 #endif
 #endif
 
-#define ENABLE_TERMINAL
+//#define ENABLE_TERMINAL
+/*
+ * Defining this symbol forces all output (NMEA + printf2) to the high-speed USART3 for tunneling to an application that demuxes it.
+ * Multiplexed output is still ASCII, but every line of text begins with a message class in square brackets. Examples:
+ *
+ * [NMEA]!AIVDM,....
+ * [DEBUG]GPS Initialized
+ * [LED]0:BLINK
+ * [ASSERT]...
+ *
+*/
+#define MULTIPLEXED_OUTPUT             1
+
 #define OUTPUT_GPS_NMEA
 #define ENABLE_PRINTF2
 
 // Some AIS messages can occupy 5 time slots (5x256 = 1280). Nothing we care about exceeds 2 slots.
 #define MAX_AIS_RX_PACKET_SIZE      512
-
-
 
 
 #ifdef TX_TEST_MODE
@@ -65,7 +75,7 @@
 #define USE_BT_04
 
 // Default interval for message 18 (position report) is 30 seconds when under way
-#define DEFAULT_TX_INTERVAL           30
+#define MSG_18_TX_INTERVAL           30
 
 // Default interval for message 24 A&B (static data report) is 6 minutes
 #define MSG_24_TX_INTERVAL           360
@@ -77,19 +87,12 @@
 // Extra debugging using halting assertions
 #define DEV_MODE                       1
 
-/*
- * Defining this symbol forces all output (NMEA + printf2 + LED status) to the high-speed UART3 for tunneling to an application that demuxes it.
- * Multiplexed output is still ASCII, but every line of text begins with a message class in square brackets. Examples:
- *
- * [NMEA]!AIVDM,....
- * [DEBUG]GPS Initialized
- * [LED]0:BLINK
- * [ASSERT]...
- *
-*/
-#define MULTIPLEXED_OUTPUT             1
+// The bootloader lives at 0x08000000 (Flash start), and occupies  8K
 
-#define METADATA_ADDRESS                0x08003800
-#define APPLICATION_ADDRESS             0x08004000
+#define FIRMWARE_METADATA_ADDRESS       0x08002400      // FW metadata lives @ 9K
+#define APPLICATION_ADDRESS             0x08002800      // The actual firmware starts @ 10K (up to 110K)
+#define CONFIGURATION_ADDRESS           0x0801E000      // General purpose configuration data lives @ 120K
+#define STATION_DATA_ADDRESS            0x0801F000      // Station data (immutable in US per USCG regulation) lives @ 122K
+
 
 #endif /* GLOBALS_H_ */

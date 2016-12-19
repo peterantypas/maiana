@@ -15,14 +15,14 @@
 
 
 Transceiver::Transceiver(SPI_TypeDef *spi, GPIO_TypeDef *sdnPort, uint16_t sdnPin, GPIO_TypeDef *csPort, uint16_t csPin, GPIO_TypeDef *gpio1Port, uint16_t gpio1Pin,
-        GPIO_TypeDef *gpio3Port, uint16_t gpio3Pin, GPIO_TypeDef *ctxPort, uint16_t ctxPin, GPIO_TypeDef *bypPort, uint16_t bypPin)
+        GPIO_TypeDef *gpio3Port, uint16_t gpio3Pin, GPIO_TypeDef *ctxPort, uint16_t ctxPin)
     : Receiver(spi, sdnPort, sdnPin, csPort, csPin, gpio1Port, gpio1Pin, gpio3Port, gpio3Pin)
 {
     mTXPacket = NULL;
     mCTXPort = ctxPort;
     mCTXPin = ctxPin;
-    mBYPPort = bypPort;
-    mBYPPin = bypPin;
+    EventQueue::instance().addObserver(this, CLOCK_EVENT);
+    mUTC = 0;
 }
 
 void Transceiver::configure()
@@ -52,10 +52,16 @@ void Transceiver::configure()
 #endif
 }
 
+void Transceiver::processEvent(const Event &e)
+{
+    // We assume CLOCK_EVENT as we didn't register for anything else
+    mUTC = e.clock.utc;
+}
+
 void Transceiver::transmitCW(VHFChannel channel)
 {
     startReceiving(channel);
-    configureForTX(TX_POWER_LEVEL);
+    configureGPIOsForTX(TX_POWER_LEVEL);
     SET_PROPERTY_PARAMS p;
     p.Group = 0x20;
     p.NumProperties = 1;
@@ -99,7 +105,7 @@ void Transceiver::setTXPower(tx_power_level powerLevel)
 }
 
 
-void Transceiver::configureForTX(tx_power_level powerLevel)
+void Transceiver::configureGPIOsForTX(tx_power_level powerLevel)
 {
     /*
      * Configure MCU pin for RFIC GPIO1 as output
@@ -124,8 +130,8 @@ void Transceiver::configureForTX(tx_power_level powerLevel)
     GPIO_PIN_CFG_PARAMS gpiocfg;
     gpiocfg.GPIO0 = 0x00;       // No change
     gpiocfg.GPIO1 = 0x04;       // Input
-    gpiocfg.GPIO2 = 0x00;       // No change
-    gpiocfg.GPIO3 = 0x1F;       // RX/TX data clock
+    gpiocfg.GPIO2 = 0x1F;       // RX/TX data clock
+    gpiocfg.GPIO3 = 0x21;       // RX_STATE; high in RX, low in TX
     gpiocfg.NIRQ  = 0x1A;       // Sync word detect
     gpiocfg.SDO   = 0x00;       // No change
     gpiocfg.GENCFG = 0x00;      // No change
@@ -133,13 +139,7 @@ void Transceiver::configureForTX(tx_power_level powerLevel)
 
     setTXPower(powerLevel);
 
-    const pa_params &pwr = POWER_TABLE[powerLevel];
-    if ( pwr.bypass )
-        GPIO_SetBits(mBYPPort, mBYPPin);
-    else
-        GPIO_ResetBits(mBYPPort, mBYPPin);
-
-    // CTX goes high
+    // CTX goes high -- this actually controls the bias voltage for the P.A. MOSFET
     GPIO_SetBits(mCTXPort, mCTXPin);
 }
 
@@ -158,17 +158,24 @@ void Transceiver::onBitClock()
 {
     if ( gRadioState == RADIO_RECEIVING ) {
         Receiver::onBitClock();
-
+#ifndef TX_TEST_MODE
         // If we have an assigned packet and we're on the correct channel, at the right bit of the time slot,
         // and the RSSI is within 6dB of the noise floor for this channel, then fire!!!
         uint8_t noiseFloor = NoiseFloorDetector::instance().getNoiseFloor(mChannel);
-        if ( mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel && mRXPacket.rssi() < noiseFloor + 12 ) {
+        if ( mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel && mRXPacket.rssi() < noiseFloor + 12 &&
+                mUTC && mTXPacket->txTime() <= mUTC ) {
             startTransmitting();
         }
+#else
+        // In Test Mode we don't care about RSSI. Presumably we're firing into a dummy load ;-) Also, we don't care about throttling.
+        if ( mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel ) {
+            startTransmitting();
+        }
+#endif
     }
     else {
         if ( mTXPacket->eof() ) {
-            LEDManager::instance().blink(LEDManager::BLUE_LED);
+            // LEDManager::instance().blink(LEDManager::BLUE_LED);
             startReceiving(mChannel);
             printf2("Transmitted %d bit packet on channel %d\r\n", mTXPacket->size(), AIS_CHANNELS[mChannel].itu);
             TXPacketPool::instance().deleteTXPacket(mTXPacket);
@@ -202,7 +209,7 @@ void Transceiver::startTransmitting()
     // Set TX power level
     // Start transmitting
     gRadioState = RADIO_TRANSMITTING;
-    configureForTX(TX_POWER_LEVEL);
+    configureGPIOsForTX(TX_POWER_LEVEL);
 
     //ASSERT(false);
 
@@ -230,10 +237,41 @@ void Transceiver::startTransmitting()
 
 void Transceiver::startReceiving(VHFChannel channel)
 {
-    // Make sure the FEM is in RX mode - CTX goes low
+    // Take the P.A. bias voltage down
     GPIO_ResetBits(mCTXPort, mCTXPin);
 
     Receiver::startReceiving(channel);
 }
 
+void Transceiver::configureGPIOsForRX()
+{
+    // Configure MCU pin for RFIC GPIO1 as input (RX_DATA below)
+    GPIO_InitTypeDef gpio;
+    gpio.GPIO_Pin = mGPIO1Pin;
+    gpio.GPIO_Mode = GPIO_Mode_IN;
+    gpio.GPIO_Speed = GPIO_Speed_Level_1;
+    gpio.GPIO_OType = GPIO_OType_PP;
+    gpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_Init(mGPIO1P, &gpio);
+
+
+    /*
+      * Configure radio GPIOs for RX:
+      * GPIO 0: Don't care
+      * GPIO 1: RX_DATA
+      * GPIO 2: RX_TX_DATA_CLK
+      * GPIO 3: RX_STATE
+      * NIRQ  : SYNC_WORD_DETECT
+      */
+
+     GPIO_PIN_CFG_PARAMS gpiocfg;
+     gpiocfg.GPIO0 = 0x00;       // No change
+     gpiocfg.GPIO1 = 0x14;       // RX data bits
+     gpiocfg.GPIO2 = 0x1F;       // RX/TX data clock
+     gpiocfg.GPIO3 = 0x21;       // RX_STATE; high during RX and low during TX
+     gpiocfg.NIRQ  = 0x1A;       // Sync word detect
+     gpiocfg.SDO   = 0x00;       // No change
+     gpiocfg.GENCFG = 0x00;      // No change
+     sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, &gpiocfg, sizeof gpiocfg);
+}
 

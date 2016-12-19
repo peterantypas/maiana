@@ -9,14 +9,14 @@ C_SRCS += \
 CPP_SRCS += \
 ../src/AISMessages.cpp \
 ../src/ChannelManager.cpp \
+../src/CommandProcessor.cpp \
+../src/Configuration.cpp \
 ../src/DataTerminal.cpp \
 ../src/DebugPrinter.cpp \
-../src/EEPROM.cpp \
 ../src/EventQueue.cpp \
 ../src/Events.cpp \
 ../src/GPS.cpp \
 ../src/LEDManager.cpp \
-../src/MenuScreens.cpp \
 ../src/NMEAEncoder.cpp \
 ../src/NMEASentence.cpp \
 ../src/NoiseFloorDetector.cpp \
@@ -35,14 +35,14 @@ CPP_SRCS += \
 OBJS += \
 ./src/AISMessages.o \
 ./src/ChannelManager.o \
+./src/CommandProcessor.o \
+./src/Configuration.o \
 ./src/DataTerminal.o \
 ./src/DebugPrinter.o \
-./src/EEPROM.o \
 ./src/EventQueue.o \
 ./src/Events.o \
 ./src/GPS.o \
 ./src/LEDManager.o \
-./src/MenuScreens.o \
 ./src/NMEAEncoder.o \
 ./src/NMEASentence.o \
 ./src/NoiseFloorDetector.o \
@@ -65,14 +65,14 @@ C_DEPS += \
 CPP_DEPS += \
 ./src/AISMessages.d \
 ./src/ChannelManager.d \
+./src/CommandProcessor.d \
+./src/Configuration.d \
 ./src/DataTerminal.d \
 ./src/DebugPrinter.d \
-./src/EEPROM.d \
 ./src/EventQueue.d \
 ./src/Events.d \
 ./src/GPS.d \
 ./src/LEDManager.d \
-./src/MenuScreens.d \
 ./src/NMEAEncoder.d \
 ./src/NMEASentence.d \
 ./src/NoiseFloorDetector.d \

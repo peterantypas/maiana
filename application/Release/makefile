@@ -61,7 +61,7 @@ all: ais_transponder.elf secondary-outputs
 ais_transponder.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross ARM C++ Linker'
-	arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -ffreestanding -flto -Wall -Wextra  -g -T mem.ld -T libs.ld -T sections.ld -nostartfiles -Xlinker --gc-sections -s -L"../ldscripts" -Wl,-Map,"ais_transponder.map" --specs=nano.specs -o "ais_transponder.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -ffreestanding -flto -Wall -Wextra -T mem.ld -T libs.ld -T sections.ld -nostartfiles -Xlinker --gc-sections -s -L"../ldscripts" -Wl,-Map,"ais_transponder.map" --specs=nano.specs -u _printf_float -o "ais_transponder.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

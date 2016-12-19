@@ -11,12 +11,12 @@
 
 
 
-#define METADATA_ADDRESS        0x08003800
-#define APPLICATION_ADDRESS     0x08004000
+#define METADATA_ADDRESS        0x08002000
+#define APPLICATION_ADDRESS     0x08002800
 #define ISR_VECTOR_OFFSET       0x00004000
 
 #define METADATA_MAGIC          0x0badf00d
-#define FLASH_PAGE_SIZE         2048
+#define FLASH_PAGE_SIZE         1024
 
 typedef struct {
     uint32_t magic;

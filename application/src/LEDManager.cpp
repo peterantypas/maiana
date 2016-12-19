@@ -9,7 +9,7 @@
 #include "stm32f30x.h"
 #include <cstring>
 
-const uint16_t LEDMAP[] = { GPIO_Pin_14, GPIO_Pin_15 };
+const uint16_t LEDMAP[] = { GPIO_Pin_12 };
 
 
 LEDManager &LEDManager::instance()
@@ -26,7 +26,7 @@ LEDManager::LEDManager()
     GPIO_InitTypeDef GPIO_InitStruct;
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); // For LEDs
 
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_14 | GPIO_Pin_15;
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_1;
     GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
@@ -56,7 +56,7 @@ LEDManager::LEDManager()
     TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
     TIM_Cmd(TIM3, ENABLE);
 
-    GPIO_ResetBits(GPIOB, GPIO_Pin_14 | GPIO_Pin_15);
+    GPIO_ResetBits(GPIOB, GPIO_Pin_12);
 }
 
 LEDManager::~LEDManager()

@@ -11,8 +11,8 @@
 #include "Events.hpp"
 #include "NMEAEncoder.hpp"
 #include <set>
-#include "EEPROM.hpp"
 #include <vector>
+#include "Configuration.hpp"
 
 class RXPacketProcessor : public EventConsumer
 {

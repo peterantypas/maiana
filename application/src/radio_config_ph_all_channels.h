@@ -67,7 +67,9 @@
 // Descriptions:
 //   GLOBAL_XO_TUNE - Configure the internal capacitor frequency tuning bank for the crystal oscillator.
 */
-#define RF_GLOBAL_XO_TUNE_1 0x11, 0x00, 0x01, 0x00, 0x30
+//#define RF_GLOBAL_XO_TUNE_1 0x11, 0x00, 0x01, 0x00, 0x30
+
+#define RF_GLOBAL_XO_TUNE_1 0x11, 0x00, 0x01, 0x00, 0x2D
 
 /*
 // Set properties:           RF_GLOBAL_CONFIG_1

@@ -22,7 +22,7 @@ RXPacketProcessor::RXPacketProcessor ()
     : mLastDumpTime(0), mGoodCount(0), mBadCRCCount(0), mInvalidCount(0), mLat(-200), mLng(-200)
 {
     mSentences.reserve(4); // We're not going to need more than 2 sentences for the longest AIS message we report ...
-    EEPROM::instance().readStationData(mStationData);
+    Configuration::instance().readStationData(mStationData);
     EventQueue::instance().addObserver(this, AIS_PACKET_EVENT | CLOCK_EVENT | GPS_FIX_EVENT);
 }
 

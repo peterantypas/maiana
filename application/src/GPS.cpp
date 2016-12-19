@@ -349,12 +349,6 @@ void GPS::onTimerIRQ()
         // Delegates need real-time information
         if ( mDelegate )
             mDelegate->timeSlotStarted(mSlotNumber);
-/*
-        if ( mSlotNumber % 2 )
-            GPIO_SetBits(GPIOB, GPIO_Pin_3);
-        else
-            GPIO_ResetBits(GPIOB, GPIO_Pin_3);
-*/
       }
 }
 

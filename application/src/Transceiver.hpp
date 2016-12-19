@@ -10,9 +10,9 @@
 
 #include "Receiver.hpp"
 #include "TXPacket.hpp"
+#include "EventQueue.hpp"
 
-
-class Transceiver : public Receiver
+class Transceiver : public Receiver, EventConsumer
 {
 public:
     Transceiver(SPI_TypeDef *spi,
@@ -25,9 +25,8 @@ public:
                 GPIO_TypeDef *gpio3Port,
                 uint16_t gpio3Pin,
                 GPIO_TypeDef *ctxPort,
-                uint16_t ctxPin,
-                GPIO_TypeDef *bypPort,
-                uint16_t bypPin);
+                uint16_t ctxPin);
+
 
     void onBitClock();
     void timeSlotStarted(uint32_t slot);
@@ -35,18 +34,19 @@ public:
     TXPacket *assignedTXPacket();
     void startReceiving(VHFChannel channel);
     void transmitCW(VHFChannel channel);
+    void processEvent(const Event &);
 protected:
     void configure();
+    void configureGPIOsForRX();
 private:
     void startTransmitting();
-    void configureForTX(tx_power_level pwr);
+    void configureGPIOsForTX(tx_power_level pwr);
     void setTXPower(tx_power_level pwr);
 private:
     TXPacket    *mTXPacket;
     GPIO_TypeDef *mCTXPort;
     uint16_t    mCTXPin;
-    GPIO_TypeDef *mBYPPort;
-    uint16_t    mBYPPin;
+    time_t      mUTC;
 };
 
 #endif /* TRANSCEIVER_HPP_ */

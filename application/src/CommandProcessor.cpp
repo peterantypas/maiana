@@ -7,10 +7,10 @@
 
 #include "CommandProcessor.hpp"
 #include <cstring>
-#include "EEPROM.hpp"
 #include <cstdio>
 #include "globals.h"
 #include "stm32f30x.h"
+#include "Configuration.hpp"
 
 CommandProcessor &
 CommandProcessor::instance()
@@ -114,7 +114,7 @@ void
 CommandProcessor::returnMMSI()
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
+    Configuration::instance ().readStationData (data);
 
     Event *reply = EventPool::instance ().newEvent (RESPONSE_EVENT);
     reply->response.success = true;
@@ -126,7 +126,7 @@ void
 CommandProcessor::returnCallSign()
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
+    Configuration::instance ().readStationData (data);
 
     Event *reply = EventPool::instance ().newEvent (RESPONSE_EVENT);
     reply->response.success = true;
@@ -138,7 +138,7 @@ void
 CommandProcessor::returnName()
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
+    Configuration::instance ().readStationData (data);
 
     Event *reply = EventPool::instance ().newEvent (RESPONSE_EVENT);
     reply->response.success = true;
@@ -150,7 +150,7 @@ void
 CommandProcessor::returnBeam()
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
+    Configuration::instance ().readStationData (data);
 
     Event *reply = EventPool::instance ().newEvent (RESPONSE_EVENT);
     reply->response.success = true;
@@ -162,7 +162,7 @@ void
 CommandProcessor::returnLength()
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
+    Configuration::instance ().readStationData (data);
 
     Event *reply = EventPool::instance ().newEvent (RESPONSE_EVENT);
     reply->response.success = true;
@@ -179,7 +179,7 @@ void
 CommandProcessor::returnVesselData()
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
+    Configuration::instance ().readStationData (data);
 
     Event *reply = EventPool::instance ().newEvent (RESPONSE_EVENT);
     reply->response.success = true;
@@ -198,9 +198,15 @@ void
 CommandProcessor::setMMSI(uint32_t mmsi)
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
-    data.mmsi = mmsi;
-    EEPROM::instance ().writeStationData (data);
+    if ( Configuration::instance ().readStationData (data) ) {
+        data.mmsi = mmsi;
+    }
+    else {
+        memset(&data, 0, sizeof data);
+        data.magic = STATION_DATA_MAGIC;
+        data.mmsi = mmsi;
+    }
+    Configuration::instance ().writeStationData (data);
     sendEmptyReply (true);
 }
 
@@ -208,9 +214,15 @@ void
 CommandProcessor::setName(const char* name)
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
-    strncpy (data.name, name, sizeof data.name);
-    EEPROM::instance ().writeStationData (data);
+    if ( Configuration::instance ().readStationData (data) ) {
+        strncpy (data.name, name, sizeof data.name);
+    }
+    else {
+        memset(&data, 0, sizeof data);
+        data.magic = STATION_DATA_MAGIC;
+        strncpy (data.name, name, sizeof data.name);
+    }
+    Configuration::instance ().writeStationData (data);
     sendEmptyReply (true);
 }
 
@@ -218,9 +230,15 @@ void
 CommandProcessor::setCallSign(const char *callsign)
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
-    strncpy (data.callsign, callsign, sizeof data.callsign);
-    EEPROM::instance ().writeStationData (data);
+    if ( Configuration::instance ().readStationData (data) ) {
+        strncpy (data.callsign, callsign, sizeof data.callsign);
+    }
+    else {
+        memset(&data, 0, sizeof data);
+        data.magic = STATION_DATA_MAGIC;
+        strncpy (data.callsign, callsign, sizeof data.callsign);
+    }
+    Configuration::instance ().writeStationData (data);
     sendEmptyReply (true);
 }
 
@@ -228,9 +246,15 @@ void
 CommandProcessor::setBeam(uint8_t beam)
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
-    data.beam = beam;
-    EEPROM::instance ().writeStationData (data);
+    if ( Configuration::instance ().readStationData (data) ) {
+        data.beam = beam;
+    }
+    else {
+        memset(&data, 0, sizeof data);
+        data.magic = STATION_DATA_MAGIC;
+        data.beam = beam;
+    }
+    Configuration::instance ().writeStationData (data);
     sendEmptyReply (true);
 }
 
@@ -238,9 +262,15 @@ void
 CommandProcessor::setLength(uint8_t len)
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
-    data.len = len;
-    EEPROM::instance ().writeStationData (data);
+    if ( Configuration::instance ().readStationData (data) ) {
+        data.len = len;
+    }
+    else {
+        memset(&data, 0, sizeof data);
+        data.magic = STATION_DATA_MAGIC;
+        data.len = len;
+    }
+    Configuration::instance ().writeStationData (data);
     sendEmptyReply (true);
 }
 
@@ -248,7 +278,11 @@ void
 CommandProcessor::setVesselData(const char *s)
 {
     StationData data;
-    EEPROM::instance ().readStationData (data);
+    if ( !Configuration::instance ().readStationData (data) ) {
+        memset(&data, 0, sizeof data);
+        data.magic = STATION_DATA_MAGIC;
+    }
+
 
     /*
      * TODO: Add to/from CSV methods in StationData and use tokenization instead of sscanf()
@@ -257,7 +291,7 @@ CommandProcessor::setVesselData(const char *s)
     if (items < 5)
         sendEmptyReply (false);
     else {
-        EEPROM::instance ().writeStationData (data);
+        Configuration::instance ().writeStationData (data);
         sendEmptyReply (true);
     }
 }
@@ -273,7 +307,7 @@ CommandProcessor::setMode(const char *mode)
             return;
         }
 
-        FLASH_ErasePage (METADATA_ADDRESS);
+        FLASH_ErasePage (FIRMWARE_METADATA_ADDRESS);
         status = FLASH_WaitForLastOperation (FLASH_ER_PRG_TIMEOUT);
         if (status != FLASH_COMPLETE) {
             sendError ("Unable to erase metadata page");
@@ -295,17 +329,21 @@ CommandProcessor::setMode(const char *mode)
         EventQueue::instance ().push (e);
     }
     else if (strcmp (mode, "rx") == 0) {
+        // If there is no valid station data, this command is a NOOP
         StationData data;
-        EEPROM::instance ().readStationData (data);
-        data.flags |= STATION_RX_ONLY;
-        EEPROM::instance ().writeStationData (data);
+        if ( Configuration::instance ().readStationData (data) ) {
+            data.flags |= STATION_RX_ONLY;
+            Configuration::instance ().writeStationData (data);
+        }
         sendEmptyReply (true);
     }
     else if (strcmp (mode, "trx") == 0) {
+        // If there is no valid station data, this command is a NOOP
         StationData data;
-        EEPROM::instance ().readStationData (data);
-        data.flags &= ~(STATION_RX_ONLY);
-        EEPROM::instance ().writeStationData (data);
+        if ( Configuration::instance ().readStationData (data) ) {
+            data.flags &= ~(STATION_RX_ONLY);
+            Configuration::instance ().writeStationData (data);
+        }
         sendEmptyReply (true);
     }
     else

@@ -41,7 +41,8 @@ public:
     void switchToChannel(VHFChannel channel);
 private:
     void resetBitScanner();
-    void configureGPIOs();
+protected:
+    virtual void configureGPIOsForRX();
 protected:
     RXPacket mRXPacket;
     uint16_t mBitWindow;

@@ -93,13 +93,13 @@ void RadioManager::init()
     gpio.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(GPIOA, &gpio);
 
-    // PA3 will be the SDN1 pin
-    gpio.GPIO_Pin = GPIO_Pin_3;
+    // PB0 will be the SDN1 pin
+    gpio.GPIO_Pin = GPIO_Pin_0;
     gpio.GPIO_Mode = GPIO_Mode_OUT;
     gpio.GPIO_Speed = GPIO_Speed_Level_1;
     gpio.GPIO_OType = GPIO_OType_PP;
-    gpio.GPIO_PuPd = GPIO_PuPd_UP;
-    GPIO_Init(GPIOA, &gpio);
+    gpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOB, &gpio);
 
     // PB2 starts as input, used for POR status (RFIC1 GPIO1 -> MCU), then switched between RX/TX DATA as necessary
     gpio.GPIO_Pin = GPIO_Pin_2;
@@ -121,14 +121,6 @@ void RadioManager::init()
 
     // PA8 will be CTX
     gpio.GPIO_Pin = GPIO_Pin_8;
-    gpio.GPIO_Mode = GPIO_Mode_OUT;
-    gpio.GPIO_Speed = GPIO_Speed_Level_1;
-    gpio.GPIO_OType = GPIO_OType_PP;
-    gpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_Init(GPIOA, &gpio);
-
-    // PA9 will be BYP
-    gpio.GPIO_Pin = GPIO_Pin_9;
     gpio.GPIO_Mode = GPIO_Mode_OUT;
     gpio.GPIO_Speed = GPIO_Speed_Level_1;
     gpio.GPIO_OType = GPIO_OType_PP;
@@ -162,14 +154,13 @@ void RadioManager::init()
 
     // This is IC1 (transceiver)
     printf2("Initializing RF IC 1\r\n");
-    mTransceiverIC = new Transceiver(SPI1, GPIOA, GPIO_Pin_3, GPIOA, GPIO_Pin_4, GPIOB, GPIO_Pin_2, GPIOA, GPIO_Pin_1, GPIOA, GPIO_Pin_8, GPIOA, GPIO_Pin_9);
+    mTransceiverIC = new Transceiver(SPI1, GPIOB, GPIO_Pin_0, GPIOA, GPIO_Pin_4, GPIOB, GPIO_Pin_2, GPIOA, GPIO_Pin_1, GPIOA, GPIO_Pin_8);
     mTransceiverIC->init();
 
     // This is IC2 (receiver)
     printf2("Initializing RF IC 2\r\n");
     mReceiverIC = new Receiver(SPI1, GPIOB, GPIO_Pin_8, GPIOB, GPIO_Pin_1, GPIOC, GPIO_Pin_13, GPIOB, GPIO_Pin_9);
     mReceiverIC->init();
-    mReceiverIC->setRSSIAdjustment(-12); // IC2 gets 6dB more signal than IC1 because of PCB layout
     mInitializing = false;
 }
 
@@ -186,10 +177,12 @@ void RadioManager::transmitCW(VHFChannel channel)
 
 void RadioManager::start()
 {
+    printf2("Radio Manager starting\r\n");
     configureInterrupts();
     mTransceiverIC->startReceiving(CH_87);
     mReceiverIC->startReceiving(CH_88);
     GPS::instance().setDelegate(this);
+    printf2("Radio Manager started\r\n");
 }
 
 
@@ -226,11 +219,12 @@ void RadioManager::configureInterrupts()
     NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStruct);
 
+    printf2("Radio Manager configured interrupts\r\n");
+
 }
 
 void RadioManager::processEvent(const Event &e)
 {
-    //ClockEvent *ce = static_cast<ClockEvent*>(e);
     mUTC = e.clock.utc;
 
     // Evaluate the state of the transceiver IC and our queue ...
@@ -288,7 +282,7 @@ void RadioManager::timeSlotStarted(uint32_t slotNumber)
 void RadioManager::scheduleTransmission(TXPacket *packet)
 {
     if ( mTXQueue->push(packet) ) {
-        //printf2("RadioManager queued TX packet for channel %d\r\n", packet->channel());
+        printf2("RadioManager queued TX packet for channel %d\r\n", packet->channel());
     }
     else {
         printf2("RadioManager rejected TX packet for channel %d\r\n", packet->channel());

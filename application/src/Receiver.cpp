@@ -61,7 +61,7 @@ void Receiver::startListening(VHFChannel channel)
     options.next_state2 = 0;
     options.next_state3 = 0;
 
-    configureGPIOs();
+    configureGPIOsForRX();
     sendCmd (START_RX, &options, sizeof options, NULL, 0);
 }
 
@@ -208,6 +208,7 @@ bool Receiver::addBit(uint8_t bit)
 
 void Receiver::pushPacket()
 {
+#ifndef TX_TEST_MODE
     Event *p = EventPool::instance().newEvent(AIS_PACKET_EVENT);
     if ( p == NULL ) {
         printf2("AISPacket allocation failed\r\n");
@@ -216,12 +217,13 @@ void Receiver::pushPacket()
 
     p->rxPacket = mRXPacket;
     mRXPacket.reset();
-    //mRXPacket = RXPacketPool::instance().newRXPacket();
-    //ASSERT(mRXPacket);
     EventQueue::instance().push(p);
+#else
+    mRXPacket.reset();
+#endif
 }
 
-void Receiver::configureGPIOs()
+void Receiver::configureGPIOsForRX()
 {
     // Configure MCU pin for RFIC GPIO1 as input (RX_DATA below)
     GPIO_InitTypeDef gpio;
@@ -252,4 +254,5 @@ void Receiver::configureGPIOs()
      gpiocfg.GENCFG = 0x00;      // No change
      sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, &gpiocfg, sizeof gpiocfg);
 }
+
 

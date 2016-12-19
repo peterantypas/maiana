@@ -12,19 +12,20 @@
 #include <time.h>
 #include "ObjectPool.hpp"
 #include "AISChannels.h"
-#include "EEPROM.hpp"
+#include "Configuration.hpp"
 
 
 class TXScheduler : public EventConsumer
 {
 public:
-    TXScheduler ();
-    virtual
-    ~TXScheduler ();
-
+    static TXScheduler &instance();
+    void init();
     void processEvent(const Event &event);
     void startTXTesting();
 private:
+    TXScheduler ();
+    virtual
+    ~TXScheduler ();
     void scheduleTestPacket();
     time_t positionReportTimeInterval();
 private:
@@ -35,6 +36,7 @@ private:
     time_t mLast24Time;
     double mAvgSpeed;
     bool mTesting;
+    StationData mStationData;
 };
 
 #endif /* TXSCHEDULER_HPP_ */

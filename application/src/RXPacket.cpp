@@ -193,6 +193,12 @@ void RXPacket::discardCRC()
         return;
     mSize -= 16;
     mCRC = 0xffff;
+
+    // Explicitly set those bits to zero, no matter how they align
+    for ( uint8_t i = 0; i < 16; ++i )
+        addBit(0);
+
+    mSize -= 16;
 }
 
 void RXPacket::addFillBits(uint8_t numBits)
