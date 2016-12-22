@@ -1,18 +1,15 @@
 # Eagle CAD files
 
-The hardware is made up of two boards. Although I officially baptised them the "Logic Stage" and the "RF Stage", I think it's better to think of them
-as the "easy" board and the "tricky" board. 
+The new design is a single, 4-layer PCB which does not follow the conventional 4-Layer design paradigm.
 
-The "easy" board holds the microcontroller (STM32F302, an ARM Cortex M4 running at 72Mhz), the USB interface, power regulator, EEPROM and GPS. It carries nothing
-more than power and digital signals. No analog RF signal traverses any trace on it.
+- Layer 1 is the component and main signal layer as you might expect.
+- Layer 2 is a power and signal layer with no ground pour. The only requirement is that these signals don't cross the RF path anywhere.
+- Layer 3 is the ground layer. It is 100% uninterrupted save for via holes.
+- Layer 4 is yet another signal layer with ground pour. Because it lies underneath the ground its traces can go anywhere with no consequences.
 
-The "tricky" board, is effectively a mixed signal circuit. It holds the RF ICs (which share the same SPI bus), the LNA, the Front End Module and the associated 
-analog filters. The critical RF traces are designed as coplanar waveguides with liberal quantities of via stitches, and they should be close to 50Ohm for 
-Oshpark's 2-layer PCB and dialectric.
+By increasing the distance between the signal and ground layer, I was able to use very wide coplanar waveguide traces so as to minimize losses and parasitic inductance.
+SWR is better than 1.1:1 with a 50 Ohm load.
 
-The two dual-layer PCBs are mirror images of each other and they mate with standard .01" male/female pins. Unlike Arduino and Pi hats, the boards mate 
-"back-to-back", so as to maximize isolation between the MCU and the RF traces.
-
-I chose to partition the hardware in this way to minimize the pain of iterating, since the analog RF stage went (and will continue to go) 
-through more iterations than the MCU / EEPROM / GPS stage. 
-
+The board now requires 7.5 Volts (because of the RF MOSFET). It draws 100 mA while receiving, and spikes to 680 mA during transmission at full power.
+Surge current for transmission can be provided by a low-profile 10 mF supercapacitor on the back of the PCB. Also, during transmission,
+the external LNA is now powered down as a precaution.

@@ -13,24 +13,13 @@ else if there is enough interest and participation.
 ### Hardware
 
 On the hardware side, the design is based on two Silicon Labs 4463 transceiver ICs and an STM32F302CBT6 ARM Cortex M4 microcontroller.
-One of the SiLabs ICs acts as a transceiver, while the other IC works as a receiver only. During reception, each IC tunes to a different
-channel. When a transmission is scheduled, the ICs swap channels if necessary for the transceiver to be listening on the next transmit channel.
-The swap occurs exactly at the boundary of a SOTDMA time slot, so no messages are lost.
-This configuration makes for a much simpler PCB layout and negates the need for a 3-position RF switch.
+The GPS is a GlobalTop "LadyBird" unit, but any decent GPS module with NMEA and PPS output should work. On the front end, there is an
+external LNA (NXP BGA2869) with an LC bandpass filter, a 2 Watt MOSFET PA and an active Skyworks RF switch. 
 
-The GPS is a GlobalTop "LadyBird" unit, but any decent GPS module with NMEA and PPS output should work.
 
-The new 4-layer board incorporates an external bandpass / LNA (NXP BGA2869) and an Skyworks RF switch. There is now a 2 Watt (+33dBm) PA powered
-by the very inexpensive NXP AFT0SMS003N MOSFET ($1.60 retail).
-
-Persistent station data (MMSI, call sign, name, dimensions, etc) is supposed to live at a high page in Flash, way beyond the application and bootloader code boundaries.
-
-The circuit requires 7.5 Volts (because of the RF MOSFET).  It draws 100 mA in RX mode, and spikes up to 680 mA during transmission at full power.
-Surge current for transmissions can be provided by a 10 mF supercapacitor so that the drain on the power supply can remain constant.
-
-I intend to use a Raspberry Pi as the front end of the transceiver, as the unit is supposed to be mounted outside, directly connected to its own antenna.
-The Pi will act as a source of power, a WiFi Access Point, a NMEA distributor and a web server for configuration and software updates. All communication between the transponder
-and the Pi is done over a single serial port.
+I intend to use a Raspberry Pi Zero as the front end of the transceiver, as the unit is supposed to be mounted outside, directly connected to its own antenna.
+The Pi will act as a WiFi Access Point and/or Bluetooth peripheral, a NMEA distributor and a web server for configuration and software updates.
+All communication between the transponder and the Pi will be carried out over a single serial port.
 
 
 ### Software
