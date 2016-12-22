@@ -12,4 +12,4 @@ SWR is better than 1.1:1 with a 50 Ohm load.
 
 The board now requires 7.5 Volts (because of the RF MOSFET). It draws 100 mA while receiving, and spikes to 680 mA during transmission at full power.
 Surge current for transmission can be provided by a low-profile 10 mF supercapacitor on the back of the PCB. Also, during transmission,
-the external LNA is now powered down as a precaution.
+the external LNA is powered down as a precaution.
