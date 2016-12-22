@@ -20,9 +20,8 @@ This configuration makes for a much simpler PCB layout and negates the need for 
 
 The GPS is a GlobalTop "LadyBird" unit, but any decent GPS module with NMEA and PPS output should work.
 
-The RF board incorporates an external bandpass / LNA (NXP BGA2869) and a Skyworks 66100 front end (PA/switch).
-
-The new 4-layer PCB incorporates a 2 Watt (+33dBm) PA powered by the very inexpensive NXP AFT0SMS003N MOSFET ($1.60 each at retail).
+The new 4-layer board incorporates an external bandpass / LNA (NXP BGA2869) and an Skyworks RF switch. There is now a 2 Watt (+33dBm) PA powered
+by the very inexpensive NXP AFT0SMS003N MOSFET ($1.60 retail).
 
 Persistent station data (MMSI, call sign, name, dimensions, etc) is supposed to live at a high page in Flash, way beyond the application and bootloader code boundaries.
 
