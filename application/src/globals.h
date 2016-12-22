@@ -23,7 +23,7 @@
 //#define CALIBRATION_MODE               1
 
 // Undefine to disable transmission
-#define ENABLE_TX                      1
+//#define ENABLE_TX                      1
 
 #ifdef ENABLE_TX
 //#define TX_TEST_MODE
@@ -31,7 +31,7 @@
 
 
 #ifdef CALIBRATION_MODE
-#define TX_POWER_LEVEL              PWR_P33
+#define TX_POWER_LEVEL              PWR_P24
 #else
 #ifdef TX_TEST_MODE
 #define TX_POWER_LEVEL              PWR_P24
@@ -75,7 +75,8 @@
 #define USE_BT_04
 
 // Default interval for message 18 (position report) is 30 seconds when under way
-#define MSG_18_TX_INTERVAL           30
+#define MIN_MSG_18_TX_INTERVAL        30
+#define MAX_MSG_18_TX_INTERVAL       180
 
 // Default interval for message 24 A&B (static data report) is 6 minutes
 #define MSG_24_TX_INTERVAL           360

@@ -163,9 +163,9 @@ time_t TXScheduler::positionReportTimeInterval()
 {
     // As a class B "CS" transponder, we transmit every 3 minutes if speed is < 2 knots, otherwise 30 seconds.
     if ( mAvgSpeed < 2.0 )
-        return 180;
+        return MAX_MSG_18_TX_INTERVAL;
 
-    return MSG_18_TX_INTERVAL;
+    return MIN_MSG_18_TX_INTERVAL;
 }
 
 #ifdef TX_TEST_MODE
