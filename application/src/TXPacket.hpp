@@ -31,17 +31,19 @@ public:
     bool eof();
     uint8_t nextBit();
     VHFChannel channel();
-    time_t txTime();
+
+    void setTimestamp(time_t t);
+    time_t timestamp();
 private:
     ~TXPacket ();
-    void configure(VHFChannel channel, time_t txTime);
+    void configure(VHFChannel channel);
     void reset();
 private:
     uint8_t mPacket[MAX_AIS_TX_PACKET_SIZE/8+1];
     uint16_t mSize;
     uint16_t mPosition;
     VHFChannel mChannel;
-    time_t mTXTime;
+    time_t mTimestamp;
 };
 
 class TXPacketPool
@@ -50,7 +52,7 @@ public:
     static TXPacketPool &instance();
     void init();
 
-    TXPacket *newTXPacket(VHFChannel channel, time_t txTime);
+    TXPacket *newTXPacket(VHFChannel channel);
     void deleteTXPacket(TXPacket*);
 private:
     ObjectPool<TXPacket> *mPool;

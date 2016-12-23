@@ -47,6 +47,7 @@ private:
     GPIO_TypeDef *mCTXPort;
     uint16_t    mCTXPin;
     time_t      mUTC;
+    time_t      mLastTXTime;
 };
 
 #endif /* TRANSCEIVER_HPP_ */

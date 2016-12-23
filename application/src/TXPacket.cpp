@@ -15,10 +15,9 @@ TXPacket::TXPacket ()
 }
 
 
-void TXPacket::configure(VHFChannel channel, time_t txTime)
+void TXPacket::configure(VHFChannel channel)
 {
     mChannel  = channel;
-    mTXTime   = txTime;
 }
 
 
@@ -28,10 +27,10 @@ TXPacket::~TXPacket ()
 
 void TXPacket::reset()
 {
-    mSize     = 0;
-    mPosition = 0;
-    mChannel  = CH_87;
-    mTXTime   = 0;
+    mSize      = 0;
+    mPosition  = 0;
+    mChannel   = CH_87;
+    mTimestamp = 0;
     memset(mPacket, 0, sizeof mPacket);
 }
 
@@ -40,9 +39,14 @@ uint16_t TXPacket::size()
     return mSize;
 }
 
-time_t TXPacket::txTime()
+void TXPacket::setTimestamp(time_t t)
 {
-    return mTXTime;
+    mTimestamp = t;
+}
+
+time_t TXPacket::timestamp()
+{
+    return mTimestamp;
 }
 
 VHFChannel TXPacket::channel()
@@ -107,14 +111,14 @@ void TXPacketPool::init()
     mPool = new ObjectPool<TXPacket>(4);
 }
 
-TXPacket *TXPacketPool::newTXPacket(VHFChannel channel, time_t txTime)
+TXPacket *TXPacketPool::newTXPacket(VHFChannel channel)
 {
     TXPacket *p = mPool->get();
     if ( !p )
         return p;
 
     p->reset();
-    p->configure(channel, txTime);
+    p->configure(channel);
     return p;
 }
 

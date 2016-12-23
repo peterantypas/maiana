@@ -42,7 +42,7 @@ void printf2_Init(int baudrate)
 }
 
 
-#ifndef MULTIPLEXED_OUTPUT
+
 void USART_putc(USART_TypeDef* USARTx, char c)
 {
     while (!(USARTx->ISR & 0x00000040))
@@ -56,7 +56,7 @@ void USART_puts(USART_TypeDef* USARTx, const char *s)
     for ( int i = 0; s[i] != 0; ++i )
         USART_putc(USARTx, s[i]);
 }
-#endif
+
 
 static char __buffer[128];
 
@@ -66,11 +66,11 @@ void printf2_now(const char *format, ...)
     va_start(list, format);
     vsnprintf(__buffer, 128, format, list);
     va_end(list);
-#ifdef MULTIPLEXED_OUTPUT
-    DataTerminal::instance().write("DEBUG", __buffer);
-#else
+    //#ifdef MULTIPLEXED_OUTPUT
+    //    DataTerminal::instance().write("DEBUG", __buffer);
+    //#else
     USART_puts(USART2, __buffer);
-#endif
+    //#endif
 }
 
 #ifdef ENABLE_PRINTF2

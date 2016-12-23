@@ -81,17 +81,18 @@ void TXScheduler::processEvent(const Event &e)
 #endif
 
             // If we don't have valid station data or transmission is explicitly disabled, we don't do anything
-
             // TODO: MOVE STATION_RX_ONLY to user-defined configuration, not static station data
             if ( mStationData.magic != STATION_DATA_MAGIC )
                 return;
 
+            
             // Using a moving average of SOG to determine transmission rate
             static double alpha = 0.2;
             mAvgSpeed = mAvgSpeed * (1.0 - alpha) + e.gpsFix.speed * alpha;
 
             if ( mUTC - mLast18Time > positionReportTimeInterval() ) {
-                TXPacket *p1 = TXPacketPool::instance().newTXPacket(mPositionReportChannel, mUTC);
+                ASSERT(mUTC);
+                TXPacket *p1 = TXPacketPool::instance().newTXPacket(mPositionReportChannel);
                 if ( !p1 ) {
                     printf2("Unable to allocate TX packet for message 18, will try again later\r\n");
                     break;
@@ -114,7 +115,8 @@ void TXScheduler::processEvent(const Event &e)
 
 
             if ( mUTC - mLast24Time > MSG_24_TX_INTERVAL ) {
-                TXPacket *p2 = TXPacketPool::instance().newTXPacket(mStaticDataChannel, mUTC+5);
+                ASSERT(mUTC);
+                TXPacket *p2 = TXPacketPool::instance().newTXPacket(mStaticDataChannel);
                 if ( !p2 ) {
                     printf2("Unable to allocate TX packet for 24A\r\n");
                     break;
@@ -125,7 +127,7 @@ void TXScheduler::processEvent(const Event &e)
 
                 RadioManager::instance().scheduleTransmission(p2);
 
-                TXPacket *p3 = TXPacketPool::instance().newTXPacket(mStaticDataChannel, mUTC+10);
+                TXPacket *p3 = TXPacketPool::instance().newTXPacket(mStaticDataChannel);
                 if ( !p3 ) {
                     printf2("Unable to allocate TX packet for 24B\r\n");
                     break;
@@ -161,7 +163,7 @@ void TXScheduler::processEvent(const Event &e)
 
 time_t TXScheduler::positionReportTimeInterval()
 {
-    // As a class B "CS" transponder, we transmit every 3 minutes if speed is < 2 knots, otherwise 30 seconds.
+    // As a class B "CS" transponder, we transmit at a rate based on our speed (2 knots is the threshold)
     if ( mAvgSpeed < 2.0 )
         return MAX_MSG_18_TX_INTERVAL;
 
@@ -174,6 +176,7 @@ void TXScheduler::scheduleTestPacket()
     VHFChannel channel = CH_84;
     if ( rand() % 2 == 0 )
         channel = CH_85;
+
     TXPacket *p = TXPacketPool::instance().newTXPacket(channel, mUTC);
     if ( !p ) {
         printf2("Ooops! Out of TX packets :(\r\n");

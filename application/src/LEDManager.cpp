@@ -9,8 +9,6 @@
 #include "stm32f30x.h"
 #include <cstring>
 
-const uint16_t LEDMAP[] = { GPIO_Pin_12 };
-
 
 LEDManager &LEDManager::instance()
 {
@@ -20,18 +18,21 @@ LEDManager &LEDManager::instance()
 
 
 LEDManager::LEDManager()
+    : mLEDState({ {GPIOB, GPIO_Pin_12, 0}, {GPIOA, GPIO_Pin_9, 0} })
 {
-    memset(&mLEDState, 0, sizeof mLEDState);
-
     GPIO_InitTypeDef GPIO_InitStruct;
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); // For LEDs
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); // For LED1
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE); // For LED2
+    
 
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12;
-    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_1;
-    GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_Init(GPIOB, &GPIO_InitStruct);
+    for ( int i = 0; i < 2; ++i ) {
+        GPIO_InitStruct.GPIO_Pin = mLEDState[i].pin;
+        GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
+        GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_1;
+        GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
+        GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
+        GPIO_Init(mLEDState[i].gpio, &GPIO_InitStruct);
+    }
 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 
@@ -56,7 +57,7 @@ LEDManager::LEDManager()
     TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
     TIM_Cmd(TIM3, ENABLE);
 
-    GPIO_ResetBits(GPIOB, GPIO_Pin_12);
+    clear();
 }
 
 LEDManager::~LEDManager()
@@ -65,34 +66,37 @@ LEDManager::~LEDManager()
 
 void LEDManager::clear()
 {
-    GPIO_ResetBits(GPIOB, GPIO_Pin_14 | GPIO_Pin_15);
+    for ( int i = 0; i < 2; ++i ) {
+        GPIO_ResetBits(mLEDState[i].gpio, mLEDState[i].pin);
+        mLEDState[i].state = 0;
+    }
 }
 
 void LEDManager::onTimer()
 {
     for ( int i = 0; i < 2; ++i ) {
-        if ( mLEDState[i] ) {
-            GPIO_ResetBits(GPIOB, LEDMAP[i]);
-            mLEDState[i] = 0;
+        if ( mLEDState[i].state ) {
+            GPIO_ResetBits(mLEDState[i].gpio, mLEDState[i].pin);
+            mLEDState[i].state = 0;
         }
     }
 }
 
 void LEDManager::blink(uint8_t led)
 {
-    GPIO_SetBits(GPIOB, LEDMAP[led]);
-    mLEDState[led] = 1;
+    GPIO_SetBits(mLEDState[led].gpio, mLEDState[led].pin);
+    mLEDState[led].state = 1;
 }
 
 extern "C" {
 
-void TIM3_IRQHandler(void)
-{
-    if ( TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET ) {
-         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
-         LEDManager::instance().onTimer();
-     }
-}
+    void TIM3_IRQHandler(void)
+    {
+        if ( TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET ) {
+            TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+            LEDManager::instance().onTimer();
+        }
+    }
 
 
 }

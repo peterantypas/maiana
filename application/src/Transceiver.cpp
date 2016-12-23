@@ -23,6 +23,7 @@ Transceiver::Transceiver(SPI_TypeDef *spi, GPIO_TypeDef *sdnPort, uint16_t sdnPi
     mCTXPin = ctxPin;
     EventQueue::instance().addObserver(this, CLOCK_EVENT);
     mUTC = 0;
+    mLastTXTime = 0;
 }
 
 void Transceiver::configure()
@@ -56,6 +57,12 @@ void Transceiver::processEvent(const Event &e)
 {
     // We assume CLOCK_EVENT as we didn't register for anything else
     mUTC = e.clock.utc;
+    
+#ifdef DEBUG
+    if (mTXPacket) {
+        printf2("mUTC: %d, mTXPacket->timestamp(): %d, mLastTXTime: %d\r\n", mUTC, mTXPacket->timestamp(), mLastTXTime);
+    }
+#endif
 }
 
 void Transceiver::transmitCW(VHFChannel channel)
@@ -147,6 +154,7 @@ void Transceiver::assignTXPacket(TXPacket *p)
 {
     ASSERT(!mTXPacket);
     mTXPacket = p;
+    mTXPacket->setTimestamp(mUTC);
 }
 
 TXPacket* Transceiver::assignedTXPacket()
@@ -162,8 +170,9 @@ void Transceiver::onBitClock()
         // If we have an assigned packet and we're on the correct channel, at the right bit of the time slot,
         // and the RSSI is within 6dB of the noise floor for this channel, then fire!!!
         uint8_t noiseFloor = NoiseFloorDetector::instance().getNoiseFloor(mChannel);
-        if ( mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel && mRXPacket.rssi() < noiseFloor + 12 &&
-                mUTC && mTXPacket->txTime() <= mUTC ) {
+        
+        if ( (mSlotBitNumber == CCA_SLOT_BIT+1) && (mTXPacket && mTXPacket->channel() == mChannel) && (mRXPacket.rssi() < noiseFloor + 12) &&
+             mUTC && (mUTC - mTXPacket->timestamp() >= MIN_TX_INTERVAL) ) {
             startTransmitting();
         }
 #else
@@ -175,7 +184,8 @@ void Transceiver::onBitClock()
     }
     else {
         if ( mTXPacket->eof() ) {
-            // LEDManager::instance().blink(LEDManager::BLUE_LED);
+            mLastTXTime = mUTC;
+            LEDManager::instance().blink(LEDManager::ORANGE_LED);
             startReceiving(mChannel);
             printf2("Transmitted %d bit packet on channel %d\r\n", mTXPacket->size(), AIS_CHANNELS[mChannel].itu);
             TXPacketPool::instance().deleteTXPacket(mTXPacket);

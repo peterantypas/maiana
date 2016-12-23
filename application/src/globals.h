@@ -23,7 +23,7 @@
 //#define CALIBRATION_MODE               1
 
 // Undefine to disable transmission
-//#define ENABLE_TX                      1
+#define ENABLE_TX                      1
 
 #ifdef ENABLE_TX
 //#define TX_TEST_MODE
@@ -36,7 +36,7 @@
 #ifdef TX_TEST_MODE
 #define TX_POWER_LEVEL              PWR_P33
 #else
-#define TX_POWER_LEVEL              PWR_P33
+#define TX_POWER_LEVEL              PWR_P24
 #endif
 #endif
 
@@ -74,7 +74,8 @@
 // Define this to set BT=0.4 for GMSK (as per ITU spec for AIS). Default is 0.5
 #define USE_BT_04
 
-// Default interval for message 18 (position report) is 30 seconds when under way
+// Transmission intervals
+#define MIN_TX_INTERVAL                5
 #define MIN_MSG_18_TX_INTERVAL        30
 #define MAX_MSG_18_TX_INTERVAL        40
 
