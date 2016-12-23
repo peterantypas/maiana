@@ -167,12 +167,19 @@ void Transceiver::onBitClock()
     if ( gRadioState == RADIO_RECEIVING ) {
         Receiver::onBitClock();
 #ifndef TX_TEST_MODE
-        // If we have an assigned packet and we're on the correct channel, at the right bit of the time slot,
-        // and the RSSI is within 6dB of the noise floor for this channel, then fire!!!
-        uint8_t noiseFloor = NoiseFloorDetector::instance().getNoiseFloor(mChannel);
-        
-        if ( (mSlotBitNumber == CCA_SLOT_BIT+1) && (mTXPacket && mTXPacket->channel() == mChannel) && (mRXPacket.rssi() < noiseFloor + 12) &&
-             mUTC && (mUTC - mTXPacket->timestamp() >= MIN_TX_INTERVAL) ) {
+        /*
+          We start transmitting a packet if:
+            - We have a TX packet assigned
+            - We are at bit CCA_SLOT_BIT+1, after obtaining an RSSI level
+            - The TX packet's transmission channel is our current listening channel
+            - The RSSI is within 6dB of the noise floor for this channel
+            - It's been at least MIN_TX_INTERVAL seconds since our last transmission
+         */
+
+        uint8_t noiseFloor = NoiseFloorDetector::instance().getNoiseFloor(mChannel);        
+        if ( mTXPacket && mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel &&
+             mRXPacket.rssi() < noiseFloor + 12 &&
+             mUTC && mUTC - mLastTXTime >= MIN_TX_INTERVAL ) {
             startTransmitting();
         }
 #else

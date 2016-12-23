@@ -51,13 +51,13 @@
  * [ASSERT]...
  *
 */
-#define MULTIPLEXED_OUTPUT             1
+#define MULTIPLEXED_OUTPUT            1
 
 #define OUTPUT_GPS_NMEA
 #define ENABLE_PRINTF2
 
-// Some AIS messages can occupy 5 time slots (5x256 = 1280). Nothing we care about exceeds 2 slots.
-#define MAX_AIS_RX_PACKET_SIZE      512
+// Some AIS messages can occupy 5 time slots. Nothing we care about exceeds 2 slots (2x256).
+#define MAX_AIS_RX_PACKET_SIZE       512
 
 
 #ifdef TX_TEST_MODE
@@ -77,7 +77,7 @@
 // Transmission intervals
 #define MIN_TX_INTERVAL                5
 #define MIN_MSG_18_TX_INTERVAL        30
-#define MAX_MSG_18_TX_INTERVAL        40
+#define MAX_MSG_18_TX_INTERVAL       180
 
 // Default interval for message 24 A&B (static data report) is 6 minutes
 #define MSG_24_TX_INTERVAL           360
