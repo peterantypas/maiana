@@ -11,3 +11,5 @@
 *.bin
 *.map
 
+.metadata
+RemoteSystems*

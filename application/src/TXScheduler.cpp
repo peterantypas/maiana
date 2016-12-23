@@ -146,7 +146,7 @@ void TXScheduler::processEvent(const Event &e)
             // This is reliable and independent of GPS update frequency which could change to something other than 1Hz
             mUTC = e.clock.utc;
 #ifdef TX_TEST_MODE
-            if ( RadioManager::instance().initialized() && mTesting && mUTC % 1 == 0 ) {
+            if ( RadioManager::instance().initialized() && mTesting && mUTC % 10 == 0 ) {
                 scheduleTestPacket();
                 printf2("Scheduled test packet\r\n");
             }
@@ -180,7 +180,7 @@ void TXScheduler::scheduleTestPacket()
         return;
     }
 
-    for ( int i = 0; i < MAX_AIS_TX_PACKET_SIZE; ++i ) {
+    for ( int i = 0; i < 240; ++i ) {
         p->addBit(rand() % 2);
     }
     RadioManager::instance().scheduleTransmission(p);

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BIN=ais_transponder.bin
+BIN=application.bin
 
 # Write the metadata first, before any reset
 
