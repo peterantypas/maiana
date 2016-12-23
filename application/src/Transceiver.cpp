@@ -178,9 +178,17 @@ void Transceiver::onBitClock()
 
         uint8_t noiseFloor = NoiseFloorDetector::instance().getNoiseFloor(mChannel);        
         if ( mTXPacket && mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel &&
-             mRXPacket.rssi() < noiseFloor + 12 &&
-             mUTC && mUTC - mLastTXTime >= MIN_TX_INTERVAL ) {
-            startTransmitting();
+             mRXPacket.rssi() < noiseFloor + 12 && mUTC && mUTC ) {
+            
+            if ( mUTC - mTXPacket->timestamp() > MIN_MSG_18_TX_INTERVAL ) {
+                // The packet is way too old. Discard it.                
+                TXPacketPool::instance().deleteTXPacket(mTXPacket);
+                mTXPacket = NULL;
+                printf2("Transceiver discarded aged TX packet\r\n");
+            }
+            else if ( mUTC - mLastTXTime >= MIN_TX_INTERVAL ) {
+                startTransmitting();
+            }
         }
 #else
         // In Test Mode we don't care about RSSI. Presumably we're firing into a dummy load ;-) Also, we don't care about throttling.

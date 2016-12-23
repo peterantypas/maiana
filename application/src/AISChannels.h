@@ -23,14 +23,14 @@
  * Marine VHF channels have an ITU designated number that is interleaved (Rec. ITU-R M.1084). They can never fit
  * the Silabs WDS channel definition scheme, so they must be associated with those channels instead.
  * For now (and maybe forever), given an ITU channel number, we'll scan the AIS_CHANNELS array to find
- * its corresponding RF IC channel ordinal.
+ * its corresponding RFIC channel ordinal.
  */
 
 typedef struct {
     uint8_t itu;              // The ITU channel #
     uint8_t ordinal;          // A zero-based index as defined by WDS in radio_config.h
     char designation;         // 'A', 'B' or '?'
-    double frequency;         // Frequency in MHz, mostly for reference
+    float frequency;          // Frequency in MHz, mostly for reference
 }
 ais_channel;
 
@@ -87,6 +87,7 @@ static const ais_channel AIS_CHANNELS[] = {
 
 
 #define ITU_TO_ORDINAL(C) (C < 78 ? (C-18)*2 : (C-78)*2+1)
+#define ORDINAL_TO_ITU(O) (AIS_CHANNELS[O].itu)
 
 
 #endif /* AISCHANNELS_H_ */

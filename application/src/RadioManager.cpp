@@ -282,10 +282,10 @@ void RadioManager::timeSlotStarted(uint32_t slotNumber)
 void RadioManager::scheduleTransmission(TXPacket *packet)
 {
     if ( mTXQueue->push(packet) ) {
-        printf2("RadioManager queued TX packet for channel %d\r\n", packet->channel());
+        printf2("RadioManager queued TX packet for channel %d\r\n", ORDINAL_TO_ITU(packet->channel()));
     }
     else {
-        printf2("RadioManager rejected TX packet for channel %d\r\n", packet->channel());
+        printf2("RadioManager rejected TX packet for channel %d\r\n", ORDINAL_TO_ITU(packet->channel()));
         TXPacketPool::instance().deleteTXPacket(packet);
     }
 }
