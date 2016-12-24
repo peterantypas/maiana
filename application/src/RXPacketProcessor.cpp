@@ -16,7 +16,7 @@
 #include "printf2.h"
 #include "AISChannels.h"
 
-static char __buff[100];
+static char __buff[128];
 
 RXPacketProcessor::RXPacketProcessor ()
     : mLastDumpTime(0), mGoodCount(0), mBadCRCCount(0), mInvalidCount(0), mLat(-200), mLng(-200)
@@ -50,7 +50,8 @@ void RXPacketProcessor::processEvent(const Event &e)
                 mLastDumpTime = e.clock.utc;
                 float yield = (float)mGoodCount / (float)(mGoodCount+mBadCRCCount+mInvalidCount);
                 printf2("\r\n");
-                printf2("[Yield: %.1fpct, Valid: %d, Wrong CRC: %d, Malformed: %d]\r\n", yield*100.0, mGoodCount, mBadCRCCount, mInvalidCount);
+                printf2("[Yield: %.1fpct, Valid: %d, Wrong CRC: %d, Malformed: %d]\r\n", yield*100.0,
+                        mGoodCount, mBadCRCCount, mInvalidCount);
                 printf2("[Unique MMSIs: %d]\r\n", mUniqueMMSIs.size());
                 printf2("\r\n");
                 mUniqueMMSIs.clear();
@@ -122,7 +123,7 @@ void RXPacketProcessor::processEvent(const Event &e)
                     }
                 }
 
-#ifdef ENABLE_TERMINAL
+
                 mSentences.clear();
                 RXPacket p(e.rxPacket);
                 mEncoder.encode(p, mSentences);
@@ -135,7 +136,7 @@ void RXPacketProcessor::processEvent(const Event &e)
                     DataTerminal::instance().write("\r\n");
 #endif
                 }
-#endif
+
                 switch (e.rxPacket.messageType()) {
                     case 15:
                         // TODO: This is an interrogation. If we are a target, push an appropriate event into the queue

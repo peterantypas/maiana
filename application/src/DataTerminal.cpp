@@ -14,7 +14,6 @@
 #include "Utils.hpp"
 #include <cstring>
 
-#ifdef ENABLE_TERMINAL
 
 static char __buff[128];
 
@@ -182,8 +181,6 @@ void USART2_IRQHandler(void)
 }
 
 }
-
-#endif
 
 
 

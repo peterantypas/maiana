@@ -65,9 +65,7 @@ main(int argc, char* argv[])
     //trace_printf("ACTLR: %.8x\n", SCnSCB->ACTLR);
 #endif
 
-    #ifdef ENABLE_TERMINAL
     DataTerminal::instance().init();
-#endif
 
 
     printf2("Software revision: %s\r\n", REVISION);

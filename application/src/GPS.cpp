@@ -247,7 +247,6 @@ GPS::parseSentence(const char *buff)
 
     NMEASentence sentence (buff);
     if (sentence.code ().find ("RMC") == 2) {
-#ifdef ENABLE_TERMINAL
 #ifdef OUTPUT_GPS_NMEA
 #ifdef MULTIPLEXED_OUTPUT
         DataTerminal::instance ().write ("NMEA", buff);
@@ -255,9 +254,7 @@ GPS::parseSentence(const char *buff)
         DataTerminal::instance().write(buff);
 #endif
 #endif
-#endif
 
-        // This is the time that corresponds to the previous PPS
         const vector<string> &fields = sentence.fields ();
 
         /*
@@ -275,6 +272,7 @@ GPS::parseSentence(const char *buff)
             return;
 
 
+        // This is the time that corresponds to the previous PPS
         const string &timestr = fields[1].substr (0, 6);
         const string &datestr = fields[9].substr (0, 6);
         mTime.tm_hour = Utils::toInt (timestr.substr (0, 2));
@@ -286,19 +284,19 @@ GPS::parseSentence(const char *buff)
         mUTC = mktime (&mTime);
 
         // Do we have a fix?
-        if (mUTC && sentence.fields ()[3].length () > 0 && sentence.fields ()[5].length () > 0) {
-            mLat = Utils::latitudeFromNMEA (sentence.fields ()[3], sentence.fields ()[4]);
-            mLng = Utils::longitudeFromNMEA (sentence.fields ()[5], sentence.fields ()[6]);
-            mSpeed = Utils::toDouble (sentence.fields ()[7]);
-            mCOG = Utils::toDouble (sentence.fields ()[8]);
-            Event *event = EventPool::instance ().newEvent (GPS_FIX_EVENT);
+        if (mUTC && sentence.fields()[3].length() > 0 && sentence.fields()[5].length() > 0) {
+            mLat = Utils::latitudeFromNMEA (sentence.fields()[3], sentence.fields()[4]);
+            mLng = Utils::longitudeFromNMEA (sentence.fields()[5], sentence.fields()[6]);
+            mSpeed = Utils::toDouble (sentence.fields()[7]);
+            mCOG = Utils::toDouble (sentence.fields()[8]);
+            Event *event = EventPool::instance ().newEvent(GPS_FIX_EVENT);
             if (event) {
                 event->gpsFix.utc = mUTC;
                 event->gpsFix.lat = mLat;
                 event->gpsFix.lng = mLng;
                 event->gpsFix.speed = mSpeed;
                 event->gpsFix.cog = mCOG;
-                EventQueue::instance ().push (event);
+                EventQueue::instance().push (event);
             }
             //printf2("Lat: %f, Lng: %f\r\n", mLat, mLng);
         }

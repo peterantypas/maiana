@@ -14,7 +14,8 @@
 #include "AISChannels.h"
 
 
-Transceiver::Transceiver(SPI_TypeDef *spi, GPIO_TypeDef *sdnPort, uint16_t sdnPin, GPIO_TypeDef *csPort, uint16_t csPin, GPIO_TypeDef *gpio1Port, uint16_t gpio1Pin,
+Transceiver::Transceiver(SPI_TypeDef *spi, GPIO_TypeDef *sdnPort, uint16_t sdnPin, GPIO_TypeDef *csPort,
+                         uint16_t csPin, GPIO_TypeDef *gpio1Port, uint16_t gpio1Pin,
         GPIO_TypeDef *gpio3Port, uint16_t gpio3Pin, GPIO_TypeDef *ctxPort, uint16_t ctxPin)
     : Receiver(spi, sdnPort, sdnPin, csPort, csPin, gpio1Port, gpio1Pin, gpio3Port, gpio3Pin)
 {

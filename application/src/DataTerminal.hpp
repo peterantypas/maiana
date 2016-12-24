@@ -15,10 +15,6 @@
 
 using namespace std;
 
-#define ENABLE_TERMINAL
-
-#ifdef ENABLE_TERMINAL
-
 
 class DataTerminal : public EventConsumer
 {
@@ -48,4 +44,3 @@ private:
 
 
 
-#endif /* DATATERMINAL_HPP_ */

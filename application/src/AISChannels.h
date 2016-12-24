@@ -3,7 +3,12 @@
  *
  *  Created on: May 8, 2016
  *      Author: peter
+ *
  */
+
+// Local Variables:
+// mode: c++
+// End:
 
 #ifndef AISCHANNELS_H_
 #define AISCHANNELS_H_
@@ -91,3 +96,5 @@ static const ais_channel AIS_CHANNELS[] = {
 
 
 #endif /* AISCHANNELS_H_ */
+
+/* -*-c++-*- */

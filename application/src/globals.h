@@ -40,15 +40,13 @@
 #endif
 #endif
 
-//#define ENABLE_TERMINAL
+
 /*
- * Defining this symbol forces all output (NMEA + printf2) to the high-speed USART3 for tunneling to an application that demuxes it.
+ * Defining this symbol forces all output (NMEA + printf2) to a high-speed USART for tunneling to an application that demuxes it.
  * Multiplexed output is still ASCII, but every line of text begins with a message class in square brackets. Examples:
  *
  * [NMEA]!AIVDM,....
  * [DEBUG]GPS Initialized
- * [LED]0:BLINK
- * [ASSERT]...
  *
 */
 #define MULTIPLEXED_OUTPUT            1
