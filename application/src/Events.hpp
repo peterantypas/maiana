@@ -58,6 +58,7 @@ typedef struct {
 
 typedef struct {
     VHFChannel channel;
+    uint8_t messageType;
 } Interrogation;
 
 class Event

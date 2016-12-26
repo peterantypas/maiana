@@ -62,10 +62,6 @@ void EventQueue::dispatch()
         }
 
         EventPool::instance().deleteEvent(e);
-
-        // TODO: Make LEDManager an EventConsumer instead
-        if ( e->type == AIS_PACKET_EVENT )
-            LEDManager::instance().blink(LEDManager::GREEN_LED);
     }
 }
 

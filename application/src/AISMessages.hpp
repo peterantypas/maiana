@@ -68,6 +68,21 @@ public:
     bool decode(const RXPacket &packet);
 };
 
+class AISMessage15: public AISMessage
+{
+public:
+    typedef struct {
+        uint32_t mmsi;
+        uint8_t  messageType;
+    } InterrogationTarget;
+
+    InterrogationTarget targets[3];
+
+    AISMessage15();
+    
+    bool decode(const RXPacket &packet);
+};
+
 class AISMessage18 : public AISMessage
 {
 public:

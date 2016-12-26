@@ -224,6 +224,40 @@ bool AISMessage123::decode(const RXPacket &packet)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// AISMessage15
+//
+///////////////////////////////////////////////////////////////////////////////
+AISMessage15::AISMessage15()
+{
+    memset(&targets, 0, sizeof targets);
+}
+
+bool AISMessage15::decode(const RXPacket &packet)
+{
+    mType = packet.messageType();
+    mRI = packet.repeatIndicator();
+    mMMSI = packet.mmsi();
+
+    uint8_t bit = 40;
+
+    // A message 15 has up to 3 targets
+    for ( uint8_t i = 0; i < 3; ++i ) {
+        if ( bit >= packet.size()-16 )
+            break;
+        targets[i].mmsi = packet.bits(bit, 30);
+        bit += 30;
+        targets[i].messageType = (uint8_t)packet.bits(bit, 6);
+        bit += 6;
+
+        // Ignore slot offset plus 2 spare bits per record
+        bit += 14;
+    }
+
+    return true; // Would we ever return false?
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // AISMessage18
 //
 ///////////////////////////////////////////////////////////////////////////////

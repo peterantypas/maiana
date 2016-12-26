@@ -114,9 +114,11 @@ void TXScheduler::processEvent(const Event &e)
         break;
     }
     case INTERROGATION_EVENT:
-        // Comply
-        queueMessage18(e.interrogation.channel);
-        queueMessage24(e.interrogation.channel);
+        if ( e.interrogation.messageType == 18 )
+            queueMessage18(e.interrogation.channel);
+
+        if ( e.interrogation.messageType == 24 )
+            queueMessage24(e.interrogation.channel);
         break;
     default:
         break;
@@ -192,7 +194,7 @@ void TXScheduler::scheduleTestPacket()
     if ( rand() % 2 == 0 )
         channel = CH_85;
 
-    TXPacket *p = TXPacketPool::instance().newTXPacket(channel, mUTC);
+    TXPacket *p = TXPacketPool::instance().newTXPacket(channel);
     if ( !p ) {
         printf2("Ooops! Out of TX packets :(\r\n");
         return;
