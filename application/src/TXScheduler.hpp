@@ -28,6 +28,8 @@ private:
     ~TXScheduler ();
     void scheduleTestPacket();
     time_t positionReportTimeInterval();
+    void queueMessage18(VHFChannel channel);
+    void queueMessage24(VHFChannel channel);
 private:
     VHFChannel mPositionReportChannel;
     VHFChannel mStaticDataChannel;
@@ -37,6 +39,7 @@ private:
     double mAvgSpeed;
     bool mTesting;
     StationData mStationData;
+    GPSFix mLastGPSFix;
 };
 
 #endif /* TXSCHEDULER_HPP_ */

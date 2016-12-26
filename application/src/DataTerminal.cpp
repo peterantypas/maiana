@@ -33,26 +33,24 @@ void DataTerminal::init()
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_7);
 
     // Initialize pins as alternative function 7 (USART)
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
-    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_2 | GPIO_Pin_3;
+    GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_AF;
     GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_NOPULL;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_Level_1;
     GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 
 
-    USART_InitTypeDef USART_InitStructure;
-    USART_StructInit(&USART_InitStructure);
-
-    USART_InitStructure.USART_BaudRate = 38400;
-    USART_Init(USART2, &USART_InitStructure);
-    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_InitStructure.USART_Mode                = USART_Mode_Rx | USART_Mode_Tx;
-    USART_InitStructure.USART_Parity              = USART_Parity_No;
-    USART_InitStructure.USART_StopBits            = USART_StopBits_1;
-    USART_InitStructure.USART_WordLength          = USART_WordLength_8b;
+    USART_InitTypeDef usart;
+    usart.USART_BaudRate            = 38400;
+    usart.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    usart.USART_Mode                = USART_Mode_Rx | USART_Mode_Tx;
+    usart.USART_Parity              = USART_Parity_No;
+    usart.USART_StopBits            = USART_StopBits_1;
+    usart.USART_WordLength          = USART_WordLength_8b;
+    USART_Init(USART2, &usart);
 
     USART_Cmd(USART2, ENABLE);
 

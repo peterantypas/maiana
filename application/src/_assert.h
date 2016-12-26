@@ -20,3 +20,6 @@
 
 
 #endif /* ASSERT_H_ */
+// Local Variables:
+// mode: c++
+// End:

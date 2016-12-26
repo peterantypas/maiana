@@ -162,3 +162,7 @@ DEVICE_STATE;
 
 
 #endif /* EZRADIOPRO_H_ */
+
+// Local Variables:
+// mode: c++
+// End:

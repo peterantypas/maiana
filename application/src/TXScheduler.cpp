@@ -27,7 +27,7 @@ TXScheduler &TXScheduler::instance()
 
 TXScheduler::TXScheduler ()
 {
-    EventQueue::instance().addObserver(this, GPS_FIX_EVENT | CLOCK_EVENT);
+    EventQueue::instance().addObserver(this, GPS_FIX_EVENT | CLOCK_EVENT | INTERROGATION_EVENT);
     mPositionReportChannel = CH_87;
     mStaticDataChannel = CH_87;
     mUTC = 0;
@@ -64,101 +64,116 @@ void TXScheduler::processEvent(const Event &e)
 #endif
 
     switch(e.type) {
-        case GPS_FIX_EVENT: {
-            if ( mTesting )
-                return;
-
-            // We do not schedule transmissions if the ChannelManager is not sure what channels are in use yet
-            if ( !ChannelManager::instance().channelsDetermined() )
-                return;
-
-            // A class B transponder only transmits when its internal GPS is working, so we tie these to GPS updates.
-            if ( !RadioManager::instance().initialized() || mUTC == 0 )
-              return;
-
-#ifdef TX_TEST_MODE
+    case GPS_FIX_EVENT: {
+        mLastGPSFix = e.gpsFix;
+        
+        if ( mTesting )
             return;
-#endif
 
-            // If we don't have valid station data or transmission is explicitly disabled, we don't do anything
-            // TODO: MOVE STATION_RX_ONLY to user-defined configuration, not static station data
-            if ( mStationData.magic != STATION_DATA_MAGIC )
-                return;
+        // We do not schedule transmissions if the ChannelManager is not sure what channels are in use yet
+        if ( !ChannelManager::instance().channelsDetermined() )
+            return;
 
-            
-            // Using a moving average of SOG to determine transmission rate
-            static double alpha = 0.2;
-            mAvgSpeed = mAvgSpeed * (1.0 - alpha) + e.gpsFix.speed * alpha;
+        // A class B transponder only transmits when its internal GPS is working, so we tie these to GPS updates.
+        if ( !RadioManager::instance().initialized() || mUTC == 0 )
+            return;
 
-            if ( mUTC - mLast18Time > positionReportTimeInterval() ) {
-                ASSERT(mUTC);
-                TXPacket *p1 = TXPacketPool::instance().newTXPacket(mPositionReportChannel);
-                if ( !p1 ) {
-                    printf2("Unable to allocate TX packet for message 18, will try again later\r\n");
-                    break;
-                }
-
-                AISMessage18 msg;
-                msg.latitude    = e.gpsFix.lat;
-                msg.longitude   = e.gpsFix.lng;
-                msg.sog         = e.gpsFix.speed;
-                msg.cog         = e.gpsFix.cog;
-                msg.utc         = e.gpsFix.utc;
-                msg.encode (mStationData, *p1);
-
-                RadioManager::instance ().scheduleTransmission (p1);
-
-                // Our next position report should be on the other channel
-                mPositionReportChannel = RadioManager::instance().alternateChannel(mPositionReportChannel);
-                mLast18Time = mUTC;
-            }
-
-
-            if ( mUTC - mLast24Time > MSG_24_TX_INTERVAL ) {
-                ASSERT(mUTC);
-                TXPacket *p2 = TXPacketPool::instance().newTXPacket(mStaticDataChannel);
-                if ( !p2 ) {
-                    printf2("Unable to allocate TX packet for 24A\r\n");
-                    break;
-                }
-
-                AISMessage24A msg2;
-                msg2.encode(mStationData, *p2);
-
-                RadioManager::instance().scheduleTransmission(p2);
-
-                TXPacket *p3 = TXPacketPool::instance().newTXPacket(mStaticDataChannel);
-                if ( !p3 ) {
-                    printf2("Unable to allocate TX packet for 24B\r\n");
-                    break;
-                }
-
-                AISMessage24B msg3;
-                msg3.encode(mStationData, *p3);
-                RadioManager::instance().scheduleTransmission(p3);
-
-                // Our next static data report should be on the other channel
-                mStaticDataChannel = RadioManager::instance().alternateChannel(mStaticDataChannel);
-                mLast24Time = mUTC;
-            }
-
-            break;
-        }
-        case CLOCK_EVENT: {
-            // This is reliable and independent of GPS update frequency which could change to something other than 1Hz
-            mUTC = e.clock.utc;
 #ifdef TX_TEST_MODE
-            if ( RadioManager::instance().initialized() && mTesting && mUTC % 10 == 0 ) {
-                scheduleTestPacket();
-                printf2("Scheduled test packet\r\n");
-            }
+        return;
 #endif
-            break;
+            
+        // Using a moving average of SOG to determine transmission rate
+        static double alpha = 0.2;
+        mAvgSpeed = mAvgSpeed * (1.0 - alpha) + mLastGPSFix.speed * alpha;
+
+        if ( mUTC - mLast18Time > positionReportTimeInterval() ) {
+            queueMessage18(mPositionReportChannel);
+            // Our next position report should be on the other channel
+            mPositionReportChannel = RadioManager::instance().alternateChannel(mPositionReportChannel);
+            mLast18Time = mUTC;
         }
-        default:
-            break;
+        
+        if ( mUTC - mLast24Time > MSG_24_TX_INTERVAL ) {
+            queueMessage24(mStaticDataChannel);
+            // Our next static data report should be on the other channel
+            mStaticDataChannel = RadioManager::instance().alternateChannel(mStaticDataChannel);
+            mLast24Time = mUTC;
+        }
+
+        break;
+    }
+    case CLOCK_EVENT: {
+        // This is reliable and independent of GPS update frequency which could change to something other than 1Hz
+        mUTC = e.clock.utc;
+#ifdef TX_TEST_MODE
+        if ( RadioManager::instance().initialized() && mTesting && mUTC % 10 == 0 ) {
+            scheduleTestPacket();
+            printf2("Scheduled test packet\r\n");
+        }
+#endif
+        break;
+    }
+    case INTERROGATION_EVENT:
+        // Comply
+        queueMessage18(e.interrogation.channel);
+        queueMessage24(e.interrogation.channel);
+        break;
+    default:
+        break;
     }
 
+}
+
+void TXScheduler::queueMessage18(VHFChannel channel)
+{
+    // If we don't have valid station data we don't do anything
+    if ( mStationData.magic != STATION_DATA_MAGIC )
+        return;
+
+        TXPacket *p1 = TXPacketPool::instance().newTXPacket(channel);
+    if ( !p1 ) {
+        printf2("Unable to allocate TX packet for message 18, will try again later\r\n");
+        return;
+    }
+    
+    AISMessage18 msg;
+    msg.latitude    = mLastGPSFix.lat;
+    msg.longitude   = mLastGPSFix.lng;
+    msg.sog         = mLastGPSFix.speed;
+    msg.cog         = mLastGPSFix.cog;
+    msg.utc         = mLastGPSFix.utc;
+    msg.encode (mStationData, *p1);
+    
+    RadioManager::instance ().scheduleTransmission (p1);
+}
+
+void TXScheduler::queueMessage24(VHFChannel channel)
+{
+    // If we don't have valid station data we don't do anything
+    if ( mStationData.magic != STATION_DATA_MAGIC )
+        return;
+    
+    TXPacket *p2 = TXPacketPool::instance().newTXPacket(channel);
+    if ( !p2 ) {
+        printf2("Unable to allocate TX packet for 24A\r\n");
+        return;
+    }
+    
+    AISMessage24A msg2;
+    msg2.encode(mStationData, *p2);
+    
+    RadioManager::instance().scheduleTransmission(p2);
+    
+    TXPacket *p3 = TXPacketPool::instance().newTXPacket(channel);
+    if ( !p3 ) {
+        printf2("Unable to allocate TX packet for 24B\r\n");
+        return;
+    }
+    
+    AISMessage24B msg3;
+    msg3.encode(mStationData, *p3);
+    RadioManager::instance().scheduleTransmission(p3);
+    
 }
 
 time_t TXScheduler::positionReportTimeInterval()

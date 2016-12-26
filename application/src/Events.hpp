@@ -56,6 +56,10 @@ typedef struct {
     char data[64];
 } Response;
 
+typedef struct {
+    VHFChannel channel;
+} Interrogation;
+
 class Event
 {
 public:
@@ -73,6 +77,7 @@ public:
         ClockTick clock;
         Request request;
         Response response;
+        Interrogation interrogation;
     };
 };
 

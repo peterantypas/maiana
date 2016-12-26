@@ -150,6 +150,11 @@ void RXPacketProcessor::processEvent(const Event &e)
                          * (161.500Mhz to 162.025Mhz), we use this to switch our primary 2 channels where instructed.
                          */
 
+                        /* 
+                           Unfortunately, I can't find any authoritative documentation about the exact representation of
+                           frequencies and/or channels in AIS message 22
+                        */
+                        
                         break;
                     case 23:
                         /*

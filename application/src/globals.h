@@ -23,7 +23,7 @@
 //#define CALIBRATION_MODE               1
 
 // Undefine to disable transmission
-#define ENABLE_TX                      1
+//#define ENABLE_TX                      1
 
 #ifdef ENABLE_TX
 //#define TX_TEST_MODE

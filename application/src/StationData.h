@@ -47,3 +47,6 @@ struct StationData {
 
 
 #endif /* STATIONDATA_H_ */
+// Local Variables:
+// mode: c++
+// End:
