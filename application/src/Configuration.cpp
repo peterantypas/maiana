@@ -37,10 +37,10 @@ void Configuration::erasePage(uint32_t address)
 void Configuration::writeStationData(const StationData &data)
 {
     unlockFlash();
-    erasePage(STATION_DATA_ADDRESS);    // 1K is enough
+    erasePage(CONFIGURATION_ADDRESS);    // 1K is enough
     const char *p = (const char*)&data;
     for ( size_t i = 0; i < sizeof data; i += 4, p += 4) {
-        FLASH_ProgramWord(STATION_DATA_ADDRESS + i, *(uint32_t*)p);
+        FLASH_ProgramWord(CONFIGURATION_ADDRESS + i, *(uint32_t*)p);
         FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
     }
 
@@ -49,7 +49,7 @@ void Configuration::writeStationData(const StationData &data)
 
 bool Configuration::readStationData(StationData &data)
 {
-    memcpy(&data, (const void*)STATION_DATA_ADDRESS, sizeof data);
+    memcpy(&data, (const void*)CONFIGURATION_ADDRESS, sizeof data);
     return data.magic == STATION_DATA_MAGIC;
 }
 

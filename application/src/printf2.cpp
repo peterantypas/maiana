@@ -45,8 +45,12 @@ void printf2_Init(int baudrate)
 
 void USART_putc(USART_TypeDef* USARTx, char c)
 {
-    while (!(USARTx->ISR & 0x00000040))
+    //while (!(USARTx->ISR & 0x00000040))
+      //  ;
+
+    while ( !(USARTx->ISR & USART_ISR_TXE) )
         ;
+
     USART_SendData(USARTx, c);
 }
 
@@ -64,13 +68,10 @@ void printf2_now(const char *format, ...)
 {
     va_list list;
     va_start(list, format);
-    vsnprintf(__buffer, 128, format, list);
+    vsnprintf(__buffer, sizeof __buffer, format, list);
     va_end(list);
-    //#ifdef MULTIPLEXED_OUTPUT
-    //    DataTerminal::instance().write("DEBUG", __buffer);
-    //#else
+
     USART_puts(USART2, __buffer);
-    //#endif
 }
 
 #ifdef ENABLE_PRINTF2
@@ -83,7 +84,7 @@ void printf2(const char *format, ...)
 
         va_list list;
         va_start(list, format);
-        vsnprintf(e->debugMessage.buffer, 128, format, list);
+        vsnprintf(e->debugMessage.buffer, sizeof e->debugMessage, format, list);
         va_end(list);
 
         EventQueue::instance().push(e);
@@ -91,7 +92,7 @@ void printf2(const char *format, ...)
     else {
         va_list list;
         va_start(list, format);
-        vsnprintf(__buffer, 128, format, list);
+        vsnprintf(__buffer, sizeof __buffer, format, list);
         va_end(list);
 #ifdef MULTIPLEXED_OUTPUT
         DataTerminal::instance().write("DEBUG", __buffer);
@@ -105,7 +106,7 @@ void printf2(const char *format, ...)
 {
     va_list list;
     va_start(list, format);
-    vsnprintf(__buffer, 255, format, list);
+    vsnprintf(__buffer, sizeof __buffer, format, list);
     va_end(list);
     trace_printf(__buffer);
 }

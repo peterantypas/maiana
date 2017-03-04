@@ -17,7 +17,7 @@ EventPool &EventPool::instance()
 
 void EventPool::init()
 {
-    mGenericPool = new ObjectPool<Event>(40);
+    mGenericPool = new ObjectPool<Event>(10);
 }
 
 Event *EventPool::newEvent(EventType type)

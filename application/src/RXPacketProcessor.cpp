@@ -33,16 +33,13 @@ RXPacketProcessor::~RXPacketProcessor ()
 
 void RXPacketProcessor::processEvent(const Event &e)
 {
-    //printf2("-> RXPacketProcessor::processEvent()\r\n");
     switch(e.type) {
     case GPS_FIX_EVENT: {
-        //GPSFIXEvent *gfe = static_cast<GPSFIXEvent*> (e);
         mLat = e.gpsFix.lat;
         mLng = e.gpsFix.lng;
         break;
     }
     case CLOCK_EVENT: {
-        //ClockEvent *pe = static_cast<ClockEvent*>(e);
         if ( mLastDumpTime == 0 ) {
             mLastDumpTime = e.clock.utc;
         }
@@ -50,7 +47,7 @@ void RXPacketProcessor::processEvent(const Event &e)
             mLastDumpTime = e.clock.utc;
             float yield = (float)mGoodCount / (float)(mGoodCount+mBadCRCCount+mInvalidCount);
             printf2("\r\n");
-            printf2("[Yield: %.1fpct, Valid: %d, Wrong CRC: %d, Malformed: %d]\r\n", yield*100.0,
+            printf2("[Yield: %dpct, Valid: %d, Wrong CRC: %d, Malformed: %d]\r\n", (int)(yield*100.0),
                     mGoodCount, mBadCRCCount, mInvalidCount);
             printf2("[Unique MMSIs: %d]\r\n", mUniqueMMSIs.size());
             printf2("\r\n");
@@ -80,22 +77,24 @@ void RXPacketProcessor::processEvent(const Event &e)
             case 1:
             case 2:
             case 3: {
+#ifdef OUTPUT_AIS_DEBUG            
                 AISMessage123 msg;
                 if (msg.decode (e.rxPacket)) {
                     double distance = Utils::haversineDistance (mLat, mLng, msg.latitude, msg.longitude);
                     double miles = distance / METERS_PER_NAUTICAL_MILE;
 
-                    printf2 (
-                             "RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
+                    printf2 ("RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Speed: %.1f kts, Pos: %.5f,%.5f, Dist: %.1f NM\r\n",
                              e.rxPacket.rssi(),
                              AIS_CHANNELS[e.rxPacket.channel()].designation,
                              msg.type(), msg.mmsi(), msg.sog,
                              msg.latitude, msg.longitude, miles);
 
                 }
+#endif
                 break;
             }
             case 18: {
+#ifdef OUTPUT_AIS_DEBUG            
                 AISMessage18 msg;
                 if (msg.decode (e.rxPacket)) {
                     double distance = Utils::haversineDistance (mLat, mLng, msg.latitude, msg.longitude);
@@ -108,11 +107,13 @@ void RXPacketProcessor::processEvent(const Event &e)
                              msg.latitude, msg.longitude, miles);
 
                 }
+#endif
                 break;
             }
             case 15: {
                 AISMessage15 msg;
                 if ( msg.decode(e.rxPacket) ) {
+#ifdef OUTPUT_AIS_DEBUG            
                     printf2 ("RSSI: %.2x, Ch: %c, Type: %d, MMSI: %d, Targets: [ {%d,%d} {%d,%d}, {%d,%d} ]\r\n",
                              e.rxPacket.rssi (),
                              AIS_CHANNELS[e.rxPacket.channel()].designation,
@@ -120,7 +121,8 @@ void RXPacketProcessor::processEvent(const Event &e)
                              msg.targets[0].mmsi, msg.targets[0].messageType,
                              msg.targets[1].mmsi, msg.targets[1].messageType,
                              msg.targets[2].mmsi, msg.targets[2].messageType);
-
+#endif
+                    
                     // Make sure we actually can transmit something
                     if ( mStationData.magic != STATION_DATA_MAGIC )
                         break;
@@ -155,6 +157,7 @@ void RXPacketProcessor::processEvent(const Event &e)
             }
             default: {
 
+#ifdef OUTPUT_AIS_DEBUG            
                 printf2 (
                          "RSSI: %.2x, Ch: %c, Type: %d, RI: %d, MMSI: %d\r\n",
                          e.rxPacket.rssi (),
@@ -164,6 +167,7 @@ void RXPacketProcessor::processEvent(const Event &e)
                          e.rxPacket.mmsi ());
 
                 break;
+#endif
             }
             }
 

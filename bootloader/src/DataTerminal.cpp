@@ -10,7 +10,9 @@
 #include "stm32f30x.h"
 #include <stdio.h>
 #include <cstring>
+#ifdef DEBUG
 #include <diag/Trace.h>
+#endif
 #include <cassert>
 
 
@@ -82,6 +84,7 @@ DataTerminal::DataTerminal()
     memset(mCurrPage, 0, sizeof mCurrPage);
 }
 
+#ifdef DEBUG
 void printmd5(uint8_t *d)
 {
     char m[35];
@@ -90,6 +93,8 @@ void printmd5(uint8_t *d)
     }
     trace_printf("%s\n",m);
 }
+#endif
+
 
 void DataTerminal::processByte(uint8_t byte)
 {
@@ -98,12 +103,16 @@ void DataTerminal::processByte(uint8_t byte)
             if ( byte == START_TRANSFER_CMD ) {
                 mState = STATE_IN_TRANSFER_HEADER;
                 mByteCount = 0;
+#ifdef DEBUG
                 trace_printf("Receiving metadata\n");
+#endif
                 GPIO_SetBits(GPIOB, GPIO_Pin_14);
                 writeCmd(ACK);
             }
             else {
+#ifdef DEBUG
                 trace_printf("Bad command: %.2x\n", byte);
+#endif
                 fail();
             }
             break;
@@ -113,12 +122,16 @@ void DataTerminal::processByte(uint8_t byte)
             memcpy(p + mByteCount, &byte, 1);
             ++mByteCount;
             if ( mByteCount == sizeof mMetadata ) {
+#ifdef DEBUG
                 trace_printf("Magick: %.8x\n", mMetadata.magic);
+#endif
                 // Is the metadata sane?
                 if ( mMetadata.magic == METADATA_MAGIC ) {
                     mState = STATE_IN_TRANSFER_BLOCK;
+#ifdef DEBUG
                     trace_printf("Expecting %d bytes\n", mMetadata.size);
                     printmd5(mMetadata.md5);
+#endif
                     GPIO_SetBits(GPIOB, GPIO_Pin_14);
                     mByteCount = 0;
                     mWriteAddress = APPLICATION_ADDRESS;
@@ -127,7 +140,9 @@ void DataTerminal::processByte(uint8_t byte)
                     writeCmd(ACK);
                 }
                 else {
-                    trace_printf("Bad metadata \n");
+#ifdef DEBUG
+                	trace_printf("Bad metadata \n");
+#endif
                     fail();
                 }
             }
@@ -151,7 +166,9 @@ void DataTerminal::processByte(uint8_t byte)
 
             // Acknowledge every 1K
             if ( mByteCount % 1024 == 0 ) {
+#ifdef DEBUG
                 trace_printf("Sending ACK\n");
+#endif
                 writeCmd(ACK);
             }
 
@@ -164,21 +181,29 @@ void DataTerminal::processByte(uint8_t byte)
                 }
 
                 // Last byte!
+#ifdef DEBUG
                 trace_printf("Received %d bytes\n", mMetadata.size);
+#endif
                 GPIO_ResetBits(GPIOB, GPIO_Pin_14);
                 mState = STATE_WAITING;
 
                 uint8_t d[16];
                 MD5Final(d, &mMD5);
+#ifdef DEBUG
                 printmd5(d);
+#endif
                 if ( memcmp(d, mMetadata.md5, 16) ) {
                     // Bad MD5
+#ifdef DEBUG
                     trace_printf("MD5 mismatch :( \n");
+#endif
                     fail();
                 }
                 else {
                     // Good transfer
+#ifdef DEBUG
                     trace_printf("MD5 match :) \n");
+#endif
                     writeCmd(ACK);
 
 
@@ -198,7 +223,9 @@ void DataTerminal::fail()
     mState = STATE_WAITING;
     GPIO_ResetBits(GPIOB, GPIO_Pin_14|GPIO_Pin_15);
     FLASH_Lock();
+#ifdef DEBUG
     trace_printf("Resetting\n");
+#endif
     writeCmd(NACK);
 }
 
@@ -228,7 +255,9 @@ void DataTerminal::flushPage()
     trace_printf("Mock write for flash page at %.8x\n", mWriteAddress);
     mWriteAddress += FLASH_PAGE_SIZE;
 #else
+#ifdef DEBUG
     trace_printf("Writing Flash page at %.8x\n", mWriteAddress);
+#endif
     FLASH_ErasePage(mWriteAddress);
     FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
     char *p = mCurrPage;
@@ -236,8 +265,9 @@ void DataTerminal::flushPage()
         FLASH_ProgramWord(mWriteAddress + i, *(uint32_t*)p);
         FLASH_WaitForLastOperation(FLASH_ER_PRG_TIMEOUT);
     }
-
+#ifdef DEBUG
     trace_printf("Wrote Flash page at %.8x\n", mWriteAddress);
+#endif
     mWriteAddress += FLASH_PAGE_SIZE;
     memset(mCurrPage, 0, sizeof mCurrPage);
 #endif
@@ -260,7 +290,7 @@ void DataTerminal::flushMetadata()
 
 void write_char(USART_TypeDef* USARTx, char c)
 {
-    while (!(USARTx->ISR & 0x00000040))
+    while (!(USARTx->ISR & USART_ISR_TXE))
         ;
 
     USART_SendData(USARTx, c);

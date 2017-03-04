@@ -104,7 +104,14 @@ void TXScheduler::processEvent(const Event &e)
     }
     case CLOCK_EVENT: {
         // This is reliable and independent of GPS update frequency which could change to something other than 1Hz
+        if ( mUTC == 0 ) {
+            // Don't start transmitting right away
+            mLast18Time = e.clock.utc - MAX_MSG_18_TX_INTERVAL/2;
+            mLast24Time = e.clock.utc - MSG_24_TX_INTERVAL/2;
+        }
+        
         mUTC = e.clock.utc;
+
 #ifdef TX_TEST_MODE
         if ( RadioManager::instance().initialized() && mTesting && mUTC % 10 == 0 ) {
             scheduleTestPacket();

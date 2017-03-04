@@ -239,15 +239,17 @@ double arcInRadians(double lat1, double lon1, double lat2, double lon2)
   double dLon    = (lon2 - lon1) * DEG_TO_RAD;
   double lat1Rad = lat1 * DEG_TO_RAD;
   double lat2Rad = lat2 * DEG_TO_RAD;
-
-  double a = sin(dLat/2.0) * sin(dLat/2.0) + sin(dLon/2.0) * sin(dLon/2) * cos(lat1Rad) * cos(lat2Rad);
+  double sindLatHalf = sin(dLat/2.0);
+  double sindLonHalf = sin(dLon/2.0);
+  
+  double a = sindLatHalf * sindLatHalf + sindLonHalf * sindLonHalf * cos(lat1Rad) * cos(lat2Rad);
   double radians = 2 * asin(min(1.0, sqrt(a)));
   return radians;
 }
 
 double Utils::haversineDistance(double lat1, double lon1, double lat2, double lon2)
 {
-  return EARTH_RADIUS_IN_METERS * arcInRadians(lat1, lon1, lat2, lon2);
+    return EARTH_RADIUS_IN_METERS * arcInRadians(lat1, lon1, lat2, lon2);
 }
 
 bool Utils::inISR()

@@ -297,6 +297,8 @@ void SystemCoreClockUpdate (void)
   * @param  None
   * @retval None
   */
+
+#if 0
 static void SetSysClock(void)
 {
   __IO uint32_t StartUpCounter = 0, HSEStatus = 0;
@@ -366,6 +368,49 @@ static void SetSysClock(void)
          configuration. User can add here some code to deal with this error */
   }
 }
+
+#else
+static void SetSysClock(void)
+{
+  /* Enable Prefetch Buffer and set Flash Latency */
+  FLASH->ACR = FLASH_ACR_PRFTBE | FLASH_ACR_LATENCY_1;
+
+  /* HCLK = SYSCLK */
+  RCC->CFGR |= (uint32_t)RCC_CFGR_HPRE_DIV1;
+
+  /* PCLK = HCLK */
+  RCC->CFGR |= (uint32_t)RCC_CFGR_PPRE2_DIV1;
+
+  /* PCLK1 = HCLK / 2 */
+  RCC->CFGR |= (uint32_t)RCC_CFGR_PPRE1_DIV2;
+
+  /* PLL configuration */
+  RCC->CFGR &= (uint32_t)((uint32_t)~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMULL));
+  RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSI_Div2 | RCC_CFGR_PLLMULL16);
+  //RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSI_Div2 | RCC_CFGR_PLLMULL12);
+
+  
+
+  /* Enable PLL */
+  RCC->CR |= RCC_CR_PLLON;
+
+  /* Wait till PLL is ready */
+  while((RCC->CR & RCC_CR_PLLRDY) == 0)
+    {
+    }
+
+  /* Select PLL as system clock source */
+  RCC->CFGR &= (uint32_t)((uint32_t)~(RCC_CFGR_SW));
+  RCC->CFGR |= (uint32_t)RCC_CFGR_SW_PLL;
+
+  /* Wait till PLL is used as system clock source */
+  while ((RCC->CFGR & (uint32_t)RCC_CFGR_SWS) != (uint32_t)RCC_CFGR_SWS_PLL)
+    {
+    }
+}
+
+#endif
+
 
 /**
   * @}

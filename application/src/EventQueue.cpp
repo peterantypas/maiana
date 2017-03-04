@@ -21,7 +21,7 @@ EventQueue &EventQueue::instance()
 
 EventQueue::EventQueue()
 {
-    mQueue = new CircularQueue<Event*>(100);
+    mQueue = new CircularQueue<Event*>(20);
 }
 
 void EventQueue::init()

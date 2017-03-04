@@ -7,7 +7,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifdef DEBUG
 #include "diag/Trace.h"
+#endif
+
 #include <stm32f30x.h>
 #include "md5.h"
 #include <cstring>
@@ -64,15 +68,22 @@ int main(int argc, char* argv[])
    *  - If no metadata is present, enter UART interactive mode and wait for software upload
    *  - If metadata is present, jump to software start address (APPLICATION_ADDRESS)
    */
+#ifdef DEBUG
     trace_printf("ClockSpeed: %d\n", SystemCoreClock);
+#endif
+
     ApplicationMetadata *metadata = (ApplicationMetadata*)METADATA_ADDRESS;
     if ( metadata == NULL || metadata->magic != METADATA_MAGIC ) {
+#ifdef DEBUG
        trace_printf("There is no software installed. Entering UART mode\n");
+#endif
        enterUARTMode();
    }
    else {
        if ( !verifyApplicationChecksum(*metadata) ) {
+#ifdef DEBUG
            trace_printf("The software is corrupt. Entering UART mode\n");
+#endif
            enterUARTMode();
        }
    }

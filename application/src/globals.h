@@ -11,8 +11,8 @@
 #include "radio_config.h"
 #include "TXPowerSettings.h"
 
-#define MODEL    "SEAWAIS_02"
-#define REVISION "0.7"
+#define MODEL    "SEAWAIS"
+#define REVISION "2.0"
 
 
 
@@ -23,7 +23,7 @@
 //#define CALIBRATION_MODE               1
 
 // Undefine to disable transmission
-#define ENABLE_TX                      1
+//#define ENABLE_TX                      1
 
 #ifdef ENABLE_TX
 //#define TX_TEST_MODE
@@ -51,6 +51,9 @@
 */
 #define MULTIPLEXED_OUTPUT            1
 
+
+
+//#define OUTPUT_AIS_DEBUG              1
 #define OUTPUT_GPS_NMEA
 #define ENABLE_PRINTF2
 
@@ -89,10 +92,10 @@
 
 // The bootloader lives at 0x08000000 (Flash start), and occupies  8K
 
-#define FIRMWARE_METADATA_ADDRESS       0x08002400      // FW metadata lives @ 9K
-#define APPLICATION_ADDRESS             0x08002800      // The actual firmware starts @ 10K (up to 110K)
-#define CONFIGURATION_ADDRESS           0x0801E000      // General purpose configuration data lives @ 120K
-#define STATION_DATA_ADDRESS            0x0801F000      // Station data (immutable in US per USCG regulation) lives @ 122K
+#define FIRMWARE_METADATA_ADDRESS       0x08002000      // FW metadata lives here
+#define APPLICATION_ADDRESS             0x08002400      // The actual firmware address
+#define CONFIGURATION_ADDRESS           0x0800FC00      // General purpose configuration data address
+
 
 
 #endif /* GLOBALS_H_ */

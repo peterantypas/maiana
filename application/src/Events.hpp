@@ -20,7 +20,7 @@
 using namespace std;
 
 typedef struct {
-    char sentence[100];
+    char sentence[88];
 } NMEABuffer;
 
 typedef struct {
@@ -36,7 +36,7 @@ typedef struct {
 } ClockTick;
 
 typedef struct {
-    char buffer[128];
+    char buffer[88];
 } DebugMessage;
 
 typedef enum {

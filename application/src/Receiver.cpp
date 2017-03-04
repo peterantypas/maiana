@@ -86,13 +86,14 @@ void Receiver::onBitClock()
     uint8_t rssi = 0;
     uint8_t bit = GPIO_ReadInputDataBit(mGPIO1P, mGPIO1Pin);
     processNRZIBit(bit);
-
+#ifdef ENABLE_TX
     if ( (mSlotBitNumber != 0xffff) && (mSlotBitNumber++ == CCA_SLOT_BIT) ) {
         rssi = readRSSI();
         rssi += mRSSIAdjustment;
         NoiseFloorDetector::instance().report(mChannel, rssi);
         mRXPacket.setRSSI(rssi);
     }
+#endif
 }
 
 void Receiver::timeSlotStarted(uint32_t slot)

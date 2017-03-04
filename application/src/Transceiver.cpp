@@ -136,7 +136,7 @@ void Transceiver::configureGPIOsForTX(tx_power_level powerLevel)
      */
 
     GPIO_PIN_CFG_PARAMS gpiocfg;
-    gpiocfg.GPIO0 = 0x00;       // No change
+    gpiocfg.GPIO0 = 0x20;       // TX_STATE; low during RX and high during TX
     gpiocfg.GPIO1 = 0x04;       // Input
     gpiocfg.GPIO2 = 0x1F;       // RX/TX data clock
     gpiocfg.GPIO3 = 0x21;       // RX_STATE; high in RX, low in TX
@@ -148,6 +148,8 @@ void Transceiver::configureGPIOsForTX(tx_power_level powerLevel)
     setTXPower(powerLevel);
 
     // CTX goes high -- this actually controls the bias voltage for the P.A. MOSFET
+
+    // TODO: This will be obsolete in next board revision. GPIO0 will handle it.
     GPIO_SetBits(mCTXPort, mCTXPin);
 }
 
@@ -171,10 +173,13 @@ void Transceiver::onBitClock()
         /*
           We start transmitting a packet if:
             - We have a TX packet assigned
-            - We are at bit CCA_SLOT_BIT+1, after obtaining an RSSI level
+            - We are at bit CCA_SLOT_BIT+1 (after obtaining an RSSI level)
             - The TX packet's transmission channel is our current listening channel
             - The RSSI is within 6dB of the noise floor for this channel
             - It's been at least MIN_TX_INTERVAL seconds since our last transmission
+
+            After PCB revision 2.0:
+            - The supercapacitor must be sufficiently charged (PB10 is high)
          */
 
         uint8_t noiseFloor = NoiseFloorDetector::instance().getNoiseFloor(mChannel);        
@@ -193,6 +198,7 @@ void Transceiver::onBitClock()
         }
 #else
         // In Test Mode we don't care about RSSI. Presumably we're firing into a dummy load ;-) Also, we don't care about throttling.
+        // TODO: We will care about supercapacitor charge though, so must check PB10 status on PCB rev 2.0 and greater
         if ( mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel ) {
             startTransmitting();
         }
@@ -263,6 +269,8 @@ void Transceiver::startTransmitting()
 
 void Transceiver::startReceiving(VHFChannel channel)
 {
+    // TODO: This will be obsolete in next board revision, BIAS will be controled from GPIO0
+
     // Take the P.A. bias voltage down
     GPIO_ResetBits(mCTXPort, mCTXPin);
 
@@ -279,25 +287,25 @@ void Transceiver::configureGPIOsForRX()
     gpio.GPIO_OType = GPIO_OType_PP;
     gpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(mGPIO1P, &gpio);
-
-
+    
+    
     /*
-      * Configure radio GPIOs for RX:
-      * GPIO 0: Don't care
-      * GPIO 1: RX_DATA
-      * GPIO 2: RX_TX_DATA_CLK
-      * GPIO 3: RX_STATE
-      * NIRQ  : SYNC_WORD_DETECT
-      */
-
-     GPIO_PIN_CFG_PARAMS gpiocfg;
-     gpiocfg.GPIO0 = 0x00;       // No change
-     gpiocfg.GPIO1 = 0x14;       // RX data bits
-     gpiocfg.GPIO2 = 0x1F;       // RX/TX data clock
-     gpiocfg.GPIO3 = 0x21;       // RX_STATE; high during RX and low during TX
-     gpiocfg.NIRQ  = 0x1A;       // Sync word detect
-     gpiocfg.SDO   = 0x00;       // No change
-     gpiocfg.GENCFG = 0x00;      // No change
-     sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, &gpiocfg, sizeof gpiocfg);
+     * Configure radio GPIOs for RX:
+     * GPIO 0: TX_STATE
+     * GPIO 1: RX_DATA
+     * GPIO 2: RX_TX_DATA_CLK
+     * GPIO 3: RX_STATE
+     * NIRQ  : SYNC_WORD_DETECT
+     */
+    
+    GPIO_PIN_CFG_PARAMS gpiocfg;
+    gpiocfg.GPIO0 = 0x20;       // TX_STATE; low during RX and high during TX
+    gpiocfg.GPIO1 = 0x14;       // RX data bits
+    gpiocfg.GPIO2 = 0x1F;       // RX/TX data clock
+    gpiocfg.GPIO3 = 0x21;       // RX_STATE; high during RX and low during TX
+    gpiocfg.NIRQ  = 0x1A;       // Sync word detect
+    gpiocfg.SDO   = 0x00;       // No change
+    gpiocfg.GENCFG = 0x00;      // No change
+    sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, &gpiocfg, sizeof gpiocfg);
 }
 

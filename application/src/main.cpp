@@ -55,6 +55,14 @@ void configureUnusedPins();
 int
 main(int argc, char* argv[])
 {
+    /*
+      TODO: Starting with PCB rev 2.0, we should read the actual hardware revision by constructing a bitmap from
+      PB13, PB14, PB15, PA11 and PA12. These 5 bits will cover 63 revisions (starting with 1). 
+      Each revised PCB will have modified traces to tie these GPIOs differently to VDD and GND, thus providing a
+      new value with zero external BOM cost. These GPIOs are unused anyway.
+     */
+
+    
     // At this stage the system clock should have already been configured
     // at high speed.
     printf2_Init(38400);
@@ -68,9 +76,12 @@ main(int argc, char* argv[])
     DataTerminal::instance().init();
 
 
+    printf2("Clock speed: %i\r\n", SystemCoreClock);
     printf2("Software revision: %s\r\n", REVISION);
     Configuration::instance().init();
 
+
+    
 
     // TODO: Move this out of here
     struct StationData __d;
@@ -114,7 +125,7 @@ main(int argc, char* argv[])
 #endif
 
 
-    //configureUnusedPins();
+    configureUnusedPins();
 #ifndef TX_TEST_MODE
     // Configure the watchdog timer
     IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
@@ -130,7 +141,7 @@ main(int argc, char* argv[])
         EventQueue::instance().dispatch();
 #ifndef TX_TEST_MODE
         IWDG_ReloadCounter();
-        __WFI(); // We get interrupted at a minimum frequency of 19.2Khz (2 x RF bit clocks)
+        //__WFI(); // We get interrupted at a minimum frequency of 19.2Khz (2 x RF bit clocks)
 #endif
     }
 }
@@ -153,7 +164,7 @@ void configureUnusedPins()
     GPIO_ResetBits(GPIOA, pins);
 
     // Port B pins
-    pins = GPIO_Pin_0 | GPIO_Pin_5;
+    pins = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
     gpio.GPIO_Pin = pins;
     GPIO_Init(GPIOB, &gpio);
     GPIO_ResetBits(GPIOB, pins);

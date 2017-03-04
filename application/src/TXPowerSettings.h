@@ -33,30 +33,18 @@ typedef struct {
     uint8_t pa_mode;            // PA Mode
     uint8_t pa_level;           // PA power level (native parameter)
     uint8_t pa_bias_clkduty;    // PA bias clock duty
-    uint8_t bypass;             // Desired state of BYP pin on Skyworks 66100 FEM
 }
 pa_params;
 
 
-#if 1
-static const pa_params POWER_TABLE[] = {
-        {PWR_P33, 0x08, 0x7f, 0x00, 0x00},
-        {PWR_P32, 0x08, 0x0e, 0x00, 0x00},
-        {PWR_P30, 0x09, 0x21, 0x21, 0x00},
-        {PWR_P27, 0x09, 0x1a, 0x1a, 0x00},
-        {PWR_P24, 0x09, 0x14, 0x15, 0x00}
-};
-#else
-// This is the best I can do with a 27nH / 9pF notch filter at the output.
-static const pa_params POWER_TABLE[] = {
-        {PWR_P33, 0x08, 0x7f, 0x00, 0x00},
-        {PWR_P32, 0x08, 0x15, 0x00, 0x00},
-        {PWR_P30, 0x08, 0x0d, 0x00, 0x00},
-        {PWR_P27, 0x09, 0x22, 0x1a, 0x00},
-        {PWR_P24, 0x09, 0x18, 0x1a, 0x00}
-};
-#endif
 
+static const pa_params POWER_TABLE[] = {
+        {PWR_P33, 0x08, 0x7f, 0x00},
+        {PWR_P32, 0x08, 0x0e, 0x00},
+        {PWR_P30, 0x09, 0x21, 0x21},
+        {PWR_P27, 0x09, 0x1a, 0x1a},
+        {PWR_P24, 0x09, 0x14, 0x15}
+};
 
 
 #endif /* TXPOWERSETTINGS_H_ */
