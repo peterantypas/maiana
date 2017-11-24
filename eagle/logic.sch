@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.4.0">
+<eagle version="8.4.3">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
+<setting keepoldvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.025" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.0125" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
@@ -4547,12 +4548,12 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 </classes>
 <parts>
 <part name="U$1" library="stm32" deviceset="STM32F302XX" device=""/>
-<part name="C1" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP"/>
-<part name="C2" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP"/>
-<part name="C3" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP"/>
-<part name="C4" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP"/>
-<part name="C5" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP"/>
-<part name="C6" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP"/>
+<part name="C1" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value="18pF"/>
+<part name="C2" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value="18pF"/>
+<part name="C3" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value=".1uF"/>
+<part name="C4" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value=".1uF"/>
+<part name="C5" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value=".1uF"/>
+<part name="C6" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value=".1uF"/>
 <part name="SUPPLY1" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY2" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY3" library="supply2" deviceset="GND" device=""/>
@@ -4562,14 +4563,14 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <part name="SUPPLY7" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY8" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY10" library="supply2" deviceset="GND" device=""/>
-<part name="R1" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES"/>
+<part name="R1" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="10k"/>
 <part name="3V@1" library="adafruit" deviceset="PINHD-1X1" device=""/>
 <part name="U$3" library="GeekAmmo" deviceset="TACTILE-SWITCH" device="-7914G"/>
-<part name="C7" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP"/>
+<part name="C7" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value=".1uF"/>
 <part name="X1" library="txc" deviceset="TXC_7A" device=""/>
 <part name="GND@3" library="adafruit" deviceset="PINHD-1X1" device=""/>
 <part name="GND@4" library="adafruit" deviceset="PINHD-1X1" device=""/>
-<part name="C8" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP"/>
+<part name="C8" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value=".1uF"/>
 <part name="SUPPLY9" library="supply2" deviceset="GND" device=""/>
 <part name="SWD" library="adafruit" deviceset="PINHD-1X1" device=""/>
 <part name="SWC" library="adafruit" deviceset="PINHD-1X1" device=""/>
@@ -4590,38 +4591,38 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <part name="P1_1" library="adafruit" deviceset="PINHD-1X1" device=""/>
 <part name="CN1" library="adafruit" deviceset="USB" device="MINIB"/>
 <part name="IC1" library="linear" deviceset="MCP1703" device="CB"/>
-<part name="C9" library="SparkFun-Capacitors" deviceset="CAP" device="0805"/>
-<part name="C10" library="SparkFun-Capacitors" deviceset="CAP" device="0805"/>
+<part name="C9" library="SparkFun-Capacitors" deviceset="CAP" device="0805" value="1uF"/>
+<part name="C10" library="SparkFun-Capacitors" deviceset="CAP" device="0805" value="1uF"/>
 <part name="SUPPLY11" library="supply2" deviceset="GND" device=""/>
 <part name="+3V3" library="supply1" deviceset="+3V3" device=""/>
-<part name="C11" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP"/>
+<part name="C11" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value="DNP"/>
 <part name="P+1" library="supply1" deviceset="+5V" device=""/>
 <part name="P+2" library="supply1" deviceset="+5V" device=""/>
 <part name="DBG" library="adafruit" deviceset="PINHD-1X1" device=""/>
 <part name="GND@1" library="adafruit" deviceset="PINHD-1X1" device=""/>
-<part name="R2" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES"/>
+<part name="R2" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="2.2k"/>
 <part name="RED" library="adafruit" deviceset="LED" device="CHIP-LED0603"/>
 <part name="ORNG" library="adafruit" deviceset="LED" device="CHIP-LED0603"/>
 <part name="BLU" library="adafruit" deviceset="LED" device="CHIP-LED0603"/>
-<part name="R3" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES"/>
-<part name="R4" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES"/>
+<part name="R3" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="2.2k"/>
+<part name="R4" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="2.2k"/>
 <part name="SUPPLY12" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY13" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY14" library="supply2" deviceset="GND" device=""/>
 <part name="+3V4" library="supply1" deviceset="+3V3" device=""/>
 <part name="CR1220" library="adafruit" deviceset="CR1220" device="SMT"/>
-<part name="L1" library="SparkFun-Passives" deviceset="INDUCTOR" device="30OHM,1.8A"/>
+<part name="L1" library="SparkFun-Passives" deviceset="INDUCTOR" device="30OHM,1.8A" value="0 ohm"/>
 <part name="IC2" library="silabs" deviceset="CP210*" device="" technology="2"/>
 <part name="P+3" library="supply1" deviceset="+5V" device=""/>
 <part name="SUPPLY15" library="supply2" deviceset="GND" device=""/>
-<part name="C12" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP"/>
+<part name="C12" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value="DNP"/>
 <part name="U1" library="Littelfuse_By_element14_Batch_1" deviceset="SP0504BAHTG" device=""/>
 <part name="SUPPLY16" library="supply2" deviceset="GND" device=""/>
 <part name="R5" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="4K7"/>
 <part name="R6" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="10K"/>
 <part name="SUPPLY17" library="supply2" deviceset="GND" device=""/>
 <part name="GRN" library="adafruit" deviceset="LED" device="CHIP-LED0603"/>
-<part name="R7" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES"/>
+<part name="R7" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="2.2k"/>
 <part name="SUPPLY18" library="supply2" deviceset="GND" device=""/>
 <part name="SDN2" library="adafruit" deviceset="PINHD-1X1" device=""/>
 <part name="P3_2" library="adafruit" deviceset="PINHD-1X1" device=""/>
@@ -4638,10 +4639,10 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <part name="SUPPLY22" library="supply2" deviceset="GND" device=""/>
 <part name="C13" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value="1nF"/>
 <part name="C14" library="SparkFun-Capacitors" deviceset="CAP" device="0603-CAP" value="1uF"/>
-<part name="R8" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES"/>
+<part name="R8" library="SparkFun-Passives" deviceset="RESISTOR" device="0603-RES" value="2.2k"/>
 <part name="FIX" library="adafruit" deviceset="LED" device="CHIP-LED0603"/>
 <part name="SUPPLY23" library="supply2" deviceset="GND" device=""/>
-<part name="L8" library="SparkFun-Passives" deviceset="INDUCTOR" device="0603"/>
+<part name="L8" library="SparkFun-Passives" deviceset="INDUCTOR" device="0603" value="0 ohm"/>
 <part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
 <part name="CLK1" library="adafruit" deviceset="PINHD-1X1" device=""/>
 <part name="CLK2" library="adafruit" deviceset="PINHD-1X1" device=""/>
@@ -4671,17 +4672,23 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <instance part="C2" gate="G$1" x="0" y="55.88"/>
 <instance part="C3" gate="G$1" x="127" y="66.04"/>
 <instance part="C4" gate="G$1" x="99.06" y="-8.89"/>
-<instance part="C5" gate="G$1" x="15.24" y="25.4" rot="R180"/>
-<instance part="C6" gate="G$1" x="43.18" y="93.98" rot="R180"/>
+<instance part="C5" gate="G$1" x="15.24" y="25.4" smashed="yes" rot="R180">
+<attribute name="NAME" x="19.431" y="27.2415" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="20.3835" y="21.844" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="C6" gate="G$1" x="43.18" y="93.98" smashed="yes" rot="R180">
+<attribute name="NAME" x="40.7035" y="96.4565" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="40.7035" y="93.599" size="1.778" layer="96" rot="R180"/>
+</instance>
 <instance part="SUPPLY1" gate="GND" x="-20.32" y="30.48"/>
-<instance part="SUPPLY2" gate="GND" x="25.4" y="30.48"/>
-<instance part="SUPPLY3" gate="GND" x="55.88" y="93.98"/>
-<instance part="SUPPLY4" gate="GND" x="119.38" y="60.96"/>
-<instance part="SUPPLY5" gate="GND" x="93.98" y="-40.64"/>
-<instance part="SUPPLY6" gate="GND" x="0" y="10.16"/>
-<instance part="SUPPLY7" gate="GND" x="15.24" y="14.605"/>
-<instance part="SUPPLY8" gate="GND" x="139.7" y="68.58"/>
-<instance part="SUPPLY10" gate="GND" x="7.62" y="-12.7"/>
+<instance part="SUPPLY2" gate="GND" x="25.4" y="30.48" smashed="yes"/>
+<instance part="SUPPLY3" gate="GND" x="55.88" y="93.98" smashed="yes"/>
+<instance part="SUPPLY4" gate="GND" x="119.38" y="60.96" smashed="yes"/>
+<instance part="SUPPLY5" gate="GND" x="93.98" y="-40.64" smashed="yes"/>
+<instance part="SUPPLY6" gate="GND" x="0" y="10.16" smashed="yes"/>
+<instance part="SUPPLY7" gate="GND" x="15.24" y="14.605" smashed="yes"/>
+<instance part="SUPPLY8" gate="GND" x="139.7" y="68.58" smashed="yes"/>
+<instance part="SUPPLY10" gate="GND" x="7.62" y="-12.7" smashed="yes"/>
 <instance part="R1" gate="G$1" x="139.7" y="83.82" rot="R90"/>
 <instance part="3V@1" gate="G$1" x="-25.4" y="85.725"/>
 <instance part="U$3" gate="G$1" x="5.08" y="0" rot="R90"/>
@@ -4690,7 +4697,7 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <instance part="GND@3" gate="G$1" x="-30.48" y="46.99" rot="R180"/>
 <instance part="GND@4" gate="G$1" x="-30.48" y="40.005" rot="R180"/>
 <instance part="C8" gate="G$1" x="-7.62" y="83.82"/>
-<instance part="SUPPLY9" gate="GND" x="-7.62" y="76.2"/>
+<instance part="SUPPLY9" gate="GND" x="-7.62" y="76.2" smashed="yes"/>
 <instance part="SWD" gate="G$1" x="-38.1" y="73.66" smashed="yes" rot="R180">
 <attribute name="NAME" x="-40.005" y="74.295" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="-31.75" y="78.74" size="1.778" layer="96" rot="R180"/>
@@ -4756,12 +4763,21 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <attribute name="VALUE" x="113.03" y="121.285" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="CN1" gate="G$1" x="-118.745" y="104.14"/>
-<instance part="IC1" gate="G$1" x="-84.455" y="109.22"/>
-<instance part="C9" gate="G$1" x="-99.06" y="104.14"/>
-<instance part="C10" gate="G$1" x="-69.215" y="104.14"/>
-<instance part="SUPPLY11" gate="GND" x="-69.215" y="96.52"/>
+<instance part="IC1" gate="G$1" x="-79.375" y="109.22"/>
+<instance part="C9" gate="G$1" x="-99.06" y="104.14" smashed="yes">
+<attribute name="NAME" x="-97.536" y="107.061" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-97.536" y="101.981" size="1.778" layer="96"/>
+</instance>
+<instance part="C10" gate="G$1" x="-66.675" y="104.14" smashed="yes">
+<attribute name="NAME" x="-65.151" y="107.061" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-65.151" y="101.981" size="1.778" layer="96"/>
+</instance>
+<instance part="SUPPLY11" gate="GND" x="-66.675" y="96.52" smashed="yes"/>
 <instance part="+3V3" gate="G$1" x="-42.545" y="115.57"/>
-<instance part="C11" gate="G$1" x="-36.83" y="104.14"/>
+<instance part="C11" gate="G$1" x="-36.83" y="104.14" smashed="yes">
+<attribute name="NAME" x="-35.306" y="107.061" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-35.306" y="101.981" size="1.778" layer="96"/>
+</instance>
 <instance part="P+1" gate="1" x="-99.06" y="114.935"/>
 <instance part="P+2" gate="1" x="47.625" y="-52.07" rot="R180"/>
 <instance part="DBG" gate="G$1" x="-31.115" y="12.7" smashed="yes" rot="R180">
@@ -4775,24 +4791,33 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <instance part="BLU" gate="G$1" x="-76.835" y="55.245"/>
 <instance part="R3" gate="G$1" x="-84.455" y="62.865" rot="R90"/>
 <instance part="R4" gate="G$1" x="-76.835" y="62.865" rot="R90"/>
-<instance part="SUPPLY12" gate="GND" x="-94.615" y="46.355"/>
-<instance part="SUPPLY13" gate="GND" x="-84.455" y="46.355"/>
-<instance part="SUPPLY14" gate="GND" x="-76.835" y="46.355"/>
+<instance part="SUPPLY12" gate="GND" x="-94.615" y="46.355" smashed="yes"/>
+<instance part="SUPPLY13" gate="GND" x="-84.455" y="46.355" smashed="yes"/>
+<instance part="SUPPLY14" gate="GND" x="-76.835" y="46.355" smashed="yes"/>
 <instance part="+3V4" gate="G$1" x="-94.615" y="73.025"/>
 <instance part="CR1220" gate="G$1" x="-50.8" y="-91.44" rot="R90"/>
-<instance part="L1" gate="G$1" x="-50.165" y="109.22" rot="R90"/>
+<instance part="L1" gate="G$1" x="-50.165" y="109.22" smashed="yes" rot="R90">
+<attribute name="NAME" x="-50.8" y="114.935" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="-48.26" y="107.315" size="1.778" layer="96" rot="R180"/>
+</instance>
 <instance part="IC2" gate="G$1" x="-91.44" y="15.24"/>
 <instance part="P+3" gate="1" x="-109.22" y="41.91"/>
-<instance part="SUPPLY15" gate="GND" x="-109.22" y="-11.43"/>
-<instance part="C12" gate="G$1" x="-94.615" y="104.14"/>
+<instance part="SUPPLY15" gate="GND" x="-109.22" y="-11.43" smashed="yes"/>
+<instance part="C12" gate="G$1" x="-92.075" y="104.14" smashed="yes">
+<attribute name="NAME" x="-90.551" y="107.061" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-90.551" y="101.981" size="1.778" layer="96"/>
+</instance>
 <instance part="U1" gate="A" x="-134.62" y="63.5" rot="R90"/>
 <instance part="SUPPLY16" gate="GND" x="-137.16" y="36.83"/>
-<instance part="R5" gate="G$1" x="-99.06" y="38.1"/>
+<instance part="R5" gate="G$1" x="-99.06" y="38.1" smashed="yes">
+<attribute name="NAME" x="-97.79" y="39.5986" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-97.79" y="34.798" size="1.778" layer="96"/>
+</instance>
 <instance part="R6" gate="G$1" x="-64.77" y="17.78" rot="R90"/>
-<instance part="SUPPLY17" gate="GND" x="-64.77" y="10.795"/>
+<instance part="SUPPLY17" gate="GND" x="-64.77" y="10.795" smashed="yes"/>
 <instance part="GRN" gate="G$1" x="-69.215" y="55.245"/>
 <instance part="R7" gate="G$1" x="-69.215" y="62.865" rot="R90"/>
-<instance part="SUPPLY18" gate="GND" x="-69.215" y="46.355"/>
+<instance part="SUPPLY18" gate="GND" x="-69.215" y="46.355" smashed="yes"/>
 <instance part="SDN2" gate="G$1" x="58.42" y="127.635" smashed="yes" rot="R90">
 <attribute name="NAME" x="58.42" y="130.81" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="63.5" y="121.285" size="1.778" layer="96" rot="R90"/>
@@ -4805,8 +4830,8 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <instance part="+3V5" gate="G$1" x="-16.51" y="-27.94" smashed="yes">
 <attribute name="VALUE" x="-12.7" y="-24.13" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="SUPPLY19" gate="GND" x="-63.5" y="-25.4"/>
-<instance part="SUPPLY20" gate="GND" x="-25.4" y="-17.78"/>
+<instance part="SUPPLY19" gate="GND" x="-63.5" y="-25.4" smashed="yes"/>
+<instance part="SUPPLY20" gate="GND" x="-25.4" y="-17.78" smashed="yes"/>
 <instance part="5V@1" gate="G$1" x="-38.1" y="53.34" smashed="yes" rot="R180">
 <attribute name="NAME" x="-40.005" y="53.975" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="-31.75" y="58.42" size="1.778" layer="96" rot="R180"/>
@@ -4821,8 +4846,8 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <attribute name="VALUE" x="88.9" y="-37.465" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="U2" gate="G$1" x="-10.16" y="-63.5"/>
-<instance part="SUPPLY21" gate="GND" x="17.78" y="-81.28"/>
-<instance part="SUPPLY22" gate="GND" x="-38.1" y="-81.28"/>
+<instance part="SUPPLY21" gate="GND" x="17.78" y="-81.28" smashed="yes"/>
+<instance part="SUPPLY22" gate="GND" x="-38.1" y="-81.28" smashed="yes"/>
 <instance part="C13" gate="G$1" x="-62.23" y="-64.135" smashed="yes">
 <attribute name="NAME" x="-63.881" y="-66.929" size="1.778" layer="95"/>
 <attribute name="VALUE" x="-63.881" y="-60.579" size="1.778" layer="96"/>
@@ -4833,8 +4858,11 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 </instance>
 <instance part="R8" gate="G$1" x="-31.115" y="-90.805" rot="R90"/>
 <instance part="FIX" gate="G$1" x="-31.115" y="-99.06"/>
-<instance part="SUPPLY23" gate="GND" x="-31.115" y="-107.315"/>
-<instance part="L8" gate="G$1" x="-69.85" y="-53.34" rot="R90"/>
+<instance part="SUPPLY23" gate="GND" x="-31.115" y="-107.315" smashed="yes"/>
+<instance part="L8" gate="G$1" x="-69.85" y="-53.34" smashed="yes" rot="R90">
+<attribute name="NAME" x="-71.12" y="-49.53" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="-68.58" y="-54.61" size="1.778" layer="96" rot="R180"/>
+</instance>
 <instance part="+3V6" gate="G$1" x="-80.645" y="-50.8"/>
 <instance part="CLK1" gate="G$1" x="52.705" y="-30.48" smashed="yes" rot="R270">
 <attribute name="NAME" x="52.07" y="-32.385" size="1.778" layer="95" rot="R270"/>
@@ -4974,25 +5002,25 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <segment>
 <pinref part="CN1" gate="G$1" pin="GND"/>
 <pinref part="SUPPLY11" gate="GND" pin="GND"/>
-<wire x1="-69.215" y1="99.06" x2="-84.455" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="-66.675" y1="99.06" x2="-79.375" y2="99.06" width="0.1524" layer="91"/>
 <pinref part="C9" gate="G$1" pin="2"/>
-<wire x1="-84.455" y1="99.06" x2="-94.615" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="-94.615" y1="99.06" x2="-99.06" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="-79.375" y1="99.06" x2="-92.075" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="-92.075" y1="99.06" x2="-99.06" y2="99.06" width="0.1524" layer="91"/>
 <wire x1="-99.06" y1="99.06" x2="-108.585" y2="99.06" width="0.1524" layer="91"/>
 <wire x1="-99.06" y1="101.6" x2="-99.06" y2="99.06" width="0.1524" layer="91"/>
 <junction x="-99.06" y="99.06"/>
 <pinref part="C10" gate="G$1" pin="2"/>
-<wire x1="-69.215" y1="101.6" x2="-69.215" y2="99.06" width="0.1524" layer="91"/>
-<junction x="-69.215" y="99.06"/>
+<wire x1="-66.675" y1="101.6" x2="-66.675" y2="99.06" width="0.1524" layer="91"/>
+<junction x="-66.675" y="99.06"/>
 <pinref part="IC1" gate="G$1" pin="GND"/>
-<wire x1="-84.455" y1="101.6" x2="-84.455" y2="99.06" width="0.1524" layer="91"/>
-<junction x="-84.455" y="99.06"/>
+<wire x1="-79.375" y1="101.6" x2="-79.375" y2="99.06" width="0.1524" layer="91"/>
+<junction x="-79.375" y="99.06"/>
 <pinref part="C11" gate="G$1" pin="2"/>
 <wire x1="-36.83" y1="101.6" x2="-36.83" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="-36.83" y1="99.06" x2="-69.215" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="-36.83" y1="99.06" x2="-66.675" y2="99.06" width="0.1524" layer="91"/>
 <pinref part="C12" gate="G$1" pin="2"/>
-<wire x1="-94.615" y1="101.6" x2="-94.615" y2="99.06" width="0.1524" layer="91"/>
-<junction x="-94.615" y="99.06"/>
+<wire x1="-92.075" y1="101.6" x2="-92.075" y2="99.06" width="0.1524" layer="91"/>
+<junction x="-92.075" y="99.06"/>
 </segment>
 <segment>
 <pinref part="ORNG" gate="G$1" pin="C"/>
@@ -5231,9 +5259,10 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <segment>
 <pinref part="C10" gate="G$1" pin="1"/>
 <pinref part="IC1" gate="G$1" pin="VO"/>
-<wire x1="-74.295" y1="109.22" x2="-69.215" y2="109.22" width="0.1524" layer="91"/>
-<wire x1="-57.785" y1="109.22" x2="-69.215" y2="109.22" width="0.1524" layer="91"/>
+<wire x1="-57.785" y1="109.22" x2="-66.675" y2="109.22" width="0.1524" layer="91"/>
 <pinref part="L1" gate="G$1" pin="1"/>
+<wire x1="-66.675" y1="109.22" x2="-69.215" y2="109.22" width="0.1524" layer="91"/>
+<junction x="-66.675" y="109.22"/>
 </segment>
 </net>
 <net name="N$6" class="0">
@@ -5317,13 +5346,13 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <segment>
 <pinref part="IC1" gate="G$1" pin="VI"/>
 <pinref part="C9" gate="G$1" pin="1"/>
-<wire x1="-99.06" y1="109.22" x2="-94.615" y2="109.22" width="0.1524" layer="91"/>
+<wire x1="-99.06" y1="109.22" x2="-89.535" y2="109.22" width="0.1524" layer="91"/>
 <pinref part="CN1" gate="G$1" pin="VBUS"/>
 <wire x1="-108.585" y1="109.22" x2="-104.14" y2="109.22" width="0.1524" layer="91"/>
 <junction x="-99.06" y="109.22"/>
 <pinref part="P+1" gate="1" pin="+5V"/>
 <pinref part="C12" gate="G$1" pin="1"/>
-<junction x="-94.615" y="109.22"/>
+<junction x="-89.535" y="109.22"/>
 <wire x1="-104.14" y1="109.22" x2="-99.06" y2="109.22" width="0.1524" layer="91"/>
 <wire x1="-99.06" y1="109.22" x2="-99.06" y2="112.395" width="0.1524" layer="91"/>
 <pinref part="U1" gate="A" pin="CATHODE_4"/>
@@ -5331,6 +5360,7 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <wire x1="-129.54" y1="90.17" x2="-104.14" y2="90.17" width="0.1524" layer="91"/>
 <wire x1="-104.14" y1="90.17" x2="-104.14" y2="109.22" width="0.1524" layer="91"/>
 <junction x="-104.14" y="109.22"/>
+<wire x1="-89.535" y1="109.22" x2="-92.075" y2="109.22" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="5V@2" gate="G$1" pin="1"/>
@@ -5596,9 +5626,9 @@ Please use FRAME-LEDGER/FRAME-LETTER for schematics now.</description>
 <wire x1="-25.4" y1="-73.66" x2="-55.245" y2="-73.66" width="0.1524" layer="91"/>
 <wire x1="-55.245" y1="-73.66" x2="-55.245" y2="-76.835" width="0.1524" layer="91"/>
 <wire x1="-55.245" y1="-76.835" x2="-59.69" y2="-76.835" width="0.1524" layer="91"/>
-<label x="-61.595" y="-77.47" size="1.778" layer="95" rot="R180" xref="yes"/>
+<label x="-67.31" y="-76.835" size="1.778" layer="95" rot="R180" xref="yes"/>
 <pinref part="GPS" gate="G$1" pin="1"/>
-<wire x1="-59.69" y1="-76.835" x2="-61.595" y2="-76.835" width="0.1524" layer="91"/>
+<wire x1="-59.69" y1="-76.835" x2="-65.0875" y2="-76.835" width="0.1524" layer="91"/>
 <junction x="-59.69" y="-76.835"/>
 </segment>
 </net>

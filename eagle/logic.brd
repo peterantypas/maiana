@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.4.0">
+<eagle version="8.4.3">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
+<setting keepoldvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="0.0125" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.025" altunitdist="inch" altunit="inch"/>
@@ -934,10 +935,10 @@ design rules under a new name.</description>
 <param name="slThermalsForVias" value="0"/>
 <param name="dpMaxLengthDifference" value="10mm"/>
 <param name="dpGapFactor" value="2.5"/>
-<param name="checkGrid" value="0"/>
 <param name="checkAngle" value="0"/>
 <param name="checkFont" value="1"/>
 <param name="checkRestrict" value="1"/>
+<param name="checkStop" value="0"/>
 <param name="useDiameter" value="13"/>
 <param name="maxErrors" value="50"/>
 </designrules>
@@ -1054,23 +1055,23 @@ design rules under a new name.</description>
 <attribute name="NAME" x="18.415" y="36.5125" size="0.6096" layer="25" font="vector" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="19.685" y="33.655" size="1.27" layer="27" rot="R90"/>
 </element>
-<element name="C1" library="SparkFun-Capacitors" package="0603-CAP" value="" x="39.0525" y="11.43" rot="R270"/>
-<element name="C10" library="SparkFun-Capacitors" package="0805" value="" x="58.42" y="19.3675" rot="R180"/>
-<element name="C11" library="SparkFun-Capacitors" package="0603-CAP" value="" x="52.3875" y="20.955" rot="R180"/>
-<element name="C12" library="SparkFun-Capacitors" package="0603-CAP" value="" x="58.1025" y="13.97"/>
+<element name="C1" library="SparkFun-Capacitors" package="0603-CAP" value="18pF" x="39.0525" y="11.43" rot="R270"/>
+<element name="C10" library="SparkFun-Capacitors" package="0805" value="1uF" x="58.42" y="19.3675" rot="R180"/>
+<element name="C11" library="SparkFun-Capacitors" package="0603-CAP" value="DNP" x="52.3875" y="20.955" rot="R180"/>
+<element name="C12" library="SparkFun-Capacitors" package="0603-CAP" value="DNP" x="58.1025" y="13.97"/>
 <element name="C13" library="SparkFun-Capacitors" package="0603-CAP" value="1nF" x="5.715" y="29.5275" rot="R180"/>
 <element name="C14" library="SparkFun-Capacitors" package="0603-CAP" value="1uF" x="5.715" y="28.2575" rot="R180"/>
-<element name="C2" library="SparkFun-Capacitors" package="0603-CAP" value="" x="31.4325" y="11.43" rot="R90"/>
-<element name="C3" library="SparkFun-Capacitors" package="0603-CAP" value="" x="33.655" y="27.6225"/>
-<element name="C4" library="SparkFun-Capacitors" package="0603-CAP" value="" x="27.6225" y="12.3825" rot="R180"/>
-<element name="C5" library="SparkFun-Capacitors" package="0603-CAP" value="" x="23.8125" y="20.955" rot="R90"/>
-<element name="C6" library="SparkFun-Capacitors" package="0603-CAP" value="" x="30.7975" y="27.6225" rot="R180"/>
-<element name="C7" library="SparkFun-Capacitors" package="0603-CAP" value="" x="13.6525" y="3.4925" rot="R270"/>
-<element name="C8" library="SparkFun-Capacitors" package="0603-CAP" value="" x="6.6675" y="34.29" smashed="yes" rot="R90">
+<element name="C2" library="SparkFun-Capacitors" package="0603-CAP" value="18pF" x="31.4325" y="11.43" rot="R90"/>
+<element name="C3" library="SparkFun-Capacitors" package="0603-CAP" value=".1uF" x="33.655" y="27.6225"/>
+<element name="C4" library="SparkFun-Capacitors" package="0603-CAP" value=".1uF" x="27.6225" y="12.3825" rot="R180"/>
+<element name="C5" library="SparkFun-Capacitors" package="0603-CAP" value=".1uF" x="23.8125" y="20.955" rot="R90"/>
+<element name="C6" library="SparkFun-Capacitors" package="0603-CAP" value=".1uF" x="30.7975" y="27.6225" rot="R180"/>
+<element name="C7" library="SparkFun-Capacitors" package="0603-CAP" value=".1uF" x="13.6525" y="3.4925" rot="R270"/>
+<element name="C8" library="SparkFun-Capacitors" package="0603-CAP" value=".1uF" x="6.6675" y="34.29" smashed="yes" rot="R90">
 <attribute name="NAME" x="5.9055" y="33.401" size="0.4064" layer="25" font="vector" rot="R90"/>
 <attribute name="VALUE" x="7.8105" y="33.274" size="0.4064" layer="27" font="vector" rot="R90"/>
 </element>
-<element name="C9" library="SparkFun-Capacitors" package="0805" value="" x="58.1025" y="12.7"/>
+<element name="C9" library="SparkFun-Capacitors" package="0805" value="1uF" x="58.1025" y="12.7"/>
 <element name="CLK1" library="adafruit" package="1X01" value="" x="63.8175" y="34.29" smashed="yes">
 <attribute name="NAME" x="62.7888" y="35.8013" size="0.6096" layer="25" font="vector" ratio="10"/>
 <attribute name="VALUE" x="62.5475" y="31.115" size="1.27" layer="27"/>
@@ -1120,18 +1121,18 @@ design rules under a new name.</description>
 </element>
 <element name="IC1" library="linear" package="SOT23" value="MCP1703CB" x="58.42" y="16.8275" smashed="yes" rot="R90"/>
 <element name="IC2" library="silabs" package="MLP28" value="CP2102" x="57.4675" y="23.8125" smashed="yes" rot="MR0">
-<attribute name="OC_NEWARK" value="30K5635" x="57.4675" y="23.8125" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="MF" value="FARNELL" x="57.4675" y="23.8125" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="OC_FARNELL" value="9282130" x="57.4675" y="23.8125" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="MPN" value="CP2102-GM" x="57.4675" y="23.8125" size="1.778" layer="28" rot="MR0" display="off"/>
 <attribute name="NAME" x="60.0075" y="26.9875" size="1.27" layer="26" rot="MR0"/>
+<attribute name="OC_FARNELL" value="9282130" x="57.4675" y="23.8125" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="OC_NEWARK" value="30K5635" x="57.4675" y="23.8125" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
-<element name="L1" library="SparkFun-Passives" package="0603" value="" x="58.42" y="20.6375" smashed="yes" rot="R180">
-<attribute name="PROD_ID" value="RES-07859" x="58.42" y="20.6375" size="1.778" layer="27" rot="R180" display="off"/>
+<element name="L1" library="SparkFun-Passives" package="0603" value="0 ohm" x="58.42" y="20.6375" smashed="yes" rot="R180">
 <attribute name="NAME" x="59.309" y="19.8755" size="0.4064" layer="25" font="vector" rot="R180"/>
+<attribute name="PROD_ID" value="RES-07859" x="58.42" y="20.6375" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="VALUE" x="59.436" y="21.7805" size="0.4064" layer="27" font="vector" rot="R180"/>
 </element>
-<element name="L8" library="SparkFun-Passives" package="0603" value="" x="6.6675" y="31.4325" rot="R270"/>
+<element name="L8" library="SparkFun-Passives" package="0603" value="0 ohm" x="6.6675" y="31.4325" rot="R270"/>
 <element name="GRN" library="adafruit" package="CHIP-LED0603" value="" x="21.59" y="34.29" smashed="yes">
 <attribute name="NAME" x="22.5425" y="36.5125" size="0.6096" layer="25" font="vector" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="23.495" y="33.655" size="1.27" layer="27" rot="R90"/>
@@ -1152,14 +1153,14 @@ design rules under a new name.</description>
 <attribute name="NAME" x="58.0263" y="0.2413" size="0.6096" layer="25" font="vector" ratio="10"/>
 <attribute name="VALUE" x="57.4675" y="-0.635" size="1.27" layer="27"/>
 </element>
-<element name="R1" library="SparkFun-Passives" package="0603-RES" value="" x="24.4475" y="13.97"/>
-<element name="R2" library="SparkFun-Passives" package="0603-RES" value="" x="23.495" y="31.75" rot="R270"/>
-<element name="R3" library="SparkFun-Passives" package="0603-RES" value="" x="19.685" y="31.75" rot="R270"/>
-<element name="R4" library="SparkFun-Passives" package="0603-RES" value="" x="17.78" y="31.75" rot="R270"/>
+<element name="R1" library="SparkFun-Passives" package="0603-RES" value="10k" x="24.4475" y="13.97"/>
+<element name="R2" library="SparkFun-Passives" package="0603-RES" value="2.2k" x="23.495" y="31.75" rot="R270"/>
+<element name="R3" library="SparkFun-Passives" package="0603-RES" value="2.2k" x="19.685" y="31.75" rot="R270"/>
+<element name="R4" library="SparkFun-Passives" package="0603-RES" value="2.2k" x="17.78" y="31.75" rot="R270"/>
 <element name="R5" library="SparkFun-Passives" package="0603-RES" value="4K7" x="59.3725" y="19.3675" rot="MR0"/>
 <element name="R6" library="SparkFun-Passives" package="0603-RES" value="10K" x="56.1975" y="19.3675" rot="MR180"/>
-<element name="R7" library="SparkFun-Passives" package="0603-RES" value="" x="21.59" y="31.75" rot="R270"/>
-<element name="R8" library="SparkFun-Passives" package="0603-RES" value="" x="9.8425" y="31.4325" rot="R270"/>
+<element name="R7" library="SparkFun-Passives" package="0603-RES" value="2.2k" x="21.59" y="31.75" rot="R270"/>
+<element name="R8" library="SparkFun-Passives" package="0603-RES" value="2.2k" x="9.8425" y="31.4325" rot="R270"/>
 <element name="RED" library="adafruit" package="CHIP-LED0603" value="" x="23.495" y="34.29" smashed="yes">
 <attribute name="NAME" x="24.765" y="36.5125" size="0.6096" layer="25" font="vector" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="25.4" y="33.655" size="1.27" layer="27" rot="R90"/>
@@ -1212,11 +1213,11 @@ design rules under a new name.</description>
 <element name="U$2" library="eeprom" package="SOT23-5" value="24LC01B" x="23.495" y="8.255" smashed="yes" rot="R270"/>
 <element name="U$3" library="GeekAmmo" package="7914G" value="TACTILE-SWITCH-7914G" x="11.7475" y="2.2225" smashed="yes" rot="R90"/>
 <element name="U1" library="Littelfuse_By_element14_Batch_1" package="SOT95P280X145-5N" value="SP0504BAHTG" x="61.9125" y="20.955" smashed="yes" rot="R90">
+<attribute name="MPN" value="SP0504BAHTG" x="61.9125" y="20.955" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_FARNELL" value="1827634" x="61.9125" y="20.955" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="OC_NEWARK" value="92K8961" x="61.9125" y="20.955" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="PACKAGE" value="SOT-23-3" x="61.9125" y="20.955" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="SUPPLIER" value="LITTELFUSE" x="61.9125" y="20.955" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="OC_FARNELL" value="1827634" x="61.9125" y="20.955" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="MPN" value="SP0504BAHTG" x="61.9125" y="20.955" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
 <element name="U2" library="adafruit" package="FGPMMOPA6H" value="" x="9.525" y="18.415" smashed="yes">
 <attribute name="VALUE" x="1.525" y="8.915" size="0.4064" layer="27" ratio="10"/>
