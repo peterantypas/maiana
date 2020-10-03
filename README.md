@@ -15,7 +15,9 @@ In 2018 I installed this system on my boat. It is still working fine after 2 yea
 
 The main difference between this design and nearly every commercial transponder is that it's a standalone unit. It contains all of its
 radios and antennas and thus only needs a power + data cable to connect to the cabin. The PCBA is 1" wide so it fits inside
-1" PVC pipe, which I used as the antenna base. The GNSS receiver and antenna are on the board. 
+1" PVC pipe, which I used as the antenna base. The GNSS receiver and antenna are on the board:
+
+![Image](images/board4.3.jpg?raw=True "PCBA version 4.3")
 
 On the hardware side, the design is based on two Silicon Labs 4463 transceiver ICs and an STM32L432KBU6 microcontroller.
 The GNSS is a Telit SE873 (7x7mm module) and relies on a Johanson ceramic SMD antenna. It usually takes about a minute to acquire a fix outdoors.
@@ -26,7 +28,7 @@ while listening for CLI commands. Persistent station data (MMSI, call sign, name
 the CLI. If this data is not present, the device will simply run as a receiver and never transmit. 
 
 The circuit draws about 45mA from 12V in RX mode, and spikes up to 600 mA during transmission (for about 30 milliseconds). The latest design uses an RJ45 connector
-because Ethernet cable is widely available, cheap and offers enough signals to instrument controls such as "TX on/off". I have included a reference design
+because Ethernet cable is widely available, cheap and offers enough signals to instrument controls such as "TX on/off". I will include a reference design
 for a control box that I built but every boat is different, so your mileage will absolutely vary.
 
 
