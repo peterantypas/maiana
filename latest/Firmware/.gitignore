@@ -1,0 +1,10 @@
+*.o
+*.elf
+*.bin
+*.map
+*.hex
+*~
+*.d
+
+/Default
+/Release/

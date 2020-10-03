@@ -27,9 +27,10 @@ The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the b
 while listening for CLI commands. Persistent station data (MMSI, call sign, name, dimensions, etc) is stored on a 1Kbit EEPROM and is provisioned via
 the CLI. If this data is not present, the device will simply run as a receiver and never transmit. 
 
-The circuit draws about 45mA from 12V in RX mode, and spikes up to 600 mA during transmission (for about 30 milliseconds). The latest design uses an RJ45 connector
-because Ethernet cable is widely available, cheap and offers enough signals to instrument controls such as "TX on/off". I will include a reference design
-for a control box that I built but every boat is different, so your mileage will absolutely vary.
+The circuit draws about 45mA from 12V in RX mode, and spikes up to 600 mA during transmission (for about 30 milliseconds).
+
+The latest design (not the one pictured above) uses an RJ45 as Ethernet cable is widely available, cheap and offers enough signals to instrument
+controls such as "TX on/off". I will include a reference design for a control box that I built but every boat is different, so your mileage will absolutely vary.
 
 
 ### Software
