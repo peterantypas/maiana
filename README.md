@@ -8,6 +8,7 @@ In 2018 I installed this system on my boat. It is still working fine after 2 yea
 
 ![Image](images/UnitExterior.jpg?raw=True "Exterior View")
 
+I have refined the design somewhat, and it now has a name: It's called "Maiana", borrowed from a Pacific atoll in the Kiribati islands. I do intend to trademark this, in the same way that "Arduino" is a trademark that identifies the original rather than the many clones that will inevitably emerge.
 
 ## Overall description
 
