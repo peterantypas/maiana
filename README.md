@@ -2,9 +2,11 @@
 
 I started this project around 2015 with the intention of experimenting and eventually building something for my own boat.
 I was not impressed with commercial AIS class B transponders. They seemed bloated, expensive and some of them
-seemed particularly power-hungry. So I set out to create a lean and mean design.
+were particularly power-hungry. So I set out to create a lean and mean design.
 
 In 2018 I installed this system on my boat. It is still working fine after 2 years.
+
+[Image][images/UnitExterior.jpg?raw=True "Exterior View"]
 
 
 ## Overall description
