@@ -40,9 +40,5 @@ and the Pi is done over a single serial port.
 There are two programs that need to be installed on the flash. The [bootloader](bootloader/) and the main [application](application/). 
 
 
-## UPDATE:
-
-Thanks to all who have contacted me about this project. Right now my current work is so demanding that I have zero bandwidth to dedicate to this project.
-
 
 
