@@ -6,7 +6,7 @@ were particularly power-hungry. So I set out to create a lean and mean design.
 
 In 2018 I installed this system on my boat. It is still working fine after 2 years.
 
-[Image][images/UnitExterior.jpg?raw=True "Exterior View"]
+![Image](images/UnitExterior.jpg?raw=True "Exterior View")
 
 
 ## Overall description
