@@ -1,4 +1,4 @@
-# Open Source AIS Transponder (Class B)
+# Project "MAIANA": The Open Source AIS Transponder
 
 I started this project around 2015 with the intention of experimenting and eventually building something for my own boat.
 I was not impressed with commercial AIS class B transponders. They seemed bloated, expensive and some of them
@@ -8,7 +8,7 @@ In 2018 I installed this system on my boat. It is still working fine after 2 yea
 
 ![Image](images/UnitExterior.jpg?raw=True "Exterior View")
 
-I have refined the design somewhat, and it now has a name: It's called "Maiana", borrowed from a Pacific atoll in the Kiribati islands. I do intend to trademark this, in the same way that "Arduino" is a trademark that identifies the original rather than the many clones that will inevitably emerge.
+I have refined the design somewhat, and it now has an "official" name, borrowed from a Pacific atoll in the Kiribati islands. I do intend to trademark this, in the same way that "Arduino" is a trademark that identifies the original rather than the many clones that inevitably emerged.
 
 ## Overall description
 
