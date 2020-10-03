@@ -40,7 +40,7 @@ the required symbols in the preprocessor to build for different board revisions.
 
 ### Building the unit
 
-This is going to be difficult for all but the most technically advanced, so I am going to be selling it as a kit (most likely on tindie.com). The kit will include a mostly-finished PCBA as well as the VHF antenna, enclosure and sealing components. The ethernet cable and whatever lies on the other side of it will be your responsibility, as every boat is different.
+This is going to be difficult for all but the most technically advanced, so I am going to be selling it as a kit (most likely on tindie.com). The kit will include a mostly-finished PCBA as well as the VHF antenna, enclosure and sealing components. The ethernet cable and whatever lies on the other side of it will be the end user's responsibility, as every boat is different.
 
 ### License
 
