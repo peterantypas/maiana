@@ -17,7 +17,7 @@ The main difference between this design and nearly every commercial transponder 
 radios and antennas and thus only needs a power + data cable to connect to the cabin. The PCBA is 1" wide so it fits inside
 1" PVC pipe, which I used as the antenna base. The GNSS receiver and antenna are on the board:
 
-![Image](images/board4.3.jpg?raw=True "PCBA version 4.3")
+![Image](images/Board4.3.jpg?raw=True "PCBA version 4.3")
 
 On the hardware side, the design is based on two Silicon Labs 4463 transceiver ICs and an STM32L432KBU6 microcontroller.
 The GNSS is a Telit SE873 (7x7mm module) and relies on a Johanson ceramic SMD antenna. It usually takes about a minute to acquire a fix outdoors.
