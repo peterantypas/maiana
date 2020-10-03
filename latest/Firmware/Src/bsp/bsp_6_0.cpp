@@ -376,6 +376,7 @@ void bsp_gnss_on()
 void bsp_gnss_off()
 {
   HAL_GPIO_WritePin(GNSS_EN_PORT, GNSS_EN_PIN, GPIO_PIN_RESET);
+  HAL_Delay(100);
 }
 
 void USART_putc(USART_TypeDef* USARTx, char c)
@@ -536,7 +537,7 @@ void bsp_enter_dfu()
    */
 
   HAL_GPIO_WritePin(DFU_EN_PORT, DFU_EN_PIN, GPIO_PIN_SET);
-  HAL_Delay(1000);
+  HAL_Delay(500);
   bsp_reboot();
 }
 
