@@ -26,12 +26,14 @@ The transmitter output is 2 Watts (+33dBm) and it has a verified range of over 1
 
 The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS NMEA0183 data
 while listening for CLI commands. Persistent station data (MMSI, call sign, name, dimensions, etc) is stored on a 1Kbit EEPROM and is provisioned via
-the CLI. If this data is not present, the device will simply run as a receiver and never transmit. 
+the CLI. The unit implements SOTDMA synchronization based on the GNSS 1 PPS signal and UTC, but it is a class B, so it will not attempt to reserve slots. It will just transmit independently and autonomously, at the schedule permitted for such transponders.
+
+If station data is not provisioned, the device will simply run as a receiver and never transmit. In addition, there is a "TX OFF" signal in the latest design which will disable transmission if it is pulled low externally (say via a rocker switch in the control panel).
 
 The circuit draws about 45mA from 12V in RX mode, and spikes up to 600 mA during transmission (for about 30 milliseconds).
 
 The latest design (not the one pictured above) uses an RJ45 connector, as Ethernet cable is cheap, widely available and offers enough signals to instrument
-controls such as "TX on/off". I will include a reference design for a control box that I'm working on but every boat is different, so your mileage will absolutely vary.
+controls such as "TX OFF". I will include a reference design for a control box that I'm working on but every boat is different, so your mileage will absolutely vary.
 
 
 ### Software
