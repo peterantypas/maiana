@@ -1,43 +1,45 @@
 # Open Source AIS Transponder (Class B)
 
-This is the first ever (that I'm aware of) attempt at creating an open source AIS transponder. The prototype device
-based on this code and designs is fully functional, but there is still a long way to go before it is a "compliant" unit.
+I started this project around 2015 with the intention of experimenting and eventually building something for my own boat.
+I was not impressed with commercial AIS class B transponders. They seemed bloated, expensive and some of them
+seemed particularly power-hungry. So I set out to create a lean and mean design.
 
-I intend to publish a blog (linking to and from here) as the project evolves. This repository will host the latest Eagle CAD files as well as
-the source code for the microcontroller. The source code project requires Eclipse CDT, but I'm open to transitioning to something
-else if there is enough interest and participation.
+In 2018 I installed this system on my boat. It is still working fine after 2 years.
 
 
 ## Overall description
 
 ### Hardware
 
-On the hardware side, the design is based on two Silicon Labs 4463 transceiver ICs and an STM32F302CBT6 ARM Cortex M4 microcontroller.
-One of the SiLabs ICs acts as a transceiver, while the other IC works as a receiver only. In receiver mode, each IC tunes to a different
-channel. When a transmission is scheduled, the ICs swap channels if the transceiver is not listening on the next transmit channel. This configuration
-may be construed as a violation of the AIS specification, but it makes for a much simpler PCB layout and negates the need for a 3-position RF switch.
+The main difference between this design and nearly every commercial transponder is that it's a standalone unit. It contains all of its
+radios and antennas and thus only needs a power + data cable to connect to the cabin. The PCBA is 1" wide so it fits inside
+1" PVC pipe, which I used as the antenna base. The GNSS receiver and antenna are on the board. 
 
-The GPS is a GlobalTop "LadyBird" unit, but any decent GPS module with NMEA and PPS output should work.
+On the hardware side, the design is based on two Silicon Labs 4463 transceiver ICs and an STM32L432KBU6 microcontroller.
+The GNSS is a Telit SE873 (7x7mm module) and relies on a Johanson ceramic SMD antenna. It usually takes about a minute to acquire a fix outdoors.
+The transmitter output is 2 Watts (+33dBm) and it has a verified range of over 10 nautical miles with a vanilla telescopic antenna (< 3dBi).
 
-The RF board incorporates an external bandpass / LNA (NXP BGA2869) and a Skyworks 66100 front end (PA/switch).
+The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS NMEA0183 data
+while listening for CLI commands. Persistent station data (MMSI, call sign, name, dimensions, etc) is stored on a 1Kbit EEPROM and is provisioned via
+the CLI. If this data is not present, the device will simply run as a receiver and never transmit. 
 
-The transmitter output is nominally 0.5Watts (+27dBm) and it has a verified range of 5 nautical miles with a vanilla telescopic antenna (< 3dBi).
-
-Persistent station data (MMSI, call sign, name, dimensions, etc) is stored on a 1Kbit EEPROM attached to I2C1. Remarkably, it works fine with the MCU's 
-internal pull-ups, but I updated the design to include external pull-up resistors on the SDA and SCL lines. The code should be modified if you choose to 
-install those.
-
-The circuit is powered entirely from a 5V connection (USB for now, but leaning against it long term). It draws 135 mA in RX mode,
-and spikes up to 350 mA during transmission at full power. 
-
-I intend to use a Raspberry Pi as the front end of the transceiver, as the unit is supposed to be mounted outside, directly connected to its own antenna.
-The Pi will act as a source of power, a WiFi Access Point, a NMEA distributor and a web server for configuration and software updates. All communication between the transponder
-and the Pi is done over a single serial port.
+The circuit draws about 45mA from 12V in RX mode, and spikes up to 600 mA during transmission (for about 30 milliseconds). The latest design uses an RJ45 connector
+because Ethernet cable is widely available, cheap and offers enough signals to instrument controls such as "TX on/off". I have included a reference design
+for a control box that I built but every boat is different, so your mileage will absolutely vary.
 
 
 ### Software
 
-There are two programs that need to be installed on the flash. The [bootloader](bootloader/) and the main [application](application/). 
+The firmware is an Eclipse CDT project that you should be able to import and build. It has a BSP architecture and build configurations for different
+board revisions. It contains snippets of STM32Cube generated code, but is not structured around it.
+
+### Building the unit
+
+This is going to be difficult for all but the most technically advanced, so I am going to be selling it as a kit (most likely on tindie.com). The kit will include a mostly-finished PCBA as well as the VHF antenna, enclosure and sealing components. The ethernet cable and whatever lies on the other side of it will be your responsibility, as every boat is different.
+
+### License
+
+CAD and firmware are licensed under GPLV3. 
 
 
 
