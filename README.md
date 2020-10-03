@@ -29,14 +29,14 @@ the CLI. If this data is not present, the device will simply run as a receiver a
 
 The circuit draws about 45mA from 12V in RX mode, and spikes up to 600 mA during transmission (for about 30 milliseconds).
 
-The latest design (not the one pictured above) uses an RJ45 as Ethernet cable is widely available, cheap and offers enough signals to instrument
-controls such as "TX on/off". I will include a reference design for a control box that I built but every boat is different, so your mileage will absolutely vary.
+The latest design (not the one pictured above) uses an RJ45 connector, as Ethernet cable is cheap, widely available and offers enough signals to instrument
+controls such as "TX on/off". I will include a reference design for a control box that I'm working on but every boat is different, so your mileage will absolutely vary.
 
 
 ### Software
 
-The firmware is an Eclipse CDT project that you should be able to import and build. It has a BSP architecture and build configurations for different
-board revisions. It contains snippets of STM32Cube generated code, but is not structured around it.
+The firmware is an Eclipse CDT project that you should be able to import and build. It has a BSP architecture so you need to tweak bsp.hpp or define one of
+the required symbols in the preprocessor to build for different board revisions. It contains snippets of STM32Cube generated code, but is not structured around it.
 
 ### Building the unit
 
