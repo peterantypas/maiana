@@ -51,7 +51,7 @@ The board features mostly surface mounted components, with 5 QFNs, a few SOT-363
 
 CAD and firmware are licensed under GPLV3. I chose the most "copyleft" license possible to discourage commercial entities from ripping this off and then "close-sourcing" it. So don't try anything fishy, because I *will* find out and then ... well, let's just say you'll be buying me another boat and I have a particular one in mind ;)
 
-If you're a tinkerer and want to further this design while adhering to the GPL, more power to you! Build it, sell it, give it away, do whatever you want to get it out there. You cannot, however, use the "Maiana" name in your forked designs, as it will be trademarked.
+If you're a tinkerer and want to further this design while adhering to the GPL, more power to you! Build it, sell it, give it away, do whatever you want to get it out there. You cannot, however, use the name in your forked designs, as it will be trademarked.
 
 ### Concluding thoughts
 
