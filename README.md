@@ -55,7 +55,7 @@ If you're a tinkerer and want to further this design while adhering to the GPL, 
 
 ### Concluding thoughts
 
-The commercial AIS industry has not exactly been successful in the low-cost recreational boating market, and with prices like $500-$800 for a unit that needs external GPS (LOL) and VHF antennas that's hardly a surprise. I hope to change that. More on that over the next few weeks as I get organized ...
+The commercial AIS industry has not exactly been successful in the low-cost recreational boating market, and with prices like $500-$800 for a unit that needs external GPS (LOL) and VHF antennas that's hardly a surprise. I hope to change that. More on that later ...
 
 
 
