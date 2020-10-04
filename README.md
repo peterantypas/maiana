@@ -1,4 +1,4 @@
-# Project "MAIANA": The Open Source AIS Transponder
+# MAIANA&trade;: The Open Source AIS Transponder
 
 I started this project around 2015 with the intention of experimenting and eventually building something for my own boat.
 I was not impressed with commercial AIS class B transponders. They seemed bloated, expensive and some of them
@@ -43,11 +43,23 @@ the required symbols in the preprocessor to build for different board revisions.
 
 ### Building the unit
 
-This is going to be difficult for all but the most technically advanced, so I am going to be selling it as a kit (most likely on tindie.com). The kit will include a mostly-finished PCBA as well as the VHF antenna, enclosure and sealing components. The ethernet cable and whatever lies on the other side of it will be the end user's responsibility, as every boat is different.
+This is going to be difficult for all but the most technically advanced.
+
+The board features mostly surface mounted components, with 5 QFNs, a few SOT-363s and all 0603 passives. Unless you're skilled with stencils and reflow, you won't likely be able to build it. So I am going to make it available as part of a kit (probably on tindie.com). The kit will include a 95% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed and tested, and the antenna will be perfectly matched. The cable and whatever lies on the other side of it will be the end user's responsibility, as every boat is different.
 
 ### License
 
-CAD and firmware are licensed under GPLV3. 
+CAD and firmware are licensed under GPLV3. I chose the most "copyleft" license possible to discourage commercial entities from ripping this off and then "close-sourcing" it. So don't try anything fishy, because I *will* find out and then ... well, let's just say you'll be buying me another boat and I have a particular one in mind ;)
+
+If you're a tinkerer and want to further this design while adhering to the GPL, more power to you! Build it, sell it, give it away, do whatever you want to get it out there. You cannot, however, use the "Maiana" name in your forked designs, as it will be trademarked.
+
+### Concluding thoughts
+
+The commercial AIS industry has not exactly been successful in the low-cost recreational boating market, and with prices like $500-$800 for a unit that needs external GPS (LOL) and VHF antennas that's hardly a surprise. I hope to change that. More on that over the next few weeks as I get organized ...
+
+
+
+
 
 
 
