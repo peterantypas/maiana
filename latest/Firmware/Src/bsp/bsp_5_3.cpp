@@ -246,7 +246,9 @@ void SystemClock_Config()
   //RCC_OscInitStruct.PLL.PLLN = 8; // 64 MHz
   //RCC_OscInitStruct.PLL.PLLN = 6; // 48 MHz
 
+#ifdef STM32L432xx
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
+#endif
   RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
