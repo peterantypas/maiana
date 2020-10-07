@@ -80,9 +80,10 @@ extern "C"
 {
   void Error_Handler(void)
   {
-    printf_serial_now("[ERROR]\r\n");
-    printf_serial_now("[ERROR] ***** System error handler resetting *****\r\n");
-    NVIC_SystemReset();
+    asm("BKPT 0");
+    //printf_serial_now("[ERROR]\r\n");
+    //printf_serial_now("[ERROR] ***** System error handler resetting *****\r\n");
+    //NVIC_SystemReset();
   }
 }
 
@@ -236,7 +237,7 @@ void SystemClock_Config()
    */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = 16;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 1;

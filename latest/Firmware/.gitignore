@@ -10,3 +10,5 @@ Release
 Debug
 /STM32L412-Debug/
 /STM32L412-Release/
+/STM32L432-Debug/
+/STM32L432-Release/
