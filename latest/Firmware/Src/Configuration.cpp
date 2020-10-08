@@ -66,8 +66,8 @@ void Configuration::reportStationData()
   if ( !readStationData(d) )
     memset(&d, 0, sizeof d);
 
-  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
-  sprintf(e->nmeaBuffer.sentence,
+  Event e(PROPR_NMEA_SENTENCE);
+  sprintf(e.nmeaBuffer.sentence,
       "$PAISTN,%lu,%s,%s,%d,%d,%d,%d,%d*",
       d.mmsi,
       d.name,
@@ -77,7 +77,7 @@ void Configuration::reportStationData()
       d.beam,
       d.portOffset,
       d.bowOffset);
-  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  Utils::completeNMEA(e.nmeaBuffer.sentence);
   EventQueue::instance().push(e);
 }
 

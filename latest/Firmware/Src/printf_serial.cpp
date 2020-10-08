@@ -50,13 +50,11 @@ void printf_serial(const char *format, ...)
 {
   if ( Utils::inISR() )
     {
-      Event *e = EventPool::instance().newEvent(DEBUG_EVENT);
-      if ( e == nullptr )
-        return;
+      Event e(DEBUG_EVENT);
 
       va_list list;
       va_start(list, format);
-      vsnprintf(e->debugMessage.buffer, sizeof e->debugMessage, format, list);
+      vsnprintf(e.debugMessage.buffer, sizeof e.debugMessage, format, list);
       va_end(list);
 
       EventQueue::instance().push(e);

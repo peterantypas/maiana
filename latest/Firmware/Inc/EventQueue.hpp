@@ -24,6 +24,8 @@
 #include <map>
 #include "CircularQueue.hpp"
 #include "Events.hpp"
+#include "FreeRTOS.h"
+#include "queue.h"
 
 using namespace std;
 
@@ -45,18 +47,18 @@ public:
   void removeObserver(EventConsumer *c);
 
   /*
-   * We push events here to be processed by the main thread
+   * We push events here to be processed by the dispatching task
    */
-  void push(Event* event);
+  void push(const Event &event);
 
   /*
-   * This method must be called repeatedly by main() (never an ISR!!!!!!)
+   * This method must be called repeatedly by an RTOS task or main() (never an ISR)
    */
   void dispatch();
 private:
   EventQueue();
-  CircularQueue<Event*> *mISRQueue;           // Exclusively used by ISRs
-  CircularQueue<Event*> *mThreadQueue;        // Exclusively used by the (only) thread
+  QueueHandle_t mQueueHandle;
+  StaticQueue_t mQueue;
   map<EventConsumer *, uint32_t> mConsumers;
 };
 

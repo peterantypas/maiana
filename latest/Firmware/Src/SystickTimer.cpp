@@ -40,10 +40,8 @@ void SystickTimer::onTick()
   if ( mTickCounter == 1000 )
     {
       mTickCounter = 0;
-      Event *e = EventPool::instance().newEvent(ONE_SEC_TIMER_EVENT);
-      if ( e )
-    	  EventQueue::instance().push(e);
-      //DBG("One second tick\r\n");
+      Event e(ONE_SEC_TIMER_EVENT);
+      EventQueue::instance().push(e);
       ++mSecondCounter;
     }
 
@@ -51,9 +49,8 @@ void SystickTimer::onTick()
     {
       mSecondCounter = 0;
       //DBG("One minute mark\r\n");
-      Event *e = EventPool::instance().newEvent(ONE_MIN_TIMER_EVENT);
-      if ( e )
-    	  EventQueue::instance().push(e);
+      Event e(ONE_MIN_TIMER_EVENT);
+      EventQueue::instance().push(e);
     }
 }
 

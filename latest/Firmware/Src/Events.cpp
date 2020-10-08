@@ -19,10 +19,9 @@
 
 
 #include "Events.hpp"
-#include <algorithm>
 #include "printf_serial.h"
 
-
+#if 0
 EventPool &EventPool::instance()
 {
   static EventPool __instance;
@@ -82,3 +81,4 @@ uint32_t EventPool::utilization()
 {
   return std::max(mISRPool->utilization(), mThreadPool->utilization());
 }
+#endif

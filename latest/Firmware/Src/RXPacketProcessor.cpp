@@ -76,15 +76,12 @@ void RXPacketProcessor::processEvent(const Event &e)
                       case 18:
                       case 24:
                         {
-                          Event *ie = EventPool::instance().newEvent(INTERROGATION_EVENT);
-                          if (ie)
-                            {
-                              ie->interrogation.channel = e.rxPacket.channel();
-                              ie->interrogation.messageType = target.messageType;
+                          Event ie(INTERROGATION_EVENT);
+                          ie.interrogation.channel = e.rxPacket.channel();
+                          ie.interrogation.messageType = target.messageType;
 
-                              //printf2("Scheduling message %d in response to interrogation\r\n", ie->interrogation.messageType);
-                              EventQueue::instance().push(ie);
-                            }
+                          //printf2("Scheduling message %d in response to interrogation\r\n", ie->interrogation.messageType);
+                          EventQueue::instance().push(ie);
                           break;
                         }
                       default:

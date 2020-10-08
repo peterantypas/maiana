@@ -77,6 +77,12 @@ public:
   : type(UNKNOWN_EVENT), flags(0) {
   }
 
+  Event(EventType t)
+  : type(t), flags(0)
+  {
+
+  }
+
   RXPacket rxPacket;
 
   union {
@@ -102,6 +108,7 @@ public:
   virtual void processEvent(const Event &event)=0;
 };
 
+#if 0
 class EventPool
 {
 public:
@@ -117,6 +124,6 @@ private:
   ObjectPool<Event> *mISRPool;
   ObjectPool<Event> *mThreadPool;
 };
-
+#endif
 
 #endif /* EVENTS_HPP_ */

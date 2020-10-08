@@ -71,7 +71,7 @@ void determineCauseOfReset()
 void mainTask(void *params)
 {
   EventQueue::instance().init();
-  EventPool::instance().init();
+  //EventPool::instance().init();
   Configuration::instance().init();
   CommandProcessor::instance().init();
   DataTerminal::instance().init();
@@ -134,7 +134,7 @@ int main(void)
   bsp_hw_init();
 
   TaskHandle_t xHandle;
-  xTaskCreate(mainTask, "main", 256u, NULL, 5, &xHandle);
+  xTaskCreate(mainTask, "main", 1024u, NULL, 5, &xHandle);
   xPortStartScheduler();
 
 #if 0

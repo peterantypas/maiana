@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include "GPS.hpp"
@@ -112,12 +112,9 @@ void GPS::onRX(char c)
   else if (c == '\n')
     {
       mBuff[mBuffPos] = 0;
-      Event *event = EventPool::instance().newEvent(GPS_NMEA_SENTENCE);
-      if ( event )
-        {
-          memcpy(event->nmeaBuffer.sentence, mBuff, sizeof event->nmeaBuffer.sentence);
-          EventQueue::instance ().push (event);
-        }
+      Event event(GPS_NMEA_SENTENCE);
+      strncpy(event.nmeaBuffer.sentence, mBuff, sizeof event.nmeaBuffer.sentence);
+      EventQueue::instance ().push(event);
       mBuffPos = 0;
       mBuff[mBuffPos] = 0;
     }
@@ -171,12 +168,9 @@ void GPS::onPPS()
         }
     }
 
-  Event *event = EventPool::instance().newEvent(CLOCK_EVENT);
-  if ( event )
-    {
-      event->clock.utc = mUTC;
-      EventQueue::instance ().push(event);
-    }
+  Event event(CLOCK_EVENT);
+  event.clock.utc = mUTC;
+  EventQueue::instance ().push(event);
 }
 
 void GPS::processEvent(const Event &event)
@@ -258,16 +252,13 @@ void GPS::parseSentence(const char *buff)
           mLng = Utils::longitudeFromNMEA (sentence.fields()[5], sentence.fields()[6]);
           mSpeed = atof(sentence.fields()[7].c_str());
           mCOG = atof(sentence.fields()[8].c_str());
-          Event *event = EventPool::instance ().newEvent(GPS_FIX_EVENT);
-          if (event)
-            {
-              event->gpsFix.utc = mUTC;
-              event->gpsFix.lat = mLat;
-              event->gpsFix.lng = mLng;
-              event->gpsFix.speed = mSpeed;
-              event->gpsFix.cog = mCOG;
-              EventQueue::instance().push (event);
-            }
+          Event event(GPS_FIX_EVENT);
+          event.gpsFix.utc = mUTC;
+          event.gpsFix.lat = mLat;
+          event.gpsFix.lng = mLng;
+          event.gpsFix.speed = mSpeed;
+          event.gpsFix.cog = mCOG;
+          EventQueue::instance().push (event);
         }
     }
 }

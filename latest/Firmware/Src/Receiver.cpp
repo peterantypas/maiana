@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include "Receiver.hpp"
@@ -121,7 +121,7 @@ void Receiver::timeSlotStarted(uint32_t slot)
   // This should never be called while transmitting. Transmissions start after the slot boundary and end before the end of it.
   //assert(gRadioState == RADIO_RECEIVING);
   //if ( gRadioState != RADIO_RECEIVING )
-    //DBG("    **** WTF??? Transmitting past slot boundary? **** \r\n");
+  //DBG("    **** WTF??? Transmitting past slot boundary? **** \r\n");
 
   mSlotBitNumber = 0;
   if ( mBitState == BIT_STATE_IN_PACKET )
@@ -242,14 +242,8 @@ bool Receiver::addBit(uint8_t bit)
 void Receiver::pushPacket()
 {
 #ifndef TX_TEST_MODE
-  Event *p = EventPool::instance().newEvent(AIS_PACKET_EVENT);
-  if ( p == nullptr )
-    {
-      //DBG("AISPacket allocation failed\r\n");
-      return;
-    }
-
-  p->rxPacket = mRXPacket;
+  Event p(AIS_PACKET_EVENT);
+  p.rxPacket = mRXPacket;
   mRXPacket.reset();
   EventQueue::instance().push(p);
 #else
@@ -260,13 +254,10 @@ void Receiver::pushPacket()
 uint8_t Receiver::reportRSSI()
 {
   uint8_t rssi = readRSSI();
-  Event *e = EventPool::instance().newEvent(RSSI_SAMPLE_EVENT);
-  if ( e )
-    {
-      e->rssiSample.channel = mChannel;
-      e->rssiSample.rssi = rssi;
-      EventQueue::instance().push(e);
-    }
+  Event e(RSSI_SAMPLE_EVENT);
+  e.rssiSample.channel = mChannel;
+  e.rssiSample.rssi = rssi;
+  EventQueue::instance().push(e);
   return rssi;
 }
 

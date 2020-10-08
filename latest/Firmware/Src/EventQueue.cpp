@@ -19,13 +19,18 @@
 
 
 #include "EventQueue.hpp"
-#include <cassert>
 #include <stm32l4xx.h>
 
 #include "printf_serial.h"
 #include "printf_serial.h"
 #include "Utils.hpp"
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
 
+#define EVENT_QUEUE_SIZE  40
+
+static Event __queue[EVENT_QUEUE_SIZE];
 
 EventQueue &EventQueue::instance()
 {
@@ -35,34 +40,23 @@ EventQueue &EventQueue::instance()
 
 EventQueue::EventQueue()
 {
-  mISRQueue = new CircularQueue<Event*>(40);
-  mThreadQueue = new CircularQueue<Event*>(40);
+  mQueueHandle = xQueueCreateStatic(EVENT_QUEUE_SIZE, sizeof(Event), (uint8_t*)&__queue[0], &mQueue);
 }
 
 void EventQueue::init()
 {
 }
 
-void EventQueue::push(Event *event)
+void EventQueue::push(const Event &e)
 {
-  /*
-   * For mISRQueue, interrupt context is the "producer", and the thread is the "consumer".
-   * For mThreadQueue, the thread is both the producer and the consumer, so all access is serialized.
-   */
-  ASSERT(event);
+  BaseType_t xHighPriorityTaskWoken = pdFALSE;
   if ( Utils::inISR() )
     {
-      if ( !mISRQueue->push(event) )
-        {
-          EventPool::instance().deleteEvent(event);
-        }
+      xQueueSendFromISR(mQueueHandle, &e, &xHighPriorityTaskWoken);
     }
   else
     {
-      if ( !mThreadQueue->push(event) )
-        {
-          EventPool::instance().deleteEvent(event);
-        }
+      xQueueSend(mQueueHandle, &e, 0);
     }
 }
 
@@ -82,27 +76,18 @@ void EventQueue::removeObserver(EventConsumer *c)
 
 void EventQueue::dispatch()
 {
-  //ASSERT(!Utils::inISR());
+  Event e;
 
-  Event *e = nullptr;
-
-  // This is safe to do as interrupt context never pops this queue!
-  while ( mISRQueue->pop(e) )
-    {
-      mThreadQueue->push(e);
-    }
-
-  if ( mThreadQueue->pop(e) )
+  while ( xQueueReceive(mQueueHandle, &e, 0) == pdTRUE )
     {
       for ( map<EventConsumer*, uint32_t>::iterator c = mConsumers.begin(); c != mConsumers.end(); ++c )
         {
-          if ( c->second & e->type )
+          if ( c->second & e.type )
             {
-              c->first->processEvent(*e);
+              c->first->processEvent(e);
             }
         }
 
-      EventPool::instance().deleteEvent(e);
     }
 }
 
