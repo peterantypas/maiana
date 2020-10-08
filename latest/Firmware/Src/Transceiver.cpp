@@ -201,8 +201,11 @@ void Transceiver::onBitClock()
             - The RSSI is within 6dB of the noise floor for this channel
             - It's been at least MIN_TX_INTERVAL seconds since our last transmission
 
-            After PCB revision 2.0:
+            With PCB revision 2.0 to 4.x:
             - No TX packets are queued if the supercapacitor is not charged, so no need to check here.
+
+            With PCB revision >= 5.x:
+            - There is no supercapacitor anymore
        */
 
       if ( mUTC && mTXPacket && mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel )
@@ -211,14 +214,13 @@ void Transceiver::onBitClock()
           if ( it != mNoiseFloorCache.end() )
             {
               uint8_t noiseFloor = it->second;
-              if ( mRXPacket.rssi() < noiseFloor + TX_CCA_HEADROOM )
+              if ( mRXPacket.rssi() <= noiseFloor + TX_CCA_HEADROOM )
                 {
-                  if ( mUTC - mTXPacket->timestamp() > MIN_MSG_18_TX_INTERVAL )
+                  if ( mUTC - mTXPacket->timestamp() >= MIN_MSG_18_TX_INTERVAL )
                     {
                       // The packet is way too old. Discard it.
                       TXPacketPool::instance().deleteTXPacket(mTXPacket);
                       mTXPacket = NULL;
-                      //printf2("Transceiver discarded aged TX packet\r\n");
                     }
                   else if ( mUTC - mLastTXTime >= MIN_TX_INTERVAL )
                     {
@@ -258,9 +260,10 @@ void Transceiver::onBitClock()
            * As of September 2020, the digital ramp-down of the Si4463 is broken and not
            * in the latest firmware patch either, so this is a good alternative:
            *
-           * We're assuming the packet has 2-3 ramp down bits, so when it tells us it's done,
-           * we start ramping the PA down as the transmission ends. There is an RC delay circuit
-           * on the PA bias voltage rail, so it won't "crash" hard. This really helped clean up spurs.
+           * The packet has 2-3 ramp down bits, so when it tells us it's reached them,
+           * we ramp the PA down. There is an RC delay circuit
+           * on the PA bias voltage rail, so the voltage won't "crash" hard.
+           * This really helped clean up spurs.
            *
            */
           if ( mTXPacket->canRampDown() )
