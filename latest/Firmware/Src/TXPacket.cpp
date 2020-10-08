@@ -32,14 +32,14 @@ void TXPacket::configure(VHFChannel channel)
 {
   mTestPacket = false;
   mChannel  = channel;
-  strcpy(mMessageType, "<unknown>");
+  memset(mMessageType, 0, sizeof mMessageType);
 }
 
 void TXPacket::configureForTesting(VHFChannel channel, uint16_t numBits)
 {
   mTestPacket = true;
   mChannel  = channel;
-  strcpy(mMessageType, "<unknown>");
+  strcpy(mMessageType, "00");
   mSize = numBits;
 }
 
