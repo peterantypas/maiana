@@ -35,7 +35,7 @@ will simply run as a receiver and never transmit.
 
 The system draws about 40mA from 12V in RX mode, and spikes up to 600mA during transmission (for about 30 milliseconds).
 
-The latest design (not the one pictured above) relies on Ethernet cable for power, data, as well as control signals such as "TX OFF". I will include a reference design for a
+The latest design (not the one pictured above) relies on Ethernet cable for power, data, and control signals such as "TX OFF". I will include a reference design for a
 control box that I'm working on but every boat is different, so your mileage will absolutely vary.
 
 
