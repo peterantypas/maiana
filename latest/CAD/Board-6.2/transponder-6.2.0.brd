@@ -40,11 +40,11 @@
 <layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
 <layer number="43" name="vRestrict" color="2" fill="10" visible="yes" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
-<layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
+<layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
-<layer number="47" name="Measures" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
+<layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
+<layer number="49" name="Reference" color="60" fill="1" visible="no" active="yes"/>
 <layer number="50" name="dxf" color="7" fill="1" visible="no" active="no"/>
 <layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="yes"/>
@@ -97,7 +97,7 @@
 <layer number="132" name="bAdjust" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="144" name="DrillLegend" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="145" name="DrillLegend_01-16" color="2" fill="9" visible="yes" active="yes"/>
-<layer number="150" name="Notes" color="7" fill="1" visible="no" active="yes"/>
+<layer number="150" name="Notes" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="151" name="HeatSink" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="152" name="_bDocu" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="153" name="FabDoc1" color="6" fill="1" visible="no" active="no"/>
@@ -173,6 +173,29 @@ P. Antypas</text>
 <text x="52.1" y="7.5" size="0.8128" layer="1" font="vector">MAIANA™</text>
 <rectangle x1="51.9" y1="7.3" x2="57.2" y2="8.6" layer="29"/>
 <text x="89.5" y="0.9" size="0.6096" layer="21" font="vector" rot="R180">Rev 6.2.0</text>
+<circle x="5.4" y="2.9" radius="1.6" width="0.0762" layer="49"/>
+<circle x="83.8" y="22.4" radius="1.6" width="0.0762" layer="49"/>
+<circle x="14.3" y="18.9" radius="0.6" width="0.0762" layer="49"/>
+<circle x="14" y="10" radius="0.6" width="0.0762" layer="49"/>
+<circle x="9" y="3" radius="0.8" width="0.0762" layer="49"/>
+<circle x="14" y="4" radius="0.6" width="0.0762" layer="49"/>
+<circle x="17" y="4" radius="0.608275" width="0.0762" layer="49"/>
+<circle x="20" y="4" radius="0.6" width="0.0762" layer="49"/>
+<circle x="24.3" y="15.6" radius="0.6" width="0.0762" layer="49"/>
+<circle x="25.9" y="17.4" radius="0.608275" width="0.0762" layer="49"/>
+<circle x="30" y="22.9" radius="0.8" width="0.0762" layer="49"/>
+<circle x="57" y="16" radius="0.8544" width="0.0762" layer="49"/>
+<circle x="66" y="5" radius="0.6" width="0.0762" layer="49"/>
+<circle x="72" y="14" radius="0.6" width="0.0762" layer="49"/>
+<circle x="82" y="12.9" radius="0.5" width="0.0762" layer="49"/>
+<circle x="80.1" y="14.5" radius="0.4" width="0.0762" layer="49"/>
+<circle x="81.3" y="15.3" radius="0.4" width="0.0762" layer="49"/>
+<circle x="82.8" y="15.3" radius="0.4" width="0.0762" layer="49"/>
+<circle x="84" y="14.4" radius="0.4" width="0.0762" layer="49"/>
+<circle x="84" y="11.4" radius="0.4" width="0.0762" layer="49"/>
+<circle x="82.8" y="10.5" radius="0.4" width="0.0762" layer="49"/>
+<circle x="81.3" y="10.5" radius="0.4" width="0.0762" layer="49"/>
+<circle x="80.1" y="11.3" radius="0.4" width="0.0762" layer="49"/>
 </plain>
 <libraries>
 <library name="SparkFun-Passives">
