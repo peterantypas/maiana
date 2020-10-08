@@ -1588,7 +1588,7 @@ Standard 150mA LDO voltage regulator in SOT-23 layout. Micrel part MIC5205. BP (
 <smd name="1" x="-1.499" y="-1.981" dx="0.8" dy="1.4" layer="1"/>
 <smd name="3" x="1.499" y="-1.981" dx="0.8" dy="1.4" layer="1"/>
 <smd name="2" x="0" y="-1.727" dx="0.8" dy="1.9" layer="1" stop="no" cream="no"/>
-<smd name="2@1" x="0" y="0.94" dx="2.032" dy="3.65" layer="1" roundness="75"/>
+<smd name="2@1" x="0" y="0.94" dx="2.032" dy="3.65" layer="1" roundness="75" cream="no"/>
 <text x="-2.54" y="3.175" size="1.27" layer="25">&gt;NAME</text>
 <text x="-2.4051" y="-4.3449" size="1.27" layer="27">&gt;VALUE</text>
 <rectangle x1="-1.7272" y1="-2.1082" x2="-1.27" y2="-1.27" layer="51"/>
@@ -1606,6 +1606,7 @@ Standard 150mA LDO voltage regulator in SOT-23 layout. Micrel part MIC5205. BP (
 </polygon>
 <rectangle x1="-0.5" y1="-2.8" x2="0.5" y2="-1.2" layer="29"/>
 <rectangle x1="-0.4" y1="-2.7" x2="0.4" y2="-0.7" layer="31"/>
+<rectangle x1="-0.9" y1="0.9" x2="0.9" y2="2.4" layer="31"/>
 </package>
 </packages>
 <symbols>
@@ -4056,9 +4057,6 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 </part>
 <part name="SUPPLY40" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY61" library="supply2" deviceset="GND" device=""/>
-<part name="TX_OFF" library="testpad" deviceset="TP" device="TP12R" value="TPTP12R">
-<attribute name="DNP" value="T"/>
-</part>
 <part name="U4" library="diodesinc" deviceset="DMN63D8LDW" device="" value="DMN63D8LDW-7">
 <attribute name="PARTNO" value="DMN63D8LDW-7"/>
 </part>
@@ -4838,11 +4836,6 @@ STLINK adapters that need a reference voltage.</text>
 <attribute name="VALUE" x="116.84" y="20.955" size="1.27" layer="96"/>
 </instance>
 <instance part="SUPPLY16" gate="GND" x="104.14" y="25.4" smashed="yes"/>
-<instance part="TX_OFF" gate="G$1" x="152.4" y="114.3" smashed="yes">
-<attribute name="NAME" x="151.13" y="115.57" size="1.27" layer="95"/>
-<attribute name="TP_SIGNAL_NAME" x="153.67" y="113.03" size="1.778" layer="97"/>
-<attribute name="DNP" x="152.4" y="114.3" size="1.27" layer="96" display="off"/>
-</instance>
 </instances>
 <busses>
 </busses>
@@ -5199,11 +5192,8 @@ STLINK adapters that need a reference voltage.</text>
 <net name="TX_DISABLE" class="0">
 <segment>
 <pinref part="U13" gate="G$1" pin="PA12"/>
-<wire x1="147.32" y1="111.76" x2="152.4" y2="111.76" width="0.1524" layer="91"/>
 <label x="160.02" y="111.76" size="1.27" layer="95" xref="yes"/>
-<pinref part="TX_OFF" gate="G$1" pin="TP"/>
-<wire x1="152.4" y1="111.76" x2="160.02" y2="111.76" width="0.1524" layer="91"/>
-<junction x="152.4" y="111.76"/>
+<wire x1="147.32" y1="111.76" x2="160.02" y2="111.76" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="SPARE" class="0">

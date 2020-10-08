@@ -27,6 +27,8 @@
 #include "CommandProcessor.hpp"
 #include "bsp.hpp"
 #include "printf_serial.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 void fireTestPacket()
 {
@@ -66,9 +68,76 @@ void determineCauseOfReset()
 }
 
 
+void mainTask(void *params)
+{
+  EventQueue::instance().init();
+  EventPool::instance().init();
+  Configuration::instance().init();
+  CommandProcessor::instance().init();
+  DataTerminal::instance().init();
+
+  RXPacketProcessor packetProcessor;
+
+  SystickTimer::instance();
+
+
+#if not defined CALIBRATION_MODE && not defined TX_TEST_MODE
+  GPS::instance().init();
+  GPS::instance().enable();
+#endif
+
+
+#ifdef ENABLE_TX
+  TXPacketPool::instance().init();
+  TXScheduler::instance().init();
+#endif
+
+#if defined CALIBRATION_MODE
+  RadioManager::instance().init();
+  RadioManager::instance().transmitCW(CH_87);
+
+  HAL_Delay(1000);
+  RadioManager::instance().start();
+#elif defined TX_TEST_MODE
+  TXPacketPool::instance().init();
+  RadioManager::instance().init();
+  RadioManager::instance().start();
+
+  // Throttle here to avoid continuous transmission in case we enter a reset loop
+  HAL_Delay(400);
+  fireTestPacket();
+#else
+  RadioManager::instance().init();
+  RadioManager::instance().start();
+#endif
+
+  uint32_t counter = 0;
+
+  bsp_start_wdt();
+
+  // We're getting a very high rate of interrupts, so there's no need to dispatch events every time
+  while (1)
+    {
+      __WFI();
+      ++counter;
+      if ( counter % 20 == 0 )
+        {
+          counter = 1;
+          bsp_refresh_wdt();
+          EventQueue::instance().dispatch();
+        }
+    }
+}
+
 int main(void)
 {
   bsp_hw_init();
+
+  TaskHandle_t xHandle;
+  xTaskCreate(mainTask, "main", 256u, NULL, 5, &xHandle);
+  xPortStartScheduler();
+
+#if 0
 
   EventQueue::instance().init();
   EventPool::instance().init();
@@ -127,4 +196,6 @@ int main(void)
           EventQueue::instance().dispatch();
         }
     }
+#endif
+
 }
