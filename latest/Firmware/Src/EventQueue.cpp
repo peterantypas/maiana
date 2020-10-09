@@ -28,7 +28,7 @@
 #include "queue.h"
 #include "task.h"
 
-#define EVENT_QUEUE_SIZE  40
+#define EVENT_QUEUE_SIZE  10
 
 static Event __queue[EVENT_QUEUE_SIZE];
 
@@ -40,19 +40,25 @@ EventQueue &EventQueue::instance()
 
 EventQueue::EventQueue()
 {
-  mQueueHandle = xQueueCreateStatic(EVENT_QUEUE_SIZE, sizeof(Event), (uint8_t*)&__queue[0], &mQueue);
 }
 
 void EventQueue::init()
 {
+  mQueueHandle = xQueueCreateStatic(EVENT_QUEUE_SIZE, sizeof(Event), (uint8_t*)&__queue[0], &mQueue);
+  configASSERT(mQueueHandle);
 }
 
 void EventQueue::push(const Event &e)
 {
+  if ( xTaskGetSchedulerState() != taskSCHEDULER_RUNNING )
+    return;
+
   BaseType_t xHighPriorityTaskWoken = pdFALSE;
   if ( Utils::inISR() )
     {
       xQueueSendFromISR(mQueueHandle, &e, &xHighPriorityTaskWoken);
+      if ( xHighPriorityTaskWoken )
+        portYIELD_FROM_ISR(xHighPriorityTaskWoken);
     }
   else
     {

@@ -173,6 +173,7 @@ void GPS::onPPS()
   EventQueue::instance ().push(event);
 }
 
+
 void GPS::processEvent(const Event &event)
 {
   //printf2("-> GPS::processEvent()\r\n");

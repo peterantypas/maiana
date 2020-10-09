@@ -256,6 +256,7 @@ __weak void HAL_MspDeInit(void)
   * @param TickPriority  Tick interrupt priority.
   * @retval HAL status
   */
+#if 1
 __weak HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 {
   HAL_StatusTypeDef  status = HAL_OK;
@@ -289,7 +290,7 @@ __weak HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   /* Return function status */
   return status;
 }
-
+#endif
 /**
   * @}
   */

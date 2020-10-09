@@ -33,6 +33,7 @@
 void fireTestPacket()
 {
   VHFChannel channel = CH_87;
+
   if ( rand() % 2 == 0 )
     channel = CH_88;
 
@@ -70,132 +71,88 @@ void determineCauseOfReset()
 
 void mainTask(void *params)
 {
-  EventQueue::instance().init();
-  //EventPool::instance().init();
-  Configuration::instance().init();
-  CommandProcessor::instance().init();
-  DataTerminal::instance().init();
+  //uint32_t counter = 0;
 
-  RXPacketProcessor packetProcessor;
-
-  SystickTimer::instance();
-
-
-#if not defined CALIBRATION_MODE && not defined TX_TEST_MODE
-  GPS::instance().init();
-  GPS::instance().enable();
-#endif
-
-
-#ifdef ENABLE_TX
-  TXPacketPool::instance().init();
-  TXScheduler::instance().init();
-#endif
-
-#if defined CALIBRATION_MODE
-  RadioManager::instance().init();
-  RadioManager::instance().transmitCW(CH_87);
-
-  HAL_Delay(1000);
-  RadioManager::instance().start();
-#elif defined TX_TEST_MODE
-  TXPacketPool::instance().init();
-  RadioManager::instance().init();
-  RadioManager::instance().start();
-
-  // Throttle here to avoid continuous transmission in case we enter a reset loop
-  HAL_Delay(400);
-  fireTestPacket();
-#else
-  RadioManager::instance().init();
-  RadioManager::instance().start();
-#endif
-
-  uint32_t counter = 0;
-
-  bsp_start_wdt();
+  //bsp_start_wdt();
 
   // We're getting a very high rate of interrupts, so there's no need to dispatch events every time
   while (1)
     {
-      __WFI();
-      ++counter;
-      if ( counter % 20 == 0 )
-        {
-          counter = 1;
-          bsp_refresh_wdt();
-          EventQueue::instance().dispatch();
-        }
+      //__WFI();
+      vTaskDelay(10);
+      //++counter;
+      //if ( counter % 100 == 0 )
+        //{
+          //counter = 1;
+          //bsp_refresh_wdt();
+      EventQueue::instance().dispatch();
+        //}
     }
 }
 
+class Ticker : EventConsumer
+{
+public:
+  Ticker()
+  {
+    EventQueue::instance().addObserver(this, ONE_SEC_TIMER_EVENT);
+  }
+
+  void processEvent(const Event &e)
+  {
+    ++__t;
+    printf_serial_now("Tick %d\r\n", __t);
+  }
+private:
+  int __t = 0;
+};
+
+extern "C" {
+__attribute__((used)) void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName )
+{
+  //printf_serial_now("WHOOPS!\r\n");
+  asm("BKPT 0");
+}
+
+__attribute__((used)) void vApplicationTickHook()
+{
+  asm("BKPT 0");
+}
+}
+
+
+
 int main(void)
 {
+  //*(uint8_t *)0xe000ed08 |= 2;
   bsp_hw_init();
-
-  TaskHandle_t xHandle;
-  xTaskCreate(mainTask, "main", 1024u, NULL, 5, &xHandle);
-  xPortStartScheduler();
-
-#if 0
-
   EventQueue::instance().init();
-  EventPool::instance().init();
-  Configuration::instance().init();
-  CommandProcessor::instance().init();
-  DataTerminal::instance().init();
-
-  RXPacketProcessor packetProcessor;
-
   SystickTimer::instance();
-
+  Ticker t;
+  //Configuration::instance().init();
+  //CommandProcessor::instance().init();
+  //DataTerminal::instance().init();
+  //RXPacketProcessor packetProcessor;
 
 #if not defined CALIBRATION_MODE && not defined TX_TEST_MODE
-  GPS::instance().init();
-  GPS::instance().enable();
+  //GPS::instance().init();
+  //GPS::instance().enable();
 #endif
 
 
 #ifdef ENABLE_TX
-  TXPacketPool::instance().init();
-  TXScheduler::instance().init();
+  //TXPacketPool::instance().init();
+  //TXScheduler::instance().init();
 #endif
 
-#if defined CALIBRATION_MODE
-  RadioManager::instance().init();
-  RadioManager::instance().transmitCW(CH_87);
+  //RadioManager::instance().init();
+  //RadioManager::instance().start();
 
-  HAL_Delay(1000);
-  RadioManager::instance().start();
-#elif defined TX_TEST_MODE
-  TXPacketPool::instance().init();
-  RadioManager::instance().init();
-  RadioManager::instance().start();
-
-  // Throttle here to avoid continuous transmission in case we enter a reset loop
-  HAL_Delay(400);
-  fireTestPacket();
-#else
-  RadioManager::instance().init();
-  RadioManager::instance().start();
-#endif
-
-  uint32_t counter = 0;
-
-  bsp_start_wdt();
-
-  // We're getting a very high rate of interrupts, so there's no need to dispatch events every time
-  while (1)
+  TaskHandle_t xHandle;
+  if ( xTaskCreate(mainTask, "main", 256u, NULL, tskIDLE_PRIORITY+1, &xHandle) != pdPASS )
     {
-      __WFI();
-      ++counter;
-      if ( counter % 20 == 0 )
-        {
-          counter = 1;
-          bsp_refresh_wdt();
-          EventQueue::instance().dispatch();
-        }
+      asm("BKPT 0");
     }
-#endif
 
+  xPortStartScheduler();
 }

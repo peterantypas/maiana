@@ -186,12 +186,14 @@ TXPacket* Transceiver::assignedTXPacket()
   return mTXPacket;
 }
 
+/**
+ * This method is called in interrupt context
+ */
 void Transceiver::onBitClock()
 {
   if ( gRadioState == RADIO_RECEIVING )
     {
       Receiver::onBitClock();
-#ifndef TX_TEST_MODE
 #ifdef ENABLE_TX
       /*
           We start transmitting a packet if:
@@ -208,7 +210,16 @@ void Transceiver::onBitClock()
             - There is no supercapacitor anymore
        */
 
-      if ( mUTC && mTXPacket && mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket && mTXPacket->channel() == mChannel )
+      if ( !mTXPacket )
+        return;
+
+
+      if ( mTXPacket->isTestPacket() )
+        {
+          // Test packets are sent immediately. Presumably, we're firing into a dummy load ;)
+          startTransmitting();
+        }
+      else if ( mUTC && mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket->channel() == mChannel )
         {
           auto it = mNoiseFloorCache.find(mChannel);
           if ( it != mNoiseFloorCache.end() )
@@ -229,12 +240,6 @@ void Transceiver::onBitClock()
                 }
             }
         }
-#endif
-#else
-      // In Test Mode we don't care about RSSI, SOTDMA or anything. Presumably we're firing into a dummy load ;-) Also, we don't care about throttling.
-      if ( mTXPacket ) {
-          startTransmitting();
-      }
 #endif
     }
   else
@@ -258,11 +263,10 @@ void Transceiver::onBitClock()
 
           /**
            * As of September 2020, the digital ramp-down of the Si4463 is broken and not
-           * in the latest firmware patch either, so this is a good alternative:
+           * in the latest firmware patch either, so this is a good alternative.
            *
            * The packet has 2-3 ramp down bits, so when it tells us it's reached them,
-           * we ramp the PA down. There is an RC delay circuit
-           * on the PA bias voltage rail, so the voltage won't "crash" hard.
+           * we ramp the bias voltage down by means of the RC delay circuit.
            * This really helped clean up spurs.
            *
            */

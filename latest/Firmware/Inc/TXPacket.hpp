@@ -54,6 +54,7 @@ public:
 
   void configureForTesting(VHFChannel channel, uint16_t numBits);
   bool canRampDown();
+  bool isTestPacket();
 private:
   uint8_t mPacket[MAX_AIS_TX_PACKET_SIZE/8+1];
   uint16_t mSize;

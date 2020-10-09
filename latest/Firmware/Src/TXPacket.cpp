@@ -76,6 +76,11 @@ void TXPacket::setMessageType(const char *t)
   strncpy(mMessageType, t, sizeof mMessageType);
 }
 
+bool TXPacket::isTestPacket()
+{
+  return mTestPacket;
+}
+
 const char *TXPacket::messageType()
 {
   return mMessageType;
