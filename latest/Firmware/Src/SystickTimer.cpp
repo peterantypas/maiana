@@ -58,7 +58,7 @@ extern "C"
 {
   void HAL_SYSTICK_Callback()
   {
-    SystickTimer::instance().onTick();
+    //SystickTimer::instance().onTick();
   }
 }
 

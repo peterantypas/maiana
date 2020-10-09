@@ -771,7 +771,7 @@ extern "C" {
 #endif
 
 #ifndef portDONT_DISCARD
-	#define portDONT_DISCARD __attribute__((used))
+	#define portDONT_DISCARD
 #endif
 
 #ifndef configUSE_TIME_SLICING

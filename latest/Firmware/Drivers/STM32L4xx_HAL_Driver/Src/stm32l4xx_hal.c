@@ -256,7 +256,7 @@ __weak void HAL_MspDeInit(void)
   * @param TickPriority  Tick interrupt priority.
   * @retval HAL status
   */
-#if 1
+
 __weak HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 {
   HAL_StatusTypeDef  status = HAL_OK;
@@ -290,7 +290,7 @@ __weak HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   /* Return function status */
   return status;
 }
-#endif
+
 /**
   * @}
   */
@@ -418,6 +418,7 @@ __weak void HAL_Delay(uint32_t Delay)
   *       implementations in user file.
   * @retval None
   */
+#if 0
 __weak void HAL_SuspendTick(void)
 {
   /* Disable SysTick Interrupt */
@@ -439,6 +440,7 @@ __weak void HAL_ResumeTick(void)
   /* Enable SysTick Interrupt */
   SysTick->CTRL  |= SysTick_CTRL_TICKINT_Msk;
 }
+#endif
 
 /**
   * @brief  Return the HAL revision.

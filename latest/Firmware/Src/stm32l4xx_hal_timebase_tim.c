@@ -48,7 +48,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   uint32_t              pFLatency;
   
   /*Configure the TIM6 IRQ priority */
-  HAL_NVIC_SetPriority(TIM6_IRQn, 5,0);//TickPriority ,0);
+  HAL_NVIC_SetPriority(TIM6_IRQn,TickPriority ,0);
   
   /* Enable the TIM6 global Interrupt */
   HAL_NVIC_EnableIRQ(TIM6_IRQn); 
@@ -131,7 +131,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM6) {
     HAL_IncTick();
-    HAL_SYSTICK_IRQHandler();
   }
   /* USER CODE BEGIN Callback 1 */
 

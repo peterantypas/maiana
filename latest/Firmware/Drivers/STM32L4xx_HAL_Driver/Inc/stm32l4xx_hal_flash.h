@@ -856,8 +856,7 @@ HAL_StatusTypeDef FLASH_WaitForLastOperation(uint32_t Timeout);
 #define FLASH_PAGE_SIZE                    ((uint32_t)0x800)
 #endif
 
-//#define FLASH_TIMEOUT_VALUE                ((uint32_t)50000)/* 50 s */
-#define FLASH_TIMEOUT_VALUE                 1200 // 1200ms
+#define FLASH_TIMEOUT_VALUE                ((uint32_t)50000)/* 50 s */
 /**
   * @}
   */

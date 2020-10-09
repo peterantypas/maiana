@@ -28,7 +28,7 @@
 #include "queue.h"
 #include "task.h"
 
-#define EVENT_QUEUE_SIZE  10
+#define EVENT_QUEUE_SIZE  40
 
 static Event __queue[EVENT_QUEUE_SIZE];
 
@@ -84,7 +84,7 @@ void EventQueue::dispatch()
 {
   Event e;
 
-  while ( xQueueReceive(mQueueHandle, &e, 0) == pdTRUE )
+  while ( xQueueReceive(mQueueHandle, &e, 10) == pdTRUE )
     {
       for ( map<EventConsumer*, uint32_t>::iterator c = mConsumers.begin(); c != mConsumers.end(); ++c )
         {

@@ -29,6 +29,8 @@
 #include "printf_serial.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "timers.h"
+
 
 void fireTestPacket()
 {
@@ -68,44 +70,57 @@ void determineCauseOfReset()
   __HAL_RCC_CLEAR_RESET_FLAGS();
 }
 
+TimerHandle_t timerHandle1, timerHandle2;
+StaticTimer_t timer1, timer2;
+
+extern "C"{
+  void on1sec(TimerHandle_t handle)
+  {
+    Event e(ONE_SEC_TIMER_EVENT);
+    EventQueue::instance().push(e);
+  }
+
+  void on1min(TimerHandle_t handle)
+  {
+    Event e(ONE_MIN_TIMER_EVENT);
+    EventQueue::instance().push(e);
+  }
+}
 
 void mainTask(void *params)
 {
-  //uint32_t counter = 0;
+  EventQueue::instance().init();
+  Configuration::instance().init();
+  CommandProcessor::instance().init();
+  DataTerminal::instance().init();
 
-  //bsp_start_wdt();
+  RXPacketProcessor packetProcessor;
 
-  // We're getting a very high rate of interrupts, so there's no need to dispatch events every time
+#if not defined CALIBRATION_MODE && not defined TX_TEST_MODE
+  GPS::instance().init();
+  GPS::instance().enable();
+#endif
+
+
+#ifdef ENABLE_TX
+  TXPacketPool::instance().init();
+  TXScheduler::instance().init();
+#endif
+
+  RadioManager::instance().init();
+  RadioManager::instance().start();
+
+  timerHandle1 = xTimerCreateStatic("1sec", 1000, pdTRUE, NULL, on1sec, &timer1);
+  xTimerStart(timerHandle1, 10);
+
+  timerHandle2 = xTimerCreateStatic("1min", 1000, pdTRUE, NULL, on1min, &timer2);
+  xTimerStart(timerHandle2, 10);
+
   while (1)
     {
-      //__WFI();
-      vTaskDelay(10);
-      //++counter;
-      //if ( counter % 100 == 0 )
-        //{
-          //counter = 1;
-          //bsp_refresh_wdt();
       EventQueue::instance().dispatch();
-        //}
     }
 }
-
-class Ticker : EventConsumer
-{
-public:
-  Ticker()
-  {
-    EventQueue::instance().addObserver(this, ONE_SEC_TIMER_EVENT);
-  }
-
-  void processEvent(const Event &e)
-  {
-    ++__t;
-    printf_serial_now("Tick %d\r\n", __t);
-  }
-private:
-  int __t = 0;
-};
 
 extern "C" {
 __attribute__((used)) void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName )
@@ -114,45 +129,20 @@ __attribute__((used)) void vApplicationStackOverflowHook( TaskHandle_t xTask, si
   asm("BKPT 0");
 }
 
-__attribute__((used)) void vApplicationTickHook()
-{
-  asm("BKPT 0");
 }
-}
-
-
 
 int main(void)
 {
-  //*(uint8_t *)0xe000ed08 |= 2;
+  *(uint8_t *)0xe000ed08 |= 2;
   bsp_hw_init();
-  EventQueue::instance().init();
-  SystickTimer::instance();
-  Ticker t;
-  //Configuration::instance().init();
-  //CommandProcessor::instance().init();
-  //DataTerminal::instance().init();
-  //RXPacketProcessor packetProcessor;
-
-#if not defined CALIBRATION_MODE && not defined TX_TEST_MODE
-  //GPS::instance().init();
-  //GPS::instance().enable();
-#endif
-
-
-#ifdef ENABLE_TX
-  //TXPacketPool::instance().init();
-  //TXScheduler::instance().init();
-#endif
-
-  //RadioManager::instance().init();
-  //RadioManager::instance().start();
 
   TaskHandle_t xHandle;
-  if ( xTaskCreate(mainTask, "main", 256u, NULL, tskIDLE_PRIORITY+1, &xHandle) != pdPASS )
+  if ( xTaskCreate(mainTask, "main", 2048u, NULL, tskIDLE_PRIORITY+4, &xHandle) != pdPASS )
     {
       asm("BKPT 0");
     }
 
-  xPortStartScheduler();
+  vTaskStartScheduler();
+  asm("BKPT 0");
+  return 1;
 }
