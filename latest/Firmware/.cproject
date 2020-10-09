@@ -1141,9 +1141,9 @@
                             							
                             <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.freestanding.1984851120" name="Assume freestanding environment (-ffreestanding)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.freestanding" useByScannerDiscovery="true" value="true" valueType="boolean"/>
                             							
-                            <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.nobuiltin.1075429989" name="Disable builtin (-fno-builtin)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.nobuiltin" useByScannerDiscovery="true"/>
+                            <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.nobuiltin.1075429989" name="Disable builtin (-fno-builtin)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.nobuiltin" useByScannerDiscovery="true" value="false" valueType="boolean"/>
                             							
-                            <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.spconstant.703973694" name="Single precision constants (-fsingle-precision-constant)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.spconstant" useByScannerDiscovery="true"/>
+                            <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.spconstant.703973694" name="Single precision constants (-fsingle-precision-constant)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.spconstant" useByScannerDiscovery="true" value="true" valueType="boolean"/>
                             							
                             <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.PIC.681252134" name="Position independent code (-fPIC)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.PIC" useByScannerDiscovery="true" value="false" valueType="boolean"/>
                             							

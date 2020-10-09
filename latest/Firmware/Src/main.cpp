@@ -32,30 +32,7 @@
 #include "timers.h"
 
 
-void fireTestPacket()
-{
-  VHFChannel channel = CH_87;
-
-  if ( rand() % 2 == 0 )
-    channel = CH_88;
-
-  TXPacket *p = TXPacketPool::instance().newTXPacket(channel);
-  if ( !p ) {
-      //DBG("Ooops! Out of TX packets :(\r\n");
-      return;
-  }
-
-  /**
-   * Define a dummy packet of 9600 random bits, so it will take 1 second to transmit it.
-   * This is long enough for most spectrum analyzers to capture details using "max hold",
-   * even at very low resolution bandwidths. Great way to measure power and look for
-   * spurious emissions as well as harmonics.
-   */
-  p->configureForTesting(channel, 9600);
-
-  RadioManager::instance().sendTestPacketNow(p);
-}
-
+#if 0
 void determineCauseOfReset()
 {
   std::string cause;
@@ -69,6 +46,7 @@ void determineCauseOfReset()
   //DBG("Cause of reset: %s\r\n", cause.c_str());
   __HAL_RCC_CLEAR_RESET_FLAGS();
 }
+#endif
 
 TimerHandle_t timerHandle1, timerHandle2;
 StaticTimer_t timer1, timer2;
@@ -113,12 +91,15 @@ void mainTask(void *params)
   timerHandle1 = xTimerCreateStatic("1sec", 1000, pdTRUE, NULL, on1sec, &timer1);
   xTimerStart(timerHandle1, 10);
 
-  timerHandle2 = xTimerCreateStatic("1min", 1000, pdTRUE, NULL, on1min, &timer2);
+  timerHandle2 = xTimerCreateStatic("1min", 60000, pdTRUE, NULL, on1min, &timer2);
   xTimerStart(timerHandle2, 10);
 
+  bsp_start_wdt();
   while (1)
     {
       EventQueue::instance().dispatch();
+      vTaskDelay(50);
+      bsp_refresh_wdt();
     }
 }
 
@@ -133,7 +114,7 @@ __attribute__((used)) void vApplicationStackOverflowHook( TaskHandle_t xTask, si
 
 int main(void)
 {
-  *(uint8_t *)0xe000ed08 |= 2;
+  //*(uint8_t *)0xe000ed08 |= 2;
   bsp_hw_init();
 
   TaskHandle_t xHandle;

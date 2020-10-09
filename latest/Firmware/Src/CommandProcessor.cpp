@@ -27,6 +27,8 @@
 #include "TXScheduler.hpp"
 #include "bsp.hpp"
 #include "GPS.hpp"
+#include "RadioManager.hpp"
+
 
 CommandProcessor &CommandProcessor::instance()
 {
@@ -54,6 +56,30 @@ void CommandProcessor::processEvent(const Event &e)
   default:
     break;
   }
+}
+
+void fireTestPacket()
+{
+  VHFChannel channel = CH_87;
+
+  if ( rand() % 2 == 0 )
+    channel = CH_88;
+
+  TXPacket *p = TXPacketPool::instance().newTXPacket(channel);
+  if ( !p ) {
+      //DBG("Ooops! Out of TX packets :(\r\n");
+      return;
+  }
+
+  /**
+   * Define a dummy packet of 9600 random bits, so it will take 1 second to transmit.
+   * This is long enough for most spectrum analyzers to capture details using "max hold",
+   * even at very low resolution bandwidths. Great way to measure power and look for
+   * spurious emissions as well as harmonics.
+   */
+  p->configureForTesting(channel, 9600);
+
+  RadioManager::instance().sendTestPacketNow(p);
 }
 
 void CommandProcessor::processCommand(const char *buff)
@@ -102,6 +128,10 @@ void CommandProcessor::processCommand(const char *buff)
     {
       // Clear station data
       Configuration::instance().resetToDefaults();
+    }
+  else if ( s.find("tx test") == 0 )
+    {
+      fireTestPacket();
     }
   else if (s.find("reboot") == 0 )
     {

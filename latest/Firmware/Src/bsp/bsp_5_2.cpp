@@ -36,7 +36,7 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim6;
 
 void SystemClock_Config();
-void bsp_init_hw_tick();
+
 
 char_input_cb gnssInputCallback = nullptr;
 char_input_cb terminalInputCallback = nullptr;
