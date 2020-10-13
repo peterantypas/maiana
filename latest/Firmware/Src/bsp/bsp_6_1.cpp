@@ -545,20 +545,14 @@ bool bsp_is_tx_disabled()
 
 void bsp_enter_dfu()
 {
-  /**
-   * The RC delay circuit feeding BOOT0 from this GPIO will latch the voltage high
-   * long enough for the next reset to invoke the ROM bootloader. This is the cleanest
-   * way to go about it. The alternative requires that we shut down all peripherals and
-   * disable every interrupt including Systick.
-   */
+  // Turn off the GNSS immediately to prevent its UART from transmitting and hijacking the bootloader upon reset
+  bsp_gnss_off();
 
-  /**
-   * BUG: This can never work with this board, because the GNSS UART is constantly sending data, so the bootloader
-   * will enable DFU protocol on that USART instead of the main one :(
-   */
+  // This flag simply tells main() to jump to the ROM bootloader immediately upon reset, before initializing anything
+  *(uint32_t*)DFU_FLAG_ADDRESS = DFU_FLAG_MAGIC;
 
-  HAL_GPIO_WritePin(DFU_EN_PORT, DFU_EN_PIN, GPIO_PIN_SET);
-  HAL_Delay(250);
+  // Give the GNSS enough time to hibernate, then reset
+  HAL_Delay(1000);
   bsp_reboot();
 }
 

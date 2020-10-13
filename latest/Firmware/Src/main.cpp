@@ -110,13 +110,13 @@ int main(void)
 {
 #if 1
   if ( *(uint32_t*)DFU_FLAG_ADDRESS == DFU_FLAG_MAGIC )
-  //if ( true )
     {
       *(uint32_t*)DFU_FLAG_ADDRESS = 0;
       jump_to_bootloader();
     }
 #endif
 
+  // This is for debugging imprecise bus faults
   //*(uint8_t *)0xe000ed08 |= 2;
   bsp_hw_init();
 
