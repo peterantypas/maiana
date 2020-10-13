@@ -1,14 +1,4 @@
 /*
- * bsp_6_0.cpp
- *
- *  Created on: Oct 13, 2020
- *      Author: peter
- */
-
-
-
-
-/*
   Copyright (c) 2016-2020 Peter Antypas
 
   This file is part of the MAIANA™ transponder firmware.
@@ -64,6 +54,7 @@ typedef struct
 
 static const GPIO __gpios[] = {
     {GNSS_EN_PORT, {GNSS_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
+    {TX_DISABLE_PORT, {TX_DISABLE_PIN, GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {EEPROM_WREN_PORT, {EEPROM_WREN_PIN, GPIO_MODE_OUTPUT_OD, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {CS2_PORT, {CS2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
     {TRX_IC_CLK_PORT, {TRX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
@@ -549,7 +540,7 @@ bool bsp_read_station_data(StationData &data)
 
 bool bsp_is_tx_disabled()
 {
-  return false;
+  return HAL_GPIO_ReadPin(TX_DISABLE_PORT, TX_DISABLE_PIN) == GPIO_PIN_RESET;
 }
 
 void bsp_enter_dfu()
