@@ -31,22 +31,24 @@
 #include "task.h"
 #include "timers.h"
 
-
-#if 0
-void determineCauseOfReset()
+void jump_to_bootloader()
 {
-  std::string cause;
-  if ( __HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST) )
-    cause += "Watchdog, ";
-  if ( __HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST) )
-    cause += "Software, ";
-  if ( __HAL_RCC_GET_FLAG(RCC_FLAG_BORRST) )
-    cause += "Brownout";
+  typedef void (*pFunction)(void);
+  pFunction systemBootloader;
 
-  //DBG("Cause of reset: %s\r\n", cause.c_str());
-  __HAL_RCC_CLEAR_RESET_FLAGS();
+  /**
+   * System bootloader for L412 and L432 series resides at 0x1fff0000,
+   * so the first 4 bytes contain the stack pointer and the next 4 contain the
+   * program counter
+   */
+  systemBootloader = (pFunction) (*((uint32_t *)(0x1fff0004)));
+  uint32_t *pp = (uint32_t*)0x1fff0000;
+  uint32_t msp = *pp;
+  __set_MSP(msp);
+
+  // That's it, jump!
+  systemBootloader();
 }
-#endif
 
 TimerHandle_t timerHandle1, timerHandle2;
 StaticTimer_t timer1, timer2;
@@ -85,8 +87,10 @@ void mainTask(void *params)
   TXScheduler::instance().init();
 #endif
 
+#if 0
   RadioManager::instance().init();
   RadioManager::instance().start();
+#endif
 
   timerHandle1 = xTimerCreateStatic("1sec", 1000, pdTRUE, NULL, on1sec, &timer1);
   xTimerStart(timerHandle1, 10);
@@ -103,17 +107,18 @@ void mainTask(void *params)
     }
 }
 
-extern "C" {
-__attribute__((used)) void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName )
-{
-  //printf_serial_now("WHOOPS!\r\n");
-  asm("BKPT 0");
-}
-
-}
 
 int main(void)
 {
+#if 0
+  //if ( *(uint32_t*)DFU_FLAG_ADDRESS == DFU_FLAG_MAGIC )
+  if ( true )
+    {
+      *(uint32_t*)DFU_FLAG_ADDRESS = 0;
+      jump_to_bootloader();
+    }
+#endif
+
   //*(uint8_t *)0xe000ed08 |= 2;
   bsp_hw_init();
 

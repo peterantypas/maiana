@@ -20,9 +20,6 @@
 #ifndef TXPACKET_HPP_
 #define TXPACKET_HPP_
 
-#include <inttypes.h>
-#include <time.h>
-
 #include "ObjectPool.hpp"
 #include "AISChannels.h"
 #include "config.h"
@@ -32,15 +29,15 @@ class TXPacket
 {
 public:
   TXPacket ();
-  virtual ~TXPacket();
+  ~TXPacket();
 
   void addBit(uint8_t bit);
   void pad();
-  virtual uint16_t size();
+  uint16_t size();
 
   // Iterator pattern for transmitting bit-by-bit
-  virtual bool eof();
-  virtual uint8_t nextBit();
+  bool eof();
+  uint8_t nextBit();
   VHFChannel channel();
 
   void setTimestamp(time_t t);
@@ -65,13 +62,6 @@ private:
   bool mTestPacket = false;
 };
 
-class TXTestPacket : public TXPacket
-{
-public:
-  TXTestPacket();
-  ~TXTestPacket();
-
-};
 
 class TXPacketPool
 {

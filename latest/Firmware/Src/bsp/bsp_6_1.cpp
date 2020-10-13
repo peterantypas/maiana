@@ -25,7 +25,7 @@
 #include <string.h>
 
 
-#if BOARD_REV==60
+#if BOARD_REV==61
 
 I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
@@ -79,11 +79,13 @@ static const GPIO __gpios[] = {
 
 extern "C"
 {
-  void Error_Handler(void)
+  void Error_Handler(uint8_t i)
   {
-    printf_serial_now("[ERROR]\r\n");
-    printf_serial_now("[ERROR] ***** System error handler resetting *****\r\n");
-    NVIC_SystemReset();
+
+    asm("BKPT 0");
+    printf_serial_now("[ERROR %d]\r\n", i);
+    //printf_serial_now("[ERROR] ***** System error handler resetting *****\r\n");
+    //NVIC_SystemReset();
   }
 }
 
@@ -158,7 +160,7 @@ void bsp_hw_init()
 
   if (HAL_SPI_Init(&hspi1) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
 
   __HAL_SPI_ENABLE(&hspi1);
@@ -209,20 +211,33 @@ void bsp_hw_init()
   hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
   if (HAL_I2C_Init(&hi2c1) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
   /** Configure Analogue filter
    */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
   /** Configure Digital filter
    */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
+
+  // 1PPS signal
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
+
+  // RF IC clock interrupts
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 }
 
 
@@ -252,7 +267,7 @@ void SystemClock_Config()
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
 
   /**Initializes the CPU, AHB and APB bus clocks
@@ -266,21 +281,21 @@ void SystemClock_Config()
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
 
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_HSI;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
 
   /**Configure the main internal regulator output voltage
    */
   if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
 
   /**Configure the Systick interrupt time

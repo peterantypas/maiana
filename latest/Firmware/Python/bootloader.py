@@ -14,7 +14,7 @@ GET  = 0x00
 PAGE_SIZE       = 2048
 FLASH_BASE      = 0x08000000
 BAUD_RATE       = 115200
-MAX_IMAGE_SIZE  = 128*1024
+MAX_IMAGE_SIZE  = 64*1024
 
 # These defaults will be overwritten with results of GET command
 GET_VER_CMD             = 0x01
@@ -62,7 +62,7 @@ def configure_commands(data):
     print s
     """
     
-
+    
 def packet_checksum(p):
     x = 0
     for b in p:
@@ -71,12 +71,19 @@ def packet_checksum(p):
     return x
     
 def read_byte():
-    r = port.read()
+    r = port.read(1)
     if len(r) > 0:
         return (True, ord(r[0]))
     else:
         return (False, 0)
 
+def drain():
+    keepreading = True
+    while True:
+        (r, keepreading) = read_byte()
+        if r == False:
+            break
+    
 def do_handshake():
     port.write([0x7f])
     (success, b) = read_byte()
@@ -93,8 +100,10 @@ def complement(cmd):
 
 def send_command(cmd):
     packet = [cmd, complement(cmd)]
+    #print packet
     port.write(packet)
     (success, r) = read_byte()
+    #print r
     if not success:
         print "Failed to send command 0x{0:2x}".format(cmd)
         return False
@@ -102,7 +111,8 @@ def send_command(cmd):
     if r != ACK:
         print "Got NACK for command 0x{0:2x}".format(cmd)
         return False
-        
+
+    #print "Got ACK"
     return True
     
 
@@ -254,7 +264,9 @@ if __name__ == '__main__':
             
     if not bl_present:
         sys.exit(1)
-    
+
+    drain()
+        
     (success, data) = send_get()
     if success:
         configure_commands(data[2:])

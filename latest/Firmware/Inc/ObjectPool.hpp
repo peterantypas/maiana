@@ -23,8 +23,7 @@
 
 using namespace std;
 
-#include <cstdlib>
-#include <cassert>
+
 #include "printf_serial.h"
 #include "_assert.h"
 #include "CircularQueue.hpp"
@@ -84,7 +83,5 @@ private:
   uint32_t          mMaxUtilization;
   CircularQueue<T*> mQueue;
 };
-
-
 
 #endif /* OBJECTPOOL_HPP_ */
