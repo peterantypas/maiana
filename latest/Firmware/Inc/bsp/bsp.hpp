@@ -26,7 +26,7 @@
 // Either modify this header or define a different symbol in the preprocessor to build for a different board
 
 #ifndef BOARD_REV
-#define BOARD_REV 52
+#define BOARD_REV 60
 #endif
 
 /**

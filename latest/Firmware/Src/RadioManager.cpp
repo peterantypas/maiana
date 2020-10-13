@@ -51,7 +51,6 @@ bool RadioManager::initialized()
 void RadioManager::init()
 {
   NoiseFloorDetector::instance();
-
   //DBG("Initializing RF IC 1\r\n");
   mTransceiverIC = new Transceiver(SDN1_PORT, SDN1_PIN,
       CS1_PORT, CS1_PIN,
@@ -60,7 +59,6 @@ void RadioManager::init()
   mTransceiverIC->init();
 
 #ifndef TX_TEST_MODE
-
   //DBG("Initializing RF IC 2\r\n");
   mReceiverIC = new Receiver(SDN2_PORT, SDN2_PIN,
       CS2_PORT, CS2_PIN,

@@ -1,14 +1,4 @@
 /*
- * bsp_6_0.cpp
- *
- *  Created on: Oct 13, 2020
- *      Author: peter
- */
-
-
-
-
-/*
   Copyright (c) 2016-2020 Peter Antypas
 
   This file is part of the MAIANA™ transponder firmware.
@@ -63,7 +53,7 @@ typedef struct
 } GPIO;
 
 static const GPIO __gpios[] = {
-    {GNSS_EN_PORT, {GNSS_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
+    {GNSS_EN_PORT, {GNSS_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {EEPROM_WREN_PORT, {EEPROM_WREN_PIN, GPIO_MODE_OUTPUT_OD, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {CS2_PORT, {CS2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
     {TRX_IC_CLK_PORT, {TRX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
@@ -78,6 +68,7 @@ static const GPIO __gpios[] = {
     {DFU_EN_PORT, {DFU_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {UART_TX_PORT, {UART_TX_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
     {UART_RX_PORT, {UART_RX_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
+    {TX_DISABLE_PORT, {TX_DISABLE_PIN, GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {SDN2_PORT, {SDN2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {RX_IC_CLK_PORT, {RX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {RX_IC_DATA_PORT, {RX_IC_DATA_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
@@ -247,13 +238,14 @@ void SystemClock_Config()
    */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.HSICalibrationValue = 16;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 1;
   RCC_OscInitStruct.PLL.PLLN = 10;  // 80 MHz
   //RCC_OscInitStruct.PLL.PLLN = 8; // 64 MHz
   //RCC_OscInitStruct.PLL.PLLN = 6; // 48 MHz
+
 #ifdef STM32L432xx
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
 #endif
@@ -352,7 +344,7 @@ void HAL_MspInit(void)
 
 void bsp_set_rx_mode()
 {
-  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_RESET);       // Kill the RF MOSFET bias voltage
+  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_RESET);
 
   GPIO_InitTypeDef gpio;
   gpio.Pin = TRX_IC_DATA_PIN;
@@ -371,7 +363,12 @@ void bsp_set_tx_mode()
   gpio.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(TRX_IC_DATA_PORT, &gpio);
 
-  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_SET);       // RF MOSFET bias voltage
+  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_SET);
+}
+
+bool bsp_is_tx_disabled()
+{
+  return HAL_GPIO_ReadPin(TX_DISABLE_PORT, TX_DISABLE_PIN) == GPIO_PIN_RESET;
 }
 
 void bsp_gnss_on()
@@ -384,7 +381,6 @@ void bsp_gnss_off()
   HAL_GPIO_WritePin(GNSS_EN_PORT, GNSS_EN_PIN, GPIO_PIN_RESET);
   HAL_Delay(100);
 }
-
 
 void USART_putc(USART_TypeDef* USARTx, char c)
 {
@@ -534,11 +530,6 @@ bool bsp_read_station_data(StationData &data)
   return true;
 }
 
-bool bsp_is_tx_disabled()
-{
-  return false;
-}
-
 void bsp_enter_dfu()
 {
   /**
@@ -548,13 +539,8 @@ void bsp_enter_dfu()
    * disable every interrupt including Systick.
    */
 
-  /**
-   * BUG: This can never work with this board, because the GNSS UART is constantly sending data, so the bootloader
-   * will enable DFU protocol on that USART instead of the main one :(
-   */
-
   HAL_GPIO_WritePin(DFU_EN_PORT, DFU_EN_PIN, GPIO_PIN_SET);
-  HAL_Delay(250);
+  HAL_Delay(500);
   bsp_reboot();
 }
 
