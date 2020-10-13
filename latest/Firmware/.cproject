@@ -328,8 +328,7 @@
                     </folderInfo>
                     					
                     <sourceEntries>
-                        						
-                        <entry excluding="Drivers/STM32L4xx_HAL_Driver_Old|Drivers/CMSIS_Old|startup/startup_stm32l412xx.S|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="Src/bsp/bsp_6_0_bad.cpp|startup/startup_stm32l412xx.S|Drivers/CMSIS_Old|Drivers/STM32L4xx_HAL_Driver_Old|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
@@ -665,7 +664,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="Drivers/STM32L4xx_HAL_Driver_Old|Drivers/CMSIS_Old|startup/startup_stm32l412xx.S|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="Src/bsp/bsp_6_0_bad.cpp|startup/startup_stm32l412xx.S|Drivers/CMSIS_Old|Drivers/STM32L4xx_HAL_Driver_Old|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
@@ -1013,7 +1012,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="Drivers/STM32L4xx_HAL_Driver_Old|startup/startup_stm32l432xx.S|Drivers/CMSIS_Old|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="Src/bsp/bsp_6_0_bad.cpp|startup/startup_stm32l432xx.S|Drivers/CMSIS_Old|Drivers/STM32L4xx_HAL_Driver_Old|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				
@@ -1355,7 +1354,7 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="Drivers/STM32L4xx_HAL_Driver_Old|startup/startup_stm32l432xx.S|Drivers/CMSIS_Old|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="Src/bsp/bsp_6_0_bad.cpp|startup/startup_stm32l432xx.S|Drivers/CMSIS_Old|Drivers/STM32L4xx_HAL_Driver_Old|Src/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                         					
                     </sourceEntries>
                     				

@@ -96,9 +96,6 @@
 #define DFU_FLAG_ADDRESS              0x20009C00
 #define DFU_FLAG_MAGIC                0xa191feed
 
-#ifdef STM32L432xx
-#define BOOTLOADER_STACK_ADDRESS      0x202C0020
-#endif
 
 
 

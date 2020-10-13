@@ -87,10 +87,8 @@ void mainTask(void *params)
   TXScheduler::instance().init();
 #endif
 
-#if 0
   RadioManager::instance().init();
   RadioManager::instance().start();
-#endif
 
   timerHandle1 = xTimerCreateStatic("1sec", 1000, pdTRUE, NULL, on1sec, &timer1);
   xTimerStart(timerHandle1, 10);
@@ -110,9 +108,9 @@ void mainTask(void *params)
 
 int main(void)
 {
-#if 0
-  //if ( *(uint32_t*)DFU_FLAG_ADDRESS == DFU_FLAG_MAGIC )
-  if ( true )
+#if 1
+  if ( *(uint32_t*)DFU_FLAG_ADDRESS == DFU_FLAG_MAGIC )
+  //if ( true )
     {
       *(uint32_t*)DFU_FLAG_ADDRESS = 0;
       jump_to_bootloader();

@@ -1,14 +1,4 @@
 /*
- * bsp_6_0.cpp
- *
- *  Created on: Oct 13, 2020
- *      Author: peter
- */
-
-
-
-
-/*
   Copyright (c) 2016-2020 Peter Antypas
 
   This file is part of the MAIANA™ transponder firmware.
@@ -35,7 +25,7 @@
 #include <string.h>
 
 
-#if BOARD_REV==61
+#if BOARD_REV==60
 
 I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
@@ -63,7 +53,7 @@ typedef struct
 } GPIO;
 
 static const GPIO __gpios[] = {
-    {GNSS_EN_PORT, {GNSS_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
+    {GNSS_EN_PORT, {GNSS_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {EEPROM_WREN_PORT, {EEPROM_WREN_PIN, GPIO_MODE_OUTPUT_OD, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {CS2_PORT, {CS2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
     {TRX_IC_CLK_PORT, {TRX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
@@ -78,6 +68,7 @@ static const GPIO __gpios[] = {
     {DFU_EN_PORT, {DFU_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {UART_TX_PORT, {UART_TX_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
     {UART_RX_PORT, {UART_RX_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
+    {TX_DISABLE_PORT, {TX_DISABLE_PIN, GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {SDN2_PORT, {SDN2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {RX_IC_CLK_PORT, {RX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {RX_IC_DATA_PORT, {RX_IC_DATA_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
@@ -88,10 +79,10 @@ static const GPIO __gpios[] = {
 
 extern "C"
 {
-  void Error_Handler(uint8_t i)
+  void Error_Handler(void)
   {
     asm("BKPT 0");
-    printf_serial_now("[ERROR %d]\r\n", i);
+    //printf_serial_now("[ERROR]\r\n");
     //printf_serial_now("[ERROR] ***** System error handler resetting *****\r\n");
     //NVIC_SystemReset();
   }
@@ -168,7 +159,7 @@ void bsp_hw_init()
 
   if (HAL_SPI_Init(&hspi1) != HAL_OK)
     {
-      Error_Handler(0);
+      Error_Handler();
     }
 
   __HAL_SPI_ENABLE(&hspi1);
@@ -219,33 +210,20 @@ void bsp_hw_init()
   hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
   if (HAL_I2C_Init(&hi2c1) != HAL_OK)
     {
-      Error_Handler(0);
+      Error_Handler();
     }
   /** Configure Analogue filter
    */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
     {
-      Error_Handler(0);
+      Error_Handler();
     }
   /** Configure Digital filter
    */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
     {
-      Error_Handler(0);
+      Error_Handler();
     }
-
-  // 1PPS signal
-  HAL_NVIC_SetPriority(EXTI2_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-
-
-  // RF IC clock interrupts
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-
-
-  HAL_NVIC_SetPriority(EXTI3_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 }
 
 
@@ -260,13 +238,14 @@ void SystemClock_Config()
    */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.HSICalibrationValue = 16;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 1;
   RCC_OscInitStruct.PLL.PLLN = 10;  // 80 MHz
   //RCC_OscInitStruct.PLL.PLLN = 8; // 64 MHz
   //RCC_OscInitStruct.PLL.PLLN = 6; // 48 MHz
+
 #ifdef STM32L432xx
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
 #endif
@@ -274,7 +253,7 @@ void SystemClock_Config()
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
-      Error_Handler(0);
+      Error_Handler();
     }
 
   /**Initializes the CPU, AHB and APB bus clocks
@@ -288,21 +267,21 @@ void SystemClock_Config()
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
     {
-      Error_Handler(0);
+      Error_Handler();
     }
 
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_HSI;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
-      Error_Handler(0);
+      Error_Handler();
     }
 
   /**Configure the main internal regulator output voltage
    */
   if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
     {
-      Error_Handler(0);
+      Error_Handler();
     }
 
   /**Configure the Systick interrupt time
@@ -365,7 +344,7 @@ void HAL_MspInit(void)
 
 void bsp_set_rx_mode()
 {
-  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_RESET);       // Kill the RF MOSFET bias voltage
+  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_RESET);
 
   GPIO_InitTypeDef gpio;
   gpio.Pin = TRX_IC_DATA_PIN;
@@ -384,7 +363,12 @@ void bsp_set_tx_mode()
   gpio.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(TRX_IC_DATA_PORT, &gpio);
 
-  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_SET);       // RF MOSFET bias voltage
+  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_SET);
+}
+
+bool bsp_is_tx_disabled()
+{
+  return HAL_GPIO_ReadPin(TX_DISABLE_PORT, TX_DISABLE_PIN) == GPIO_PIN_RESET;
 }
 
 void bsp_gnss_on()
@@ -397,7 +381,6 @@ void bsp_gnss_off()
   HAL_GPIO_WritePin(GNSS_EN_PORT, GNSS_EN_PIN, GPIO_PIN_RESET);
   HAL_Delay(100);
 }
-
 
 void USART_putc(USART_TypeDef* USARTx, char c)
 {
@@ -547,11 +530,6 @@ bool bsp_read_station_data(StationData &data)
   return true;
 }
 
-bool bsp_is_tx_disabled()
-{
-  return false;
-}
-
 void bsp_enter_dfu()
 {
   /**
@@ -561,13 +539,8 @@ void bsp_enter_dfu()
    * disable every interrupt including Systick.
    */
 
-  /**
-   * BUG: This can never work with this board, because the GNSS UART is constantly sending data, so the bootloader
-   * will enable DFU protocol on that USART instead of the main one :(
-   */
-
   HAL_GPIO_WritePin(DFU_EN_PORT, DFU_EN_PIN, GPIO_PIN_SET);
-  HAL_Delay(250);
+  HAL_Delay(500);
   bsp_reboot();
 }
 

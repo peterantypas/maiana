@@ -142,7 +142,10 @@ void CommandProcessor::processCommand(const char *buff)
 void CommandProcessor::jumpToBootloader()
 {
   GPS::instance().disable();
-  bsp_enter_dfu();
+  *(uint32_t*)DFU_FLAG_ADDRESS = DFU_FLAG_MAGIC;
+
+  HAL_Delay(1000);
+  bsp_reboot();
 }
 
 
