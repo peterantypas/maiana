@@ -29,13 +29,12 @@ On my boat, it is wired to a control box that converts the UART to USB and feeds
 running on an iPad. There are many different apps and solutions available for this and every boater has different preferences.
 
 Persistent station data (MMSI, call sign, name, dimensions, etc) is stored on a 1Kbit EEPROM and is provisioned via a command interface.
-The unit implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GNSS and the UTC clock, but being a class B, it will not attempt to reserve time slots.
-It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for class B devices. If station data is not provisioned, the device
-will simply run as a receiver and never transmit.
 
-The system draws about 40mA from 12V in RX mode, and spikes up to 600mA during transmission (for about 30 milliseconds).
+The unit implements SOTDMA synchronization via a hardware timer locked onto the very acurate 1 PPS signal from the GNSS, so no high precision crystal is required for the MCU. Being a class B, the system will not attempt to reserve time slots, so it will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for class B devices. If station data is not provisioned, the device will simply run as a receiver and never transmit.
 
-The latest design (not the one pictured above) relies on Ethernet cable for power, data, and control signals such as "TX OFF". I will include a reference design for a
+The system draws about 40mA from 12V in RX mode, and draws a 650mA spike during transmission (for 27 milliseconds).
+
+The latest design (6.1, not the one pictured above) relies on Ethernet cable for power, data, and control signals such as "TX OFF". I will include a reference design for a
 control box that I'm working on but every boat is different, so your mileage will absolutely vary.
 
 
