@@ -11,9 +11,9 @@ Main improvements:
 
 The control circuit is designed to fit inside a Hammond 1551KFLGY case (with appropriate cutouts). It features a single on/off button as well as a "TX on/off" slider switch.
 
-All logic is provided by a custom GreenPAK mixed signal IC (originally Silego, now Dialog Semi):
+All logic is provided by a customized GreenPAK mixed signal IC (SLG46537V):
 
 ![Image](ais-control-greenpak-design.png?raw=True "Exterior View")
 
-Using this type of IC avoids yet another microcontroller with firmware. The GreenPAK instruments latched overcurrent protection, debounces the on/off button, and acts as an LED driver. The design file for the IC (.gp5) is included. If you are an electronics enthusiast and you're not familiar with this family of ICs , I think it's time you learn ;)
+Using this type of IC avoids yet another microcontroller with firmware. The GreenPAK instruments latched overcurrent protection, debounces the on/off button, and acts as an LED driver. The design file for the IC (.gp5) is included. If you are an electronics enthusiast and you're not familiar with this family of ICs yet, I think it's time to change that ;)
 
