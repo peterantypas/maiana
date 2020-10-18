@@ -9,9 +9,9 @@ Main improvements:
 - The 10000uF supercapacitor is back as an option in case transmission currents cause too much voltage drop at the input
 - There are explicit signals to control status LEDs (GNSS, RX, TX)
 
-The control circuit is designed to fit inside a Hammond 1551KFLGY case (with appropriate cutouts). It features a single on/off button as well as a "TX on/off" slider switch.
+There are two assembly variants, with and without the supercap. 
 
-All logic is provided by a customized GreenPAK mixed signal IC (SLG46537V):
+The control circuit is designed to fit inside a Hammond 1551KFLGY case (with appropriate cutouts). It features a single on/off button as well as a "TX on/off" slider switch. Control logic is implemented in a customized GreenPAK mixed signal IC (SLG46537V):
 
 ![Image](ais-control-greenpak-design.png?raw=True "Exterior View")
 
