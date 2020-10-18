@@ -9,7 +9,7 @@ Main improvements:
 - The 10000uF supercapacitor is back as an option in case transmission currents cause too much voltage drop at the input
 - There are explicit signals to control status LEDs (GNSS, RX, TX)
 
-There are two assembly variants, with and without the supercap. Firmware will support either without any special considerations, as it enforces a 5 second minimum interval between consecutive transmissions, which is more than enough to recharge a depleted supercap.
+There are two assembly variants, with and without the supercap. Firmware will support either without any special considerations, as it enforces a 5 second minimum interval between consecutive transmissions. This is more than enough to recharge a depleted supercap.
 
 The control circuit is designed to fit inside a Hammond 1551KFLGY case (with appropriate cutouts). It features a single on/off button as well as a "TX on/off" slider switch. Control logic is implemented in a customized GreenPAK mixed signal IC (SLG46537V):
 
