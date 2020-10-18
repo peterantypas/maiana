@@ -3513,6 +3513,8 @@ Production Part - 8199
 <attributes>
 </attributes>
 <variantdefs>
+<variantdef name="Supercap"/>
+<variantdef name="No supercap"/>
 </variantdefs>
 <classes>
 <class number="0" name="default" width="0" drill="0">
@@ -3552,7 +3554,7 @@ Production Part - 8199
 </part>
 <part name="SUPPLY41" library="supply2" deviceset="GND" device=""/>
 <part name="C37" library="MyPassives" deviceset="CAPACITOR" device="0603" value="47pF">
-<attribute name="PARTNO" value="Murata Electronics"/>
+<attribute name="PARTNO" value="GRM1885C1H470JA01J"/>
 </part>
 <part name="C39" library="MyPassives" deviceset="CAPACITOR" device="0603" value="56pF">
 <attribute name="PARTNO" value="GRM1885C1H560JA01D"/>
@@ -3918,14 +3920,17 @@ Production Part - 8199
 <part name="SUPPLY4" library="supply2" deviceset="GND" device=""/>
 <part name="D1" library="MyDiodes" deviceset="DIODE-SCHOTTKY" device="SOD323" value="BAT20JFILM">
 <attribute name="PARTNO" value="BAT20JFILM"/>
+<variant name="No supercap" populate="no"/>
 </part>
 <part name="C50" library="avx-supercaps" deviceset="BZ05CA103ZSB" device="" value="10000uF">
 <attribute name="PARTNO" value="BZ05CA103ZSB"/>
+<variant name="No supercap" populate="no"/>
 </part>
 <part name="SUPPLY7" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY8" library="supply2" deviceset="GND" device=""/>
 <part name="R6" library="MyPassives" deviceset="RESISTOR" device="0603" value="100R">
 <attribute name="PARTNO" value="RC0603FR-07100RL"/>
+<variant name="No supercap" populate="no"/>
 </part>
 <part name="SUPPLY3" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY57" library="supply2" deviceset="GND" device=""/>
@@ -3946,7 +3951,7 @@ Production Part - 8199
 <attribute name="PARTNO" value="GRM188R71E223KA01D"/>
 </part>
 <part name="U2" library="PSA4-5043_" deviceset="PSA4-5043+" device="" value="PSA4-5043+"/>
-<part name="U$6" library="rfmi" deviceset="SF2147D" device="">
+<part name="U16" library="rfmi" deviceset="SF2147D" device="">
 <attribute name="PARTNO" value="SF2147D"/>
 </part>
 <part name="L14" library="MyPassives" deviceset="INDUCTOR" device="0603" value="120nH">
@@ -3973,6 +3978,7 @@ Production Part - 8199
 <part name="SUPPLY77" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="D3" library="SparkFun-DiscreteSemi" deviceset="DIODE-ZENER" device="5.6V" value="12V">
 <attribute name="PARTNO" value="MM3Z12VST1G"/>
+<variant name="No supercap" populate="no"/>
 </part>
 <part name="SUPPLY78" library="supply2" deviceset="GND" device=""/>
 <part name="Q2" library="transistor-small-signal" deviceset="BSS84" device="" value="DMP3099L-7">
@@ -3981,15 +3987,16 @@ Production Part - 8199
 <part name="SUPPLY79" library="supply2" deviceset="GND" device=""/>
 <part name="R1" library="MyPassives" deviceset="RESISTOR" device="0603" value="0R">
 <attribute name="PARTNO" value="RC0603FR-070RL"/>
+<variant name="Supercap" populate="no"/>
 </part>
-<part name="R2" library="MyPassives" deviceset="RESISTOR" device="0603" value="1k">
-<attribute name="PARTNO" value="RC0603JR-071KL"/>
+<part name="R2" library="MyPassives" deviceset="RESISTOR" device="0603" value="1k1">
+<attribute name="PARTNO" value="RC0603JR-071K1L"/>
 </part>
-<part name="R3" library="MyPassives" deviceset="RESISTOR" device="0603" value="1k">
-<attribute name="PARTNO" value="RC0603JR-071KL"/>
+<part name="R3" library="MyPassives" deviceset="RESISTOR" device="0603" value="1k1">
+<attribute name="PARTNO" value="RC0603JR-071K1L"/>
 </part>
-<part name="R7" library="MyPassives" deviceset="RESISTOR" device="0603" value="1k">
-<attribute name="PARTNO" value="RC0603JR-071KL"/>
+<part name="R7" library="MyPassives" deviceset="RESISTOR" device="0603" value="1k1">
+<attribute name="PARTNO" value="RC0603JR-071K1L"/>
 </part>
 </parts>
 <sheets>
@@ -4984,6 +4991,8 @@ STLINK adapters that need a reference voltage.</text>
 <text x="162.56" y="10.16" size="2.1844" layer="97">MAIANA™ AIS Transponder
 Copyright © 2015-2020 Peter Antypas
 Licensed under GPLv3</text>
+<text x="66.04" y="114.3" size="1.778" layer="97">To avoid instability, the LNA is 
+powered off during transmission.</text>
 </plain>
 <instances>
 <instance part="FRAME7" gate="G$1" x="0" y="0" smashed="yes">
@@ -5023,7 +5032,7 @@ Licensed under GPLv3</text>
 <attribute name="NAME" x="81.28" y="71.12" size="1.27" layer="95"/>
 <attribute name="VALUE" x="81.28" y="68.58" size="1.27" layer="96"/>
 </instance>
-<instance part="U$6" gate="G$1" x="157.48" y="81.28" smashed="yes">
+<instance part="U16" gate="G$1" x="157.48" y="81.28" smashed="yes">
 <attribute name="NAME" x="160.02" y="71.12" size="1.27" layer="95"/>
 <attribute name="VALUE" x="160.02" y="68.58" size="1.27" layer="95"/>
 <attribute name="PARTNO" x="157.48" y="81.28" size="1.778" layer="96" display="off"/>
@@ -5079,9 +5088,9 @@ Licensed under GPLv3</text>
 <pinref part="U2" gate="G$1" pin="GND"/>
 </segment>
 <segment>
-<pinref part="U$6" gate="G$1" pin="GND@3"/>
+<pinref part="U16" gate="G$1" pin="GND@3"/>
 <wire x1="172.72" y1="76.2" x2="172.72" y2="66.04" width="0.1524" layer="91"/>
-<pinref part="U$6" gate="G$1" pin="GND@2"/>
+<pinref part="U16" gate="G$1" pin="GND@2"/>
 <wire x1="172.72" y1="66.04" x2="157.48" y2="66.04" width="0.1524" layer="91"/>
 <wire x1="157.48" y1="66.04" x2="142.24" y2="66.04" width="0.1524" layer="91"/>
 <wire x1="142.24" y1="66.04" x2="142.24" y2="76.2" width="0.1524" layer="91"/>
@@ -5089,10 +5098,10 @@ Licensed under GPLv3</text>
 <junction x="157.48" y="66.04"/>
 </segment>
 <segment>
-<pinref part="U$6" gate="G$1" pin="GND@4"/>
+<pinref part="U16" gate="G$1" pin="GND@4"/>
 <wire x1="172.72" y1="86.36" x2="172.72" y2="93.98" width="0.1524" layer="91"/>
 <wire x1="172.72" y1="93.98" x2="157.48" y2="93.98" width="0.1524" layer="91"/>
-<pinref part="U$6" gate="G$1" pin="GND@1"/>
+<pinref part="U16" gate="G$1" pin="GND@1"/>
 <wire x1="157.48" y1="93.98" x2="142.24" y2="93.98" width="0.1524" layer="91"/>
 <wire x1="142.24" y1="93.98" x2="142.24" y2="86.36" width="0.1524" layer="91"/>
 <pinref part="SUPPLY67" gate="GND" pin="GND"/>
@@ -5167,7 +5176,7 @@ Licensed under GPLv3</text>
 </net>
 <net name="N$4" class="0">
 <segment>
-<pinref part="U$6" gate="G$1" pin="IN"/>
+<pinref part="U16" gate="G$1" pin="IN"/>
 <pinref part="L14" gate="G$1" pin="1"/>
 <wire x1="142.24" y1="81.28" x2="139.7" y2="81.28" width="0.1524" layer="91"/>
 </segment>
@@ -5181,7 +5190,7 @@ Licensed under GPLv3</text>
 </net>
 <net name="N$33" class="0">
 <segment>
-<pinref part="U$6" gate="G$1" pin="OUT"/>
+<pinref part="U16" gate="G$1" pin="OUT"/>
 <pinref part="L16" gate="G$1" pin="2"/>
 <wire x1="172.72" y1="81.28" x2="175.26" y2="81.28" width="0.1524" layer="91"/>
 </segment>

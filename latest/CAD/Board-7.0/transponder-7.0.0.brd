@@ -847,6 +847,8 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <attributes>
 </attributes>
 <variantdefs>
+<variantdef name="Supercap"/>
+<variantdef name="No supercap"/>
 </variantdefs>
 <classes>
 <class number="0" name="default" width="0" drill="0">
@@ -1088,7 +1090,7 @@ design rules under a new name.</description>
 </element>
 <element name="C37" library="MyPassives" package="0603" value="47pF" x="73.6" y="21.1" smashed="yes" rot="R90">
 <attribute name="NAME" x="73.6745" y="22.938" size="0.6096" layer="25" font="vector" rot="R90"/>
-<attribute name="PARTNO" value="Murata Electronics" x="73.6" y="21.1" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="PARTNO" value="GRM1885C1H470JA01J" x="73.6" y="21.1" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="VALUE" x="74.997" y="20.084" size="0.6096" layer="27" font="vector" rot="R90"/>
 </element>
 <element name="C39" library="MyPassives" package="0603" value="56pF" x="74.9" y="21.1" smashed="yes" rot="R90">
@@ -1603,7 +1605,7 @@ design rules under a new name.</description>
 <attribute name="PARTNO" value="PSA4-5043+" x="73.1" y="10.4" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="PRICE" value="None" x="73.1" y="10.4" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="U$6" library="rfmi" package="SAW_FILTER1" value="SF2147D" x="58.8" y="11" smashed="yes" rot="R180">
+<element name="U16" library="rfmi" package="SAW_FILTER1" value="SF2147D" x="58.8" y="11" smashed="yes" rot="R180">
 <attribute name="NAME" x="60.1" y="8.3" size="0.6096" layer="25" font="vector" rot="R180"/>
 <attribute name="PARTNO" value="SF2147D" x="58.8" y="11" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="VALUE" x="60.3" y="14" size="0.6096" layer="27" font="vector" rot="R180"/>
@@ -1653,17 +1655,17 @@ design rules under a new name.</description>
 <attribute name="NAME" x="24.9" y="24.3" size="0.6096" layer="25" font="vector"/>
 <attribute name="PARTNO" value="RC0603FR-070RL" x="26.3" y="23.6" size="1.778" layer="27" display="off"/>
 </element>
-<element name="R2" library="MyPassives" package="0603" value="1k" x="22.7" y="9.9" smashed="yes" rot="R90">
+<element name="R2" library="MyPassives" package="0603" value="1k1" x="22.7" y="9.9" smashed="yes" rot="R90">
 <attribute name="NAME" x="22" y="8.5" size="0.6096" layer="25" font="vector" rot="R90"/>
-<attribute name="PARTNO" value="RC0603JR-071KL" x="22.7" y="9.9" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="PARTNO" value="RC0603JR-071K1L" x="22.7" y="9.9" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="R3" library="MyPassives" package="0603" value="1k" x="27.8" y="17.8" smashed="yes" rot="R180">
+<element name="R3" library="MyPassives" package="0603" value="1k1" x="27.8" y="17.8" smashed="yes" rot="R180">
 <attribute name="NAME" x="29.2" y="17.1" size="0.6096" layer="25" font="vector" rot="R180"/>
-<attribute name="PARTNO" value="RC0603JR-071KL" x="27.8" y="17.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="PARTNO" value="RC0603JR-071K1L" x="27.8" y="17.8" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="R7" library="MyPassives" package="0603" value="1k" x="23.2" y="18.3" smashed="yes" rot="R90">
+<element name="R7" library="MyPassives" package="0603" value="1k1" x="23.2" y="18.3" smashed="yes" rot="R90">
 <attribute name="NAME" x="22.5" y="16.9" size="0.6096" layer="25" font="vector" rot="R90"/>
-<attribute name="PARTNO" value="RC0603JR-071KL" x="23.2" y="18.3" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="PARTNO" value="RC0603JR-071K1L" x="23.2" y="18.3" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
 </elements>
 <signals>
@@ -2139,10 +2141,10 @@ design rules under a new name.</description>
 <contactref element="C3" pad="P$2"/>
 <contactref element="U2" pad="4"/>
 <contactref element="U2" pad="2"/>
-<contactref element="U$6" pad="P$4"/>
-<contactref element="U$6" pad="P$3"/>
-<contactref element="U$6" pad="P$6"/>
-<contactref element="U$6" pad="P$1"/>
+<contactref element="U16" pad="P$4"/>
+<contactref element="U16" pad="P$3"/>
+<contactref element="U16" pad="P$6"/>
+<contactref element="U16" pad="P$1"/>
 <contactref element="C10" pad="P$1"/>
 <via x="75.5" y="9.2" extent="1-16" drill="0.254"/>
 <via x="63" y="9" extent="1-16" drill="0.254"/>
@@ -3351,7 +3353,7 @@ design rules under a new name.</description>
 <wire x1="67" y1="12.6" x2="70.2" y2="12.6" width="0.1524" layer="1"/>
 </signal>
 <signal name="N$4">
-<contactref element="U$6" pad="P$2"/>
+<contactref element="U16" pad="P$2"/>
 <contactref element="L14" pad="P$1"/>
 <wire x1="61.7" y1="11" x2="60.3" y2="11" width="1" layer="1"/>
 </signal>
@@ -3361,7 +3363,7 @@ design rules under a new name.</description>
 <wire x1="64.4" y1="11" x2="63.3" y2="11" width="1" layer="1"/>
 </signal>
 <signal name="N$33">
-<contactref element="U$6" pad="P$5"/>
+<contactref element="U16" pad="P$5"/>
 <contactref element="L16" pad="P$2"/>
 <wire x1="57.2" y1="11" x2="55.9" y2="11" width="1" layer="1"/>
 </signal>
