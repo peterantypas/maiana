@@ -213,14 +213,9 @@ void GPS::parseSentence(const char *buff)
 
   if (sentence.code ().find ("RMC") == 2)
     {
-
       const vector<string> &fields = sentence.fields ();
 
       /*
-       * Sometimes the GPS indicates errors with sentences like
-       * $GPRMC,1420$0*74\r\n
-       * Although the sentence structure is valid, its content is not what we expect.
-       *
        * TODO: Should we consider the GPS non-functioning at this point and thus prevent transmission until it recovers?
        */
       if (fields.size () < 10)
@@ -229,10 +224,13 @@ void GPS::parseSentence(const char *buff)
       // GPS updates arrive even with no time or fix information, so ignore them if that's the case
       if (fields[1].length () < 6 || fields[9].length () < 6)
         {
-          // TODO: A loss of fix while the SOTDMA timer is active, MUST stop the timer
-
+          // A loss of fix while the SOTDMA timer is active, MUST stop the timer
+          if ( mStarted )
+            stopTimer();
+          bsp_update_gnss_status(false);
           return;
         }
+
 
 
       // This is the time that corresponds to the previous PPS
@@ -249,6 +247,7 @@ void GPS::parseSentence(const char *buff)
       // Do we have a fix?
       if (mUTC && sentence.fields()[3].length() > 0 && sentence.fields()[5].length() > 0)
         {
+          bsp_update_gnss_status(true);
           mLat = Utils::latitudeFromNMEA (sentence.fields()[3], sentence.fields()[4]);
           mLng = Utils::longitudeFromNMEA (sentence.fields()[5], sentence.fields()[6]);
           mSpeed = atof(sentence.fields()[7].c_str());
@@ -260,6 +259,10 @@ void GPS::parseSentence(const char *buff)
           event.gpsFix.speed = mSpeed;
           event.gpsFix.cog = mCOG;
           EventQueue::instance().push (event);
+        }
+      else
+        {
+          bsp_update_gnss_status(false);
         }
     }
 }

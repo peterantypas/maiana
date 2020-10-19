@@ -25,7 +25,7 @@
 #include <string.h>
 
 
-#if BOARD_REV==61
+#if BOARD_REV==70
 
 I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
@@ -54,9 +54,10 @@ typedef struct
 
 static const GPIO __gpios[] = {
     {GNSS_EN_PORT, {GNSS_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
-    {SPARE_PORT, {SPARE_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
+    {AIS_RX_EVT_PORT, {AIS_RX_EVT_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
+    {AIS_TX_EVT_PORT, {AIS_TX_EVT_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
+    {GNSS_STATE_PORT, {GNSS_STATE_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {TX_DISABLE_PORT, {TX_DISABLE_PIN, GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
-    {EEPROM_WREN_PORT, {EEPROM_WREN_PIN, GPIO_MODE_OUTPUT_OD, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {CS2_PORT, {CS2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
     {TRX_IC_CLK_PORT, {TRX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {GNSS_1PPS_PORT, {GNSS_1PPS_PIN, GPIO_MODE_IT_FALLING, GPIO_PULLUP, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
@@ -67,7 +68,6 @@ static const GPIO __gpios[] = {
     {MOSI_PORT, {MOSI_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, GPIO_AF5_SPI1}, GPIO_PIN_SET},
     {SDN1_PORT, {SDN1_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {TRX_IC_DATA_PORT, {TRX_IC_DATA_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
-    {DFU_EN_PORT, {DFU_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {UART_TX_PORT, {UART_TX_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
     {UART_RX_PORT, {UART_RX_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
     {SDN2_PORT, {SDN2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
@@ -232,8 +232,8 @@ void bsp_hw_init()
 
 
   // RF IC clock interrupts
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 
   HAL_NVIC_SetPriority(EXTI3_IRQn, 5, 0);
@@ -387,7 +387,6 @@ void bsp_gnss_on()
 void bsp_gnss_off()
 {
   HAL_GPIO_WritePin(GNSS_EN_PORT, GNSS_EN_PIN, GPIO_PIN_RESET);
-  HAL_Delay(100);
 }
 
 
@@ -493,7 +492,6 @@ uint8_t bsp_tx_spi_byte(uint8_t data)
 bool bsp_erase_station_data()
 {
   uint8_t b = 0xff;
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_RESET);
   HAL_Delay(1);
 
   for ( unsigned i = 0; i < sizeof(StationData); ++i )
@@ -501,14 +499,12 @@ bool bsp_erase_station_data()
       HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i, 1, &b, 1, 100);
       HAL_Delay(6);
     }
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_SET);
 
   return true;
 }
 
 bool bsp_save_station_data(const StationData &data)
 {
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_RESET);
   HAL_Delay(1);
 
   uint8_t *b = (uint8_t*)&data;
@@ -517,8 +513,6 @@ bool bsp_save_station_data(const StationData &data)
       HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i, 1, b, 1, 100);
       HAL_Delay(6);
     }
-
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_SET);
 
   return true;
 }
@@ -559,24 +553,27 @@ void bsp_enter_dfu()
 
 void bsp_update_gnss_status(bool hasFix)
 {
-  // Does nothing on this board
+  HAL_GPIO_WritePin(GNSS_STATE_PORT, GNSS_STATE_PIN, hasFix ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
 void bsp_notify_rx_event()
 {
-  // "Blink" the spare pin
-  HAL_GPIO_WritePin(SPARE_PORT, SPARE_PIN, GPIO_PIN_SET);
+  // "Blink" the pin
+  HAL_GPIO_WritePin(AIS_RX_EVT_PORT, AIS_RX_EVT_PIN, GPIO_PIN_SET);
 }
 
 void bsp_notify_tx_event()
 {
-  // Does nothing on this board
+  // "Blink" the pin
+  HAL_GPIO_WritePin(AIS_TX_EVT_PORT, AIS_TX_EVT_PIN, GPIO_PIN_SET);
 }
 
 void bsp_clear_event_pins()
 {
-  HAL_GPIO_WritePin(SPARE_PORT, SPARE_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(AIS_RX_EVT_PORT, AIS_RX_EVT_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(AIS_TX_EVT_PORT, AIS_TX_EVT_PIN, GPIO_PIN_RESET);
 }
+
 
 extern "C"
 {
@@ -637,27 +634,28 @@ extern "C"
       }
   }
 
-  void EXTI1_IRQHandler(void)
+  void EXTI15_10_IRQHandler(void)
   {
-    if ( __HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1) != RESET )
+    if ( __HAL_GPIO_EXTI_GET_IT(GPIO_PIN_15) != RESET )
       {
-        __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
+        __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_15);
         if ( trxClockCallback )
           trxClockCallback();
       }
   }
 
-  void HAL_SYSTICK_Callback()
-    {
-      static uint32_t c = 1;
 
-      if ( c++ % 20 == 0 )
-        {
-          // Use this as a 20ms timer for "blinking" GPIOs
-          bsp_clear_event_pins();
-          c = 1;
-        }
-    }
+  void HAL_SYSTICK_Callback()
+  {
+    static uint32_t c = 1;
+
+    if ( c++ % 20 == 0 )
+      {
+        // Use this as a 20ms timer for "blinking" GPIOs
+        bsp_clear_event_pins();
+        c = 1;
+      }
+  }
 }
 
 #endif

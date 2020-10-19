@@ -22,7 +22,7 @@
 
 #include "StationData.h"
 
-// Current board revision is 5.0
+// Current board revision is 6.1
 // Either modify this header or define a different symbol in the preprocessor to build for a different board
 
 #ifndef BOARD_REV
@@ -46,6 +46,10 @@ void bsp_enter_dfu();
 void bsp_gnss_on();
 void bsp_gnss_off();
 bool bsp_is_tx_disabled();
+
+void bsp_update_gnss_status(bool hasFix);
+void bsp_notify_rx_event();
+void bsp_notify_tx_event();
 
 // Callback for processing UART input (interrupt)
 typedef void(*char_input_cb)(char c);
@@ -87,6 +91,8 @@ bool bsp_read_station_data(StationData &data);
 #include "bsp_5_3.hpp"
 #elif BOARD_REV == 61
 #include <bsp_6_1.hpp>
+#elif BOARD_REV == 70
+#include <bsp_7_0.hpp>
 #endif
 
 

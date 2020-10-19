@@ -17,8 +17,8 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>
 */
 
-#ifndef INC_BSP_6_0_HPP_
-#define INC_BSP_6_0_HPP_
+#ifndef INC_BSP_7_0_HPP_
+#define INC_BSP_7_0_HPP_
 
 
 
@@ -26,14 +26,14 @@
 #define GNSS_EN_PORT              GPIOC
 #define GNSS_EN_PIN               GPIO_PIN_14
 
-#define EEPROM_WREN_PORT          GPIOC
-#define EEPROM_WREN_PIN           GPIO_PIN_15
+#define TRX_IC_CLK_PORT           GPIOC
+#define TRX_IC_CLK_PIN            GPIO_PIN_15
 
 #define CS2_PORT                  GPIOA
 #define CS2_PIN                   GPIO_PIN_0
 
-#define TRX_IC_CLK_PORT           GPIOA
-#define TRX_IC_CLK_PIN            GPIO_PIN_1
+#define AIS_RX_EVT_PORT           GPIOA
+#define AIS_RX_EVT_PIN            GPIO_PIN_1
 
 #define GNSS_1PPS_PORT            GPIOA
 #define GNSS_1PPS_PIN             GPIO_PIN_2
@@ -59,8 +59,8 @@
 #define TRX_IC_DATA_PORT          GPIOB
 #define TRX_IC_DATA_PIN           GPIO_PIN_1
 
-#define DFU_EN_PORT               GPIOA
-#define DFU_EN_PIN                GPIO_PIN_8
+#define AIS_TX_EVT_PORT           GPIOA
+#define AIS_TX_EVT_PIN            GPIO_PIN_8
 
 #define UART_TX_PORT              GPIOA
 #define UART_TX_PIN               GPIO_PIN_9
@@ -68,8 +68,8 @@
 #define UART_RX_PORT              GPIOA
 #define UART_RX_PIN               GPIO_PIN_10
 
-#define SPARE_PORT                GPIOA
-#define SPARE_PIN                 GPIO_PIN_11
+#define GNSS_STATE_PORT           GPIOA
+#define GNSS_STATE_PIN            GPIO_PIN_11
 
 #define TX_DISABLE_PORT           GPIOA
 #define TX_DISABLE_PIN            GPIO_PIN_12

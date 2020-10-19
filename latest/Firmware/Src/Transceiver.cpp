@@ -353,10 +353,11 @@ void Transceiver::configureGPIOsForRX()
 
 void Transceiver::reportTXEvent()
 {
+  bsp_notify_tx_event();
+
   Event e(PROPR_NMEA_SENTENCE);
-
-  snprintf(e.nmeaBuffer.sentence, sizeof e.nmeaBuffer.sentence, "$PAITX,%c,%s*", AIS_CHANNELS[mTXPacket->channel()].designation, mTXPacket->messageType());
-
+  snprintf(e.nmeaBuffer.sentence, sizeof e.nmeaBuffer.sentence,
+      "$PAITX,%c,%s*", AIS_CHANNELS[mTXPacket->channel()].designation, mTXPacket->messageType());
   Utils::completeNMEA(e.nmeaBuffer.sentence);
   EventQueue::instance().push(e);
 }
