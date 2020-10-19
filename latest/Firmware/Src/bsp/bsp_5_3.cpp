@@ -542,6 +542,18 @@ void bsp_enter_dfu()
   bsp_reboot();
 }
 
+void bsp_update_gnss_status(bool hasFix)
+{
+}
+
+void bsp_notify_rx_event()
+{
+}
+
+void bsp_notify_tx_event()
+{
+}
+
 extern "C"
 {
 

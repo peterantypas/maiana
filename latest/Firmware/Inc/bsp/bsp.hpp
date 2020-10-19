@@ -22,11 +22,11 @@
 
 #include "StationData.h"
 
-// Current board revision is 6.1
+// Current board revision is 7.0
 // Either modify this header or define a different symbol in the preprocessor to build for a different board
 
 #ifndef BOARD_REV
-#define BOARD_REV 61
+#define BOARD_REV 70
 #endif
 
 /**
@@ -83,9 +83,7 @@ bool bsp_read_station_data(StationData &data);
 
 // Board-specific headers go here
 
-#if BOARD_REV == 50
-#include "bsp_5_0.hpp"
-#elif BOARD_REV == 52
+#if BOARD_REV == 52
 #include "bsp_5_2.hpp"
 #elif BOARD_REV == 53
 #include "bsp_5_3.hpp"
