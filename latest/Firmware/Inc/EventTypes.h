@@ -37,8 +37,8 @@ typedef enum {
     DEBUG_EVENT          =   0x00020,         // Something to print to the output as a [DEBUG] message
     PROPR_NMEA_SENTENCE  =   0x00040,         // Proprietary NMEA sentence to be sent out
     DFU_EVENT            =   0x00080,         // Enter DFU mode
-    ONE_SEC_TIMER_EVENT  =   0x00100,         // Sent once a second (with jitter)
-    ONE_MIN_TIMER_EVENT  =   0x00200,         // Sent once a minute (with jitter)
+    //ONE_SEC_TIMER_EVENT  =   0x00100,         // Sent once a second (with jitter)
+    //ONE_MIN_TIMER_EVENT  =   0x00200,         // Sent once a minute (with jitter)
     COMMAND_EVENT        =   0x00400,         // An unparsed request (raw format)
     RSSI_SAMPLE_EVENT    =   0x00800          // An RSSI sample (very high frequency event)
 }

@@ -28,6 +28,12 @@
 
 using namespace std;
 
+/**
+ * This class tracks the lowest RSSI values read over a 30 second period for each channel
+ * and uses the median to establish the noise floor for Clear Channel Assessment
+ */
+
+
 class NoiseFloorDetector : public EventConsumer
 {
 public:
@@ -58,7 +64,7 @@ private:
   NoiseFloorDetector();
   void processSample(ChannelReadings &window, uint8_t rssi);
   uint8_t medianValue(ChannelReadings &window);
-  void dump();
+  //void dump();
 private:
   uint32_t        mTicks;
   ChannelData     mData;

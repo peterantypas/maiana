@@ -100,12 +100,12 @@ void Receiver::resetBitScanner()
   mRXPacket.reset();
 }
 
+// This is called in interrupt context
 void Receiver::onBitClock()
 {
   // Don't waste time processing bits when the transceiver is transmitting
   if ( gRadioState == RADIO_TRANSMITTING )
     return;
-
 
   uint8_t bit = HAL_GPIO_ReadPin(mDataPort, mDataPin);
   processNRZIBit(bit);

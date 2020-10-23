@@ -36,7 +36,7 @@ void jump_to_bootloader()
   pFunction systemBootloader;
 
   /**
-   * System bootloader for L412 and L432 series resides at 0x1fff0000,
+   * System bootloader for STM32L4x2 series resides at 0x1fff0000,
    * so the first 4 bytes contain the stack pointer and the next 4 contain the
    * program counter
    */
@@ -53,6 +53,7 @@ TimerHandle_t timerHandle1, timerHandle2;
 StaticTimer_t timer1, timer2;
 
 extern "C"{
+#if 0
   void on1sec(TimerHandle_t handle)
   {
     Event e(ONE_SEC_TIMER_EVENT);
@@ -64,6 +65,7 @@ extern "C"{
     Event e(ONE_MIN_TIMER_EVENT);
     EventQueue::instance().push(e);
   }
+#endif
 }
 
 void mainTask(void *params)
@@ -89,17 +91,20 @@ void mainTask(void *params)
   RadioManager::instance().init();
   RadioManager::instance().start();
 
+
+#if 0
   timerHandle1 = xTimerCreateStatic("1sec", 1000, pdTRUE, NULL, on1sec, &timer1);
   xTimerStart(timerHandle1, 10);
 
   timerHandle2 = xTimerCreateStatic("1min", 60000, pdTRUE, NULL, on1min, &timer2);
   xTimerStart(timerHandle2, 10);
+#endif
 
   bsp_start_wdt();
   while (1)
     {
       EventQueue::instance().dispatch();
-      vTaskDelay(50);
+      vTaskDelay(10);
       bsp_refresh_wdt();
     }
 }

@@ -29,6 +29,7 @@
 
 #define WINDOW_SIZE 10
 
+
 NoiseFloorDetector &NoiseFloorDetector::instance()
 {
   static NoiseFloorDetector __instance;
@@ -38,7 +39,7 @@ NoiseFloorDetector &NoiseFloorDetector::instance()
 NoiseFloorDetector::NoiseFloorDetector()
 : mTicks(0xffffffff)
 {
-  EventQueue::instance().addObserver(this, ONE_SEC_TIMER_EVENT|RSSI_SAMPLE_EVENT);
+  EventQueue::instance().addObserver(this, CLOCK_EVENT|RSSI_SAMPLE_EVENT);
 }
 
 void NoiseFloorDetector::report(VHFChannel channel, uint8_t rssi)
@@ -70,7 +71,7 @@ void NoiseFloorDetector::processEvent(const Event &e)
 {
   switch(e.type)
   {
-  case ONE_SEC_TIMER_EVENT:
+  case CLOCK_EVENT:
     if ( mTicks == 0xffffffff )
       {
         mTicks = 0;
@@ -83,7 +84,7 @@ void NoiseFloorDetector::processEvent(const Event &e)
     if ( mTicks == 30 )
       {
         //DBG("Event pool utilization = %d, max = %d\r\n", EventPool::instance().utilization(), EventPool::instance().maxUtilization());
-        dump();
+        //dump();
         reset();
         mTicks = 0;
       }
@@ -114,7 +115,7 @@ void NoiseFloorDetector::processSample(ChannelReadings &window, uint8_t rssi)
     }
 
   // Insert the reading at the start if it qualifies
-  for ( ChannelReadings::iterator i = window.begin(); i != window.end(); ++i )
+  for ( auto i = window.begin(); i != window.end(); ++i )
     {
       if ( rssi <= i->reading )
         {
@@ -134,6 +135,7 @@ uint8_t NoiseFloorDetector::medianValue(ChannelReadings &window)
   return window[window.size()/2].reading;
 }
 
+#if 0
 
 void NoiseFloorDetector::dump()
 {
@@ -143,6 +145,7 @@ void NoiseFloorDetector::dump()
       //DBG("[Channel %d noise floor: 0x%.2x]\r\n", AIS_CHANNELS[cIt->first].itu, value);
     }
 }
+#endif
 
 void NoiseFloorDetector::reset()
 {

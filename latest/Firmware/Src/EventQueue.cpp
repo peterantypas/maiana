@@ -86,7 +86,7 @@ void EventQueue::dispatch()
 
   while ( xQueueReceive(mQueueHandle, &e, 10) == pdTRUE )
     {
-      for ( map<EventConsumer*, uint32_t>::iterator c = mConsumers.begin(); c != mConsumers.end(); ++c )
+      for ( auto c = mConsumers.begin(); c != mConsumers.end(); ++c )
         {
           if ( c->second & e.type )
             {
