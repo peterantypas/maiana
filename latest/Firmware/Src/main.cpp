@@ -50,23 +50,6 @@ void jump_to_bootloader()
   systemBootloader();
 }
 
-TimerHandle_t timerHandle1, timerHandle2;
-StaticTimer_t timer1, timer2;
-
-extern "C"{
-  void on1sec(TimerHandle_t handle)
-  {
-    Event e(ONE_SEC_TIMER_EVENT);
-    EventQueue::instance().push(e);
-  }
-
-  void on1min(TimerHandle_t handle)
-  {
-    Event e(ONE_MIN_TIMER_EVENT);
-    EventQueue::instance().push(e);
-  }
-}
-
 void mainTask(void *params)
 {
   EventQueue::instance().init();
@@ -90,17 +73,11 @@ void mainTask(void *params)
   RadioManager::instance().init();
   RadioManager::instance().start();
 
-  timerHandle1 = xTimerCreateStatic("1sec", 1000, pdTRUE, NULL, on1sec, &timer1);
-  xTimerStart(timerHandle1, 10);
-
-  timerHandle2 = xTimerCreateStatic("1min", 60000, pdTRUE, NULL, on1min, &timer2);
-  xTimerStart(timerHandle2, 10);
-
   bsp_start_wdt();
   while (1)
     {
       EventQueue::instance().dispatch();
-      vTaskDelay(50);
+      vTaskDelay(10);
       bsp_refresh_wdt();
     }
 }
@@ -108,13 +85,11 @@ void mainTask(void *params)
 
 int main(void)
 {
-#if 1
   if ( *(uint32_t*)DFU_FLAG_ADDRESS == DFU_FLAG_MAGIC )
     {
       *(uint32_t*)DFU_FLAG_ADDRESS = 0;
       jump_to_bootloader();
     }
-#endif
 
   // This is for debugging imprecise bus faults
   //*(uint8_t *)0xe000ed08 |= 2;

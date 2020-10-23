@@ -38,7 +38,7 @@ NoiseFloorDetector &NoiseFloorDetector::instance()
 NoiseFloorDetector::NoiseFloorDetector()
 : mTicks(0xffffffff)
 {
-  EventQueue::instance().addObserver(this, ONE_SEC_TIMER_EVENT|RSSI_SAMPLE_EVENT);
+  EventQueue::instance().addObserver(this, CLOCK_EVENT|RSSI_SAMPLE_EVENT);
 }
 
 void NoiseFloorDetector::report(VHFChannel channel, uint8_t rssi)
@@ -70,7 +70,7 @@ void NoiseFloorDetector::processEvent(const Event &e)
 {
   switch(e.type)
   {
-  case ONE_SEC_TIMER_EVENT:
+  case CLOCK_EVENT:
     if ( mTicks == 0xffffffff )
       {
         mTicks = 0;
