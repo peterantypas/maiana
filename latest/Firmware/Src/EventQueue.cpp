@@ -29,7 +29,7 @@
 #include "task.h"
 #include "bsp.hpp"
 
-#define EVENT_QUEUE_SIZE  80
+#define EVENT_QUEUE_SIZE  50
 
 static Event* __queue[EVENT_QUEUE_SIZE];
 

@@ -245,7 +245,7 @@ bool Receiver::addBit(uint8_t bit)
 
 void Receiver::pushPacket()
 {
-  bsp_signal_high();
+  //bsp_signal_high();
 #ifndef TX_TEST_MODE
   Event *p = EventPool::instance().newEvent(AIS_PACKET_EVENT);
   if ( p )
@@ -257,7 +257,7 @@ void Receiver::pushPacket()
 #else
   mRXPacket.reset();
 #endif
-  bsp_signal_low();
+  //bsp_signal_low();
 }
 
 uint8_t Receiver::reportRSSI()
