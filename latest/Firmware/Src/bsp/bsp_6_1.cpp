@@ -53,7 +53,8 @@ typedef struct
 } GPIO;
 
 static const GPIO __gpios[] = {
-    {GNSS_EN_PORT, {GNSS_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
+    {GNSS_EN_PORT, {GNSS_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    {SPARE_PORT, {SPARE_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_RESET},
     {TX_DISABLE_PORT, {TX_DISABLE_PIN, GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {EEPROM_WREN_PORT, {EEPROM_WREN_PIN, GPIO_MODE_OUTPUT_OD, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {CS2_PORT, {CS2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
@@ -562,6 +563,16 @@ uint8_t bsp_noise_floor()
    * This is the result of extensive characterization with this hardware
    */
   return 0x22;
+}
+
+void bsp_signal_high()
+{
+  HAL_GPIO_WritePin(SPARE_PORT, SPARE_PIN, GPIO_PIN_SET);
+}
+
+void bsp_signal_low()
+{
+  HAL_GPIO_WritePin(SPARE_PORT, SPARE_PIN, GPIO_PIN_RESET);
 }
 
 extern "C"

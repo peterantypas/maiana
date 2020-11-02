@@ -68,6 +68,9 @@
 #define UART_RX_PORT              GPIOA
 #define UART_RX_PIN               GPIO_PIN_10
 
+#define SPARE_PORT                GPIOA
+#define SPARE_PIN                 GPIO_PIN_11
+
 #define TX_DISABLE_PORT           GPIOA
 #define TX_DISABLE_PIN            GPIO_PIN_12
 

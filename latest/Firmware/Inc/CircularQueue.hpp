@@ -38,7 +38,7 @@ public:
     ASSERT(mBuffer);
   }
 
-  bool empty()
+  inline bool empty()
   {
     return mReadPosition == mWritePosition;
   }
@@ -61,16 +61,14 @@ public:
     if ( empty() )
       return false;
 
-    int nextElement = (mReadPosition + 1) % mSize;
-
     Element = mBuffer[mReadPosition];
-    mReadPosition = nextElement;
+    mReadPosition = (mReadPosition + 1) % mSize;
     return true;
   }
 
 
 private:
-  bool isSafeToWrite(int nextElement)
+  inline bool isSafeToWrite(int nextElement)
   {
     return nextElement != mReadPosition;
   }
@@ -79,7 +77,7 @@ private:
   volatile int mReadPosition;
   volatile int mWritePosition;
   size_t mSize;
-  T* mBuffer;
+  volatile T* mBuffer;
 };
 
 #endif /* CIRCULARQUEUE_HPP_ */

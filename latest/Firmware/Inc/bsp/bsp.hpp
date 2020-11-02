@@ -47,6 +47,8 @@ void bsp_gnss_on();
 void bsp_gnss_off();
 bool bsp_is_tx_disabled();
 uint8_t bsp_noise_floor();
+void bsp_signal_high();
+void bsp_signal_low();
 
 // Callback for processing UART input (interrupt)
 typedef void(*char_input_cb)(char c);

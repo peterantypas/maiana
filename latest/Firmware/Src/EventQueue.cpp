@@ -19,7 +19,7 @@
 
 
 #include "EventQueue.hpp"
-#include <stm32l4xx.h>
+//#include <stm32l4xx.h>
 
 #include "printf_serial.h"
 #include "printf_serial.h"
@@ -27,8 +27,9 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "task.h"
+#include "bsp.hpp"
 
-#define EVENT_QUEUE_SIZE  40
+#define EVENT_QUEUE_SIZE  50
 
 static Event __queue[EVENT_QUEUE_SIZE];
 
@@ -53,12 +54,16 @@ void EventQueue::push(const Event &e)
   if ( xTaskGetSchedulerState() != taskSCHEDULER_RUNNING )
     return;
 
-  BaseType_t xHighPriorityTaskWoken = pdFALSE;
+  BaseType_t xHighPriorityTaskWoken = pdTRUE;
   if ( Utils::inISR() )
     {
+      //bsp_signal_high();
       xQueueSendFromISR(mQueueHandle, &e, &xHighPriorityTaskWoken);
+      //bsp_signal_low();
+#if 0
       if ( xHighPriorityTaskWoken )
         portYIELD_FROM_ISR(xHighPriorityTaskWoken);
+#endif
     }
   else
     {
