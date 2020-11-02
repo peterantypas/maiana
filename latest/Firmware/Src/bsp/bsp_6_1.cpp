@@ -109,18 +109,6 @@ void bsp_hw_init()
 
   gpio_pin_init();
 
-  // 1PPS signal
-  HAL_NVIC_SetPriority(EXTI2_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-
-
-  // RF IC clock interrupts
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-
-
-  HAL_NVIC_SetPriority(EXTI3_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
 
   // USART1 (main UART)
@@ -136,7 +124,7 @@ void bsp_hw_init()
   huart1.AdvancedInit.AdvFeatureInit  = UART_ADVFEATURE_NO_INIT;
   HAL_UART_Init(&huart1);
 
-  HAL_NVIC_SetPriority(USART1_IRQn, 6, 0);
+  HAL_NVIC_SetPriority(USART1_IRQn, 7, 0);
   HAL_NVIC_EnableIRQ(USART1_IRQn);
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 
@@ -179,7 +167,7 @@ void bsp_hw_init()
   huart2.AdvancedInit.AdvFeatureInit  = UART_ADVFEATURE_NO_INIT;
   HAL_UART_Init(&huart2);
 
-  HAL_NVIC_SetPriority(USART2_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(USART2_IRQn, 7, 0);
   HAL_NVIC_EnableIRQ(USART2_IRQn);
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 
@@ -227,7 +215,7 @@ void bsp_hw_init()
     }
 
   // 1PPS signal
-  HAL_NVIC_SetPriority(EXTI2_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 6, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
 
@@ -238,6 +226,9 @@ void bsp_hw_init()
 
   HAL_NVIC_SetPriority(EXTI3_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+
+  // This is our HAL tick timer now
+  HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 0, 0);
 }
 
 

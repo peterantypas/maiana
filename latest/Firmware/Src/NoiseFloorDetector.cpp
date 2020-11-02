@@ -87,7 +87,7 @@ void NoiseFloorDetector::processEvent(const Event &e)
         ++mTicks;
       }
 
-    if ( mTicks == 10 )
+    if ( mTicks == 30 )
       {
         //DBG("Event pool utilization = %d, max = %d\r\n", EventPool::instance().utilization(), EventPool::instance().maxUtilization());
         mChannelACurrent = mAFloor;
