@@ -219,25 +219,22 @@ void Transceiver::onBitClock()
           // Test packets are sent immediately. Presumably, we're firing into a dummy load ;)
           startTransmitting();
         }
-      else if ( mUTC && mSlotBitNumber == CCA_SLOT_BIT+1 && mTXPacket->channel() == mChannel )
+      else if ( mUTC && mUTC - mTXPacket->timestamp() >= MIN_MSG_18_TX_INTERVAL )
         {
-          auto it = mNoiseFloorCache.find(mChannel);
-          if ( it != mNoiseFloorCache.end() )
+          // The packet is way too old. Discard it.
+          TXPacketPool::instance().deleteTXPacket(mTXPacket);
+          mTXPacket = NULL;
+        }
+      else if ( mUTC - mLastTXTime < MIN_TX_INTERVAL )
+        {
+          return;
+        }
+      else if ( mUTC && mSlotBitNumber == CCA_SLOT_BIT && mTXPacket->channel() == mChannel )
+        {
+          uint8_t rssi = readRSSI();
+          if ( rssi <= bsp_noise_floor() + TX_CCA_HEADROOM )
             {
-              uint8_t noiseFloor = it->second;
-              if ( mRXPacket.rssi() <= noiseFloor + TX_CCA_HEADROOM )
-                {
-                  if ( mUTC - mTXPacket->timestamp() >= MIN_MSG_18_TX_INTERVAL )
-                    {
-                      // The packet is way too old. Discard it.
-                      TXPacketPool::instance().deleteTXPacket(mTXPacket);
-                      mTXPacket = NULL;
-                    }
-                  else if ( mUTC - mLastTXTime >= MIN_TX_INTERVAL )
-                    {
-                      startTransmitting();
-                    }
-                }
+              startTransmitting();
             }
         }
 #endif

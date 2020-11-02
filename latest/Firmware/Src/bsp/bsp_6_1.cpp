@@ -556,6 +556,14 @@ void bsp_enter_dfu()
   bsp_reboot();
 }
 
+uint8_t bsp_noise_floor()
+{
+  /**
+   * This is the result of extensive characterization with this hardware
+   */
+  return 0x22;
+}
+
 extern "C"
 {
 

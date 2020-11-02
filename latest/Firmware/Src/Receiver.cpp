@@ -109,11 +109,14 @@ void Receiver::onBitClock()
 
   uint8_t bit = HAL_GPIO_ReadPin(mDataPort, mDataPin);
   processNRZIBit(bit);
+  ++mSlotBitNumber;
+#if 0
   if ( (mSlotBitNumber != 0xffff) && (mSlotBitNumber++ == CCA_SLOT_BIT) )
     {
       uint8_t rssi = reportRSSI();
       mRXPacket.setRSSI(rssi);
     }
+#endif
 }
 
 void Receiver::timeSlotStarted(uint32_t slot)

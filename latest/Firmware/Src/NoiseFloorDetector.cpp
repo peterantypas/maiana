@@ -137,10 +137,14 @@ uint8_t NoiseFloorDetector::medianValue(ChannelReadings &window)
 
 void NoiseFloorDetector::dump()
 {
+  Event e(PROPR_NMEA_SENTENCE);
   for ( ChannelData::iterator cIt = mData.begin(); cIt != mData.end(); ++cIt )
     {
-      //uint8_t value = medianValue(cIt->second);
+      uint8_t value = medianValue(cIt->second);
       //DBG("[Channel %d noise floor: 0x%.2x]\r\n", AIS_CHANNELS[cIt->first].itu, value);
+      sprintf(e.nmeaBuffer.sentence, "$PAINF,%c,0x%.2x*", AIS_CHANNELS[cIt->first].designation, value);
+      Utils::completeNMEA(e.nmeaBuffer.sentence);
+      EventQueue::instance().push(e);
     }
 }
 
