@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include <stdio.h>
@@ -50,14 +50,16 @@ void printf_serial(const char *format, ...)
 {
   if ( Utils::inISR() )
     {
-      Event e(DEBUG_EVENT);
+      Event *e = EventPool::instance().newEvent(DEBUG_EVENT);
+      if ( e )
+        {
+          va_list list;
+          va_start(list, format);
+          vsnprintf(e->debugMessage.buffer, sizeof e->debugMessage, format, list);
+          va_end(list);
 
-      va_list list;
-      va_start(list, format);
-      vsnprintf(e.debugMessage.buffer, sizeof e.debugMessage, format, list);
-      va_end(list);
-
-      EventQueue::instance().push(e);
+          EventQueue::instance().push(e);
+        }
     }
   else
     {

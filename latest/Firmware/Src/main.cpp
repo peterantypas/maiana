@@ -52,6 +52,7 @@ void jump_to_bootloader()
 
 void mainTask(void *params)
 {
+  EventPool::instance().init();
   EventQueue::instance().init();
   Configuration::instance().init();
   CommandProcessor::instance().init();

@@ -108,7 +108,7 @@ public:
   virtual void processEvent(const Event &event)=0;
 };
 
-#if 0
+#if 1
 class EventPool
 {
 public:

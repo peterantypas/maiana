@@ -111,8 +111,8 @@ void termInputCB(char c)
   else if ( c == '\n' )
     {
       __rxbuff[__rxpos++] = 0;
-      Event e(COMMAND_EVENT);
-      strncpy(e.command.buffer, __rxbuff, sizeof e.command.buffer);
+      Event *e = EventPool::instance().newEvent(COMMAND_EVENT);
+      strncpy(e->command.buffer, __rxbuff, sizeof e->command.buffer);
       EventQueue::instance().push(e);
     }
 }

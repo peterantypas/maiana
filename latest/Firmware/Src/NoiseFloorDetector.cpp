@@ -147,14 +147,20 @@ uint8_t NoiseFloorDetector::medianValue(ChannelReadings &window)
 
 void NoiseFloorDetector::dump()
 {
-  Event e(PROPR_NMEA_SENTENCE);
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
 
-  sprintf(e.nmeaBuffer.sentence, "$PAINF,A,0x%.2x*", mChannelACurrent);
-  Utils::completeNMEA(e.nmeaBuffer.sentence);
+  sprintf(e->nmeaBuffer.sentence, "$PAINF,A,0x%.2x*", mChannelACurrent);
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
 
-  sprintf(e.nmeaBuffer.sentence, "$PAINF,B,0x%.2x*", mChannelBCurrent);
-  Utils::completeNMEA(e.nmeaBuffer.sentence);
+  e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  sprintf(e->nmeaBuffer.sentence, "$PAINF,B,0x%.2x*", mChannelBCurrent);
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
 }
 

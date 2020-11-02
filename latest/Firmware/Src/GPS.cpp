@@ -112,9 +112,12 @@ void GPS::onRX(char c)
   else if (c == '\n')
     {
       mBuff[mBuffPos] = 0;
-      Event event(GPS_NMEA_SENTENCE);
-      strncpy(event.nmeaBuffer.sentence, mBuff, sizeof event.nmeaBuffer.sentence);
-      EventQueue::instance ().push(event);
+      Event *e = EventPool::instance().newEvent(GPS_NMEA_SENTENCE);
+      if ( e )
+        {
+          strncpy(e->nmeaBuffer.sentence, mBuff, sizeof e->nmeaBuffer.sentence);
+          EventQueue::instance ().push(e);
+        }
       mBuffPos = 0;
       mBuff[mBuffPos] = 0;
     }
@@ -168,9 +171,12 @@ void GPS::onPPS()
         }
     }
 
-  Event event(CLOCK_EVENT);
-  event.clock.utc = mUTC;
-  EventQueue::instance ().push(event);
+  Event *e = EventPool::instance().newEvent(CLOCK_EVENT);
+  if ( e )
+    {
+      e->clock.utc = mUTC;
+      EventQueue::instance ().push(e);
+    }
 }
 
 
@@ -253,13 +259,17 @@ void GPS::parseSentence(const char *buff)
           mLng = Utils::longitudeFromNMEA (sentence.fields()[5], sentence.fields()[6]);
           mSpeed = atof(sentence.fields()[7].c_str());
           mCOG = atof(sentence.fields()[8].c_str());
-          Event event(GPS_FIX_EVENT);
-          event.gpsFix.utc = mUTC;
-          event.gpsFix.lat = mLat;
-          event.gpsFix.lng = mLng;
-          event.gpsFix.speed = mSpeed;
-          event.gpsFix.cog = mCOG;
-          EventQueue::instance().push (event);
+          Event *e = EventPool::instance().newEvent(GPS_FIX_EVENT);
+          if ( e )
+            {
+              Event &event = *e;
+              event.gpsFix.utc = mUTC;
+              event.gpsFix.lat = mLat;
+              event.gpsFix.lng = mLng;
+              event.gpsFix.speed = mSpeed;
+              event.gpsFix.cog = mCOG;
+              EventQueue::instance().push (e);
+            }
         }
     }
 }

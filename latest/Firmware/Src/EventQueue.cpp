@@ -29,9 +29,9 @@
 #include "task.h"
 #include "bsp.hpp"
 
-#define EVENT_QUEUE_SIZE  50
+#define EVENT_QUEUE_SIZE  80
 
-static Event __queue[EVENT_QUEUE_SIZE];
+static Event* __queue[EVENT_QUEUE_SIZE];
 
 EventQueue &EventQueue::instance()
 {
@@ -45,11 +45,11 @@ EventQueue::EventQueue()
 
 void EventQueue::init()
 {
-  mQueueHandle = xQueueCreateStatic(EVENT_QUEUE_SIZE, sizeof(Event), (uint8_t*)&__queue[0], &mQueue);
+  mQueueHandle = xQueueCreateStatic(EVENT_QUEUE_SIZE, sizeof(Event*), (uint8_t*)&__queue[0], &mQueue);
   configASSERT(mQueueHandle);
 }
 
-void EventQueue::push(const Event &e)
+void EventQueue::push(Event *e)
 {
   if ( xTaskGetSchedulerState() != taskSCHEDULER_RUNNING )
     return;
@@ -87,18 +87,19 @@ void EventQueue::removeObserver(EventConsumer *c)
 
 void EventQueue::dispatch()
 {
-  Event e;
+  Event *e = nullptr;
 
   while ( xQueueReceive(mQueueHandle, &e, 10) == pdTRUE )
     {
       for ( map<EventConsumer*, uint32_t>::iterator c = mConsumers.begin(); c != mConsumers.end(); ++c )
         {
-          if ( c->second & e.type )
+          if ( c->second & e->type )
             {
-              c->first->processEvent(e);
+              c->first->processEvent(*e);
             }
         }
 
+      EventPool::instance().deleteEvent(e);
     }
 }
 

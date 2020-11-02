@@ -21,7 +21,7 @@
 #include "Events.hpp"
 #include "printf_serial.h"
 
-#if 0
+#if 1
 EventPool &EventPool::instance()
 {
   static EventPool __instance;
@@ -30,7 +30,7 @@ EventPool &EventPool::instance()
 
 void EventPool::init()
 {
-  mISRPool = new ObjectPool<Event>(40);
+  mISRPool = new ObjectPool<Event>(25);
   mThreadPool = new ObjectPool<Event>(10);
 }
 
