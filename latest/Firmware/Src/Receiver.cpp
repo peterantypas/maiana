@@ -109,13 +109,14 @@ void Receiver::onBitClock()
 
   uint8_t bit = HAL_GPIO_ReadPin(mDataPort, mDataPin);
   processNRZIBit(bit);
-  ++mSlotBitNumber;
-#if 0
-  if ( (mSlotBitNumber != 0xffff) && (mSlotBitNumber++ == CCA_SLOT_BIT) )
+#if 1
+  if ( mSlotBitNumber != 0xffff && mSlotBitNumber++ == CCA_SLOT_BIT - 1 )
     {
       uint8_t rssi = reportRSSI();
       mRXPacket.setRSSI(rssi);
     }
+#else
+  ++mSlotBitNumber;
 #endif
 }
 
@@ -257,10 +258,18 @@ void Receiver::pushPacket()
 uint8_t Receiver::reportRSSI()
 {
   uint8_t rssi = readRSSI();
+
+#if 0
   Event e(RSSI_SAMPLE_EVENT);
   e.rssiSample.channel = mChannel;
   e.rssiSample.rssi = rssi;
   EventQueue::instance().push(e);
+#endif
+
+
+  char channel = AIS_CHANNELS[mChannel].designation;
+  NoiseFloorDetector::instance().report(channel, rssi);
+
   return rssi;
 }
 

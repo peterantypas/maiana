@@ -15,16 +15,12 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include "NoiseFloorDetector.hpp"
 #include "EventQueue.hpp"
-#include <algorithm>
 #include "AISChannels.h"
-#include "_assert.h"
-#include "printf_serial.h"
-#include "RadioManager.hpp"
 
 
 #define WINDOW_SIZE 10
@@ -38,33 +34,44 @@ NoiseFloorDetector &NoiseFloorDetector::instance()
 NoiseFloorDetector::NoiseFloorDetector()
 : mTicks(0xffffffff)
 {
-  EventQueue::instance().addObserver(this, CLOCK_EVENT|RSSI_SAMPLE_EVENT);
+  //mChannelASamples.reserve(WINDOW_SIZE);
+  //mChannelBSamples.reserve(WINDOW_SIZE);
+  mChannelACurrent = 0xff;
+  mChannelBCurrent = 0xff;
+
+  mAFloor = 0xff;
+  mBFloor = 0xff;
+  EventQueue::instance().addObserver(this, CLOCK_EVENT);
 }
 
-void NoiseFloorDetector::report(VHFChannel channel, uint8_t rssi)
+void NoiseFloorDetector::report(char channel, uint8_t rssi)
 {
   if ( rssi < 0x20 ) // Not realistic, likely a bug
     return;
 
-  if ( mData.find(channel) == mData.end() )
+#if 0
+  processSample(channel == 'A' ? mChannelASamples : mChannelBSamples, rssi);
+
+  if ( channel == 'A' )
+    mChannelACurrent = medianValue(mChannelASamples);
+  else
+    mChannelBCurrent = medianValue(mChannelBSamples);
+#endif
+
+  if ( channel == 'A' )
     {
-      ChannelReadings r;
-      r.reserve(WINDOW_SIZE*2);
-      mData[channel] = r;
+      mAFloor = min(mAFloor, rssi);
     }
-
-  ChannelReadings &window = mData[channel];
-  processSample(window, rssi);
+  else
+    {
+      mBFloor = min(mBFloor, rssi);
+    }
 }
 
-uint8_t NoiseFloorDetector::getNoiseFloor(VHFChannel channel)
+uint8_t NoiseFloorDetector::getNoiseFloor(char channel)
 {
-  if ( mData.find(channel) == mData.end() )
-    return 0xff;
-
-  return medianValue(mData[channel]);
+  return channel == 'A' ? mChannelACurrent : mChannelBCurrent;
 }
-
 
 void NoiseFloorDetector::processEvent(const Event &e)
 {
@@ -80,14 +87,17 @@ void NoiseFloorDetector::processEvent(const Event &e)
         ++mTicks;
       }
 
-    if ( mTicks == 30 )
+    if ( mTicks == 10 )
       {
         //DBG("Event pool utilization = %d, max = %d\r\n", EventPool::instance().utilization(), EventPool::instance().maxUtilization());
+        mChannelACurrent = mAFloor;
+        mChannelBCurrent = mBFloor;
         dump();
         reset();
         mTicks = 0;
       }
     break;
+#if 0
   case RSSI_SAMPLE_EVENT:
     {
       report(e.rssiSample.channel, e.rssiSample.rssi);
@@ -95,11 +105,13 @@ void NoiseFloorDetector::processEvent(const Event &e)
       RadioManager::instance().noiseFloorUpdated(e.rssiSample.channel, rssi);
     }
     break;
+#endif
   default:
     break;
   }
 }
 
+#if 0
 void NoiseFloorDetector::processSample(ChannelReadings &window, uint8_t rssi)
 {
   while ( window.size() >= WINDOW_SIZE )
@@ -107,50 +119,51 @@ void NoiseFloorDetector::processSample(ChannelReadings &window, uint8_t rssi)
 
   if ( window.empty() )
     {
-      Reading r;
-      r.reading = rssi;
-      window.push_back(r);
+      window.push_back(rssi);
       return;
     }
 
   // Insert the reading at the start if it qualifies
   for ( ChannelReadings::iterator i = window.begin(); i != window.end(); ++i )
     {
-      if ( rssi <= i->reading )
+      if ( rssi <= *i )
         {
-          Reading r;
-          r.reading = rssi;
-          window.insert(i, r);
+          window.insert(i, rssi);
           break;
         }
     }
+
 }
 
 uint8_t NoiseFloorDetector::medianValue(ChannelReadings &window)
 {
-  if ( window.empty() )
+  if ( window.size() < WINDOW_SIZE )
     return 0xff;
 
-  return window[window.size()/2].reading;
+  return window[window.size()/2];
 }
 
+#endif
 
 void NoiseFloorDetector::dump()
 {
   Event e(PROPR_NMEA_SENTENCE);
-  for ( ChannelData::iterator cIt = mData.begin(); cIt != mData.end(); ++cIt )
-    {
-      uint8_t value = medianValue(cIt->second);
-      //DBG("[Channel %d noise floor: 0x%.2x]\r\n", AIS_CHANNELS[cIt->first].itu, value);
-      sprintf(e.nmeaBuffer.sentence, "$PAINF,%c,0x%.2x*", AIS_CHANNELS[cIt->first].designation, value);
-      Utils::completeNMEA(e.nmeaBuffer.sentence);
-      EventQueue::instance().push(e);
-    }
+
+  sprintf(e.nmeaBuffer.sentence, "$PAINF,A,0x%.2x*", mChannelACurrent);
+  Utils::completeNMEA(e.nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
+
+  sprintf(e.nmeaBuffer.sentence, "$PAINF,B,0x%.2x*", mChannelBCurrent);
+  Utils::completeNMEA(e.nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
 }
 
 void NoiseFloorDetector::reset()
 {
-  mData.clear();
+  //mChannelASamples.clear();
+  //mChannelBSamples.clear();
+  mAFloor = 0xff;
+  mBFloor = 0xff;
 }
 
 

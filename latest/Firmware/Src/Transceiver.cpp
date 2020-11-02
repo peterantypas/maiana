@@ -231,8 +231,9 @@ void Transceiver::onBitClock()
         }
       else if ( mUTC && mSlotBitNumber == CCA_SLOT_BIT && mTXPacket->channel() == mChannel )
         {
-          uint8_t rssi = readRSSI();
-          if ( rssi <= bsp_noise_floor() + TX_CCA_HEADROOM )
+          int rssi = mRXPacket.rssi();
+          int nf = NoiseFloorDetector::instance().getNoiseFloor(AIS_CHANNELS[mChannel].designation);
+          if ( rssi <= nf + TX_CCA_HEADROOM )
             {
               startTransmitting();
             }
