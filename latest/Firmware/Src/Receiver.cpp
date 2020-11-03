@@ -63,10 +63,10 @@ bool Receiver::init()
   return true;
 }
 
-void Receiver::startReceiving(VHFChannel channel)
+void Receiver::startReceiving(VHFChannel channel, bool reconfigGPIOs)
 {
   mChannel = channel;
-  startListening(mChannel);
+  startListening(mChannel, reconfigGPIOs);
   resetBitScanner();
 }
 
@@ -77,11 +77,15 @@ void Receiver::switchToChannel(VHFChannel channel)
 }
 
 // TODO: This is a really, really long operation - over 320us !!!
-void Receiver::startListening(VHFChannel channel)
+void Receiver::startListening(VHFChannel channel, bool reconfigGPIOs)
 {
-  //bsp_signal_high();
-  configureGPIOsForRX();
+  if ( reconfigGPIOs )
+    {
+      // This takes about 140us
+      configureGPIOsForRX();
+    }
 
+  // This takes 180us
   mChannel = channel;
   RX_OPTIONS options;
   options.channel = AIS_CHANNELS[channel].ordinal;
@@ -91,8 +95,12 @@ void Receiver::startListening(VHFChannel channel)
   options.next_state2 = 0;
   options.next_state3 = 0;
 
+  /**
+   * This can take up to 220us, that's 3 bit clocks!!!
+   */
+  bsp_signal_high();
   sendCmd (START_RX, &options, sizeof options, NULL, 0);
-  //bsp_signal_low();
+  bsp_signal_low();
 }
 
 void Receiver::resetBitScanner()
@@ -106,6 +114,14 @@ void Receiver::resetBitScanner()
 
   mRXPacket->reset();
 }
+
+/*
+ * TODO: Under a worst case scenario, this interrupt service method
+ * can take up to 320us to complete (that's 4 clock bits!!!)
+ *
+ * Re-architecting will be necessary to resolve this, and it will almost certainly
+ * require ditching FreeRTOS in favor of "bare metal".
+ */
 
 void Receiver::onBitClock()
 {
@@ -140,7 +156,7 @@ void Receiver::timeSlotStarted(uint32_t slot)
   if ( mSwitchAtNextSlot )
     {
       mSwitchAtNextSlot = false;
-      startReceiving(mSwitchToChannel);
+      startReceiving(mSwitchToChannel, false);
     }
 }
 
@@ -178,7 +194,7 @@ void Receiver::processNRZIBit(uint8_t bit)
       if ( mRXPacket->size() >= MAX_AIS_RX_PACKET_SIZE )
         {
           // Start over
-          startReceiving(mChannel);
+          startReceiving(mChannel, false);
 
           return;
         }
@@ -186,7 +202,7 @@ void Receiver::processNRZIBit(uint8_t bit)
       if ( mOneBitCount >= 7 )
         {
           // Bad packet!
-          startReceiving(mChannel);
+          startReceiving(mChannel, false);
           return;
         }
 
@@ -200,7 +216,7 @@ void Receiver::processNRZIBit(uint8_t bit)
         {
           mBitState = BIT_STATE_PREAMBLE_SYNC;
           pushPacket();
-          startReceiving(mChannel);
+          startReceiving(mChannel, false);
         }
       else
         {

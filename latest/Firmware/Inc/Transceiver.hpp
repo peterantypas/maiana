@@ -43,8 +43,8 @@ public:
   void timeSlotStarted(uint32_t slot);
   void assignTXPacket(TXPacket *p);
   TXPacket *assignedTXPacket();
-  void startReceiving(VHFChannel channel);
-  void startListening(VHFChannel channel);
+  void startReceiving(VHFChannel channel, bool reconfigGPIOs);
+  void startListening(VHFChannel channel, bool reconfigGPIOs);
   void transmitCW(VHFChannel channel);
   void processEvent(const Event &);
 

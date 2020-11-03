@@ -44,12 +44,12 @@ public:
 
   bool init();
   VHFChannel channel();
-  virtual void startReceiving(VHFChannel channel);
+  virtual void startReceiving(VHFChannel channel, bool reconfigGPIOs);
   virtual void onBitClock();
   virtual void timeSlotStarted(uint32_t slot);
   void switchToChannel(VHFChannel channel);
 protected:
-  void startListening(VHFChannel channel);
+  void startListening(VHFChannel channel, bool reconfigGPIOs);
   bool addBit(uint8_t bit);
   void resetBitScanner();
   uint8_t reportRSSI();

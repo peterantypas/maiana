@@ -82,10 +82,10 @@ void RadioManager::start()
   //DBG("Radio Manager starting\r\n");
   configureInterrupts();
   if ( mTransceiverIC )
-    mTransceiverIC->startReceiving(CH_87);
+    mTransceiverIC->startReceiving(CH_87, true);
 
   if ( mReceiverIC )
-    mReceiverIC->startReceiving(CH_88);
+    mReceiverIC->startReceiving(CH_88, true);
 
   GPS::instance().setDelegate(this);
   //DBG("Radio Manager started\r\n");

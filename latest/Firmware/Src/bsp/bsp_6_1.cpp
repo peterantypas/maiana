@@ -477,7 +477,7 @@ uint32_t bsp_get_system_clock()
 uint8_t bsp_tx_spi_byte(uint8_t data)
 {
   uint8_t result = 0;
-  HAL_SPI_TransmitReceive(&hspi1, &data, &result, 1, 10);
+  HAL_SPI_TransmitReceive(&hspi1, &data, &result, 1, 2);
   return result;
 }
 

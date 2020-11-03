@@ -90,7 +90,7 @@ void Transceiver::processEvent(const Event &e)
 
 void Transceiver::transmitCW(VHFChannel channel)
 {
-  startReceiving(channel);
+  startReceiving(channel, false);
   configureGPIOsForTX(TX_POWER_LEVEL);
   SET_PROPERTY_PARAMS p;
   p.Group = 0x20;
@@ -155,9 +155,9 @@ void Transceiver::configureGPIOsForTX(tx_power_level powerLevel)
   setTXPower(powerLevel);
 }
 
-void Transceiver::startListening(VHFChannel channel)
+void Transceiver::startListening(VHFChannel channel, bool reconfigGPIOs)
 {
-  Receiver::startListening(channel);
+  Receiver::startListening(channel, reconfigGPIOs);
 }
 
 void Transceiver::assignTXPacket(TXPacket *p)
@@ -231,7 +231,7 @@ void Transceiver::onBitClock()
       if ( mTXPacket->eof() )
         {
           mLastTXTime = mUTC;
-          startReceiving(mChannel);
+          startReceiving(mChannel, true);
           gRadioState = RADIO_RECEIVING;
           reportTXEvent();
           TXPacketPool::instance().deleteTXPacket(mTXPacket);
@@ -267,7 +267,7 @@ void Transceiver::timeSlotStarted(uint32_t slot)
 
   // Switch channel if we have a transmission scheduled and we're not on the right channel
   if ( gRadioState == RADIO_RECEIVING && mTXPacket && mTXPacket->channel() != mChannel )
-    startReceiving(mTXPacket->channel());
+    startReceiving(mTXPacket->channel(), false);
 }
 
 void Transceiver::startTransmitting()
@@ -306,9 +306,9 @@ void Transceiver::startTransmitting()
 #endif
 }
 
-void Transceiver::startReceiving(VHFChannel channel)
+void Transceiver::startReceiving(VHFChannel channel, bool reconfigGPIOs)
 {
-  Receiver::startReceiving(channel);
+  Receiver::startReceiving(channel, reconfigGPIOs);
 }
 
 void Transceiver::configureGPIOsForRX()
