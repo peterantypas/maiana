@@ -98,9 +98,9 @@ void Receiver::startListening(VHFChannel channel, bool reconfigGPIOs)
   /**
    * This can take up to 220us, that's 3 bit clocks!!!
    */
-  bsp_signal_high();
+  //bsp_signal_high();
   sendCmd (START_RX, &options, sizeof options, NULL, 0);
-  bsp_signal_low();
+  //bsp_signal_low();
 }
 
 void Receiver::resetBitScanner()
