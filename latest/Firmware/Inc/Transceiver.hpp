@@ -23,10 +23,10 @@
 
 #include "Receiver.hpp"
 #include "TXPacket.hpp"
-#include "EventQueue.hpp"
+#include "Events.hpp"
 #include <map>
 
-class Transceiver : public Receiver, EventConsumer
+class Transceiver : public Receiver, public EventConsumer
 {
 public:
   Transceiver(GPIO_TypeDef *sdnPort,

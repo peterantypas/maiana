@@ -97,7 +97,7 @@ int main(void)
   bsp_hw_init();
 
   TaskHandle_t xHandle;
-  if ( xTaskCreate(mainTask, "main", 2048u, NULL, tskIDLE_PRIORITY+4, &xHandle) != pdPASS )
+  if ( xTaskCreate(mainTask, "main", 2248u, NULL, tskIDLE_PRIORITY+4, &xHandle) != pdPASS )
     {
       asm("BKPT 0");
     }

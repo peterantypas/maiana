@@ -57,7 +57,7 @@ protected:
   void processNRZIBit(uint8_t level);
   virtual void configureGPIOsForRX();
 protected:
-  RXPacket mRXPacket;
+  RXPacket *mRXPacket = nullptr;
   uint16_t mBitWindow;
   uint8_t mLastNRZIBit;
   uint32_t mBitCount;

@@ -41,11 +41,13 @@ public:
     mUtilization = 0;
     mMaxUtilization = 0;
 
+    //printf_serial_now("ObjectPool @%p\r\n", this);
     for ( uint32_t i = 0; i < mSize; ++i )
       {
         T *p = new T();
-        ASSERT(p);
+        ASSERT_VALID_PTR(p);
         mQueue.push(p);
+        //printf_serial_now("\t@%p\r\n", p);
       }
   }
 
@@ -60,7 +62,6 @@ public:
   {
     mQueue.push(o);
   }
-
 
   uint32_t maxUtilization()
   {

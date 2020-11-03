@@ -20,16 +20,18 @@
 #ifndef ASSERT_H_
 #define ASSERT_H_
 
-#include <cassert>
-
-#include "config.h"
-#include "printf_serial.h"
 
 
-#if DEV_MODE
-#define ASSERT(b) if (!(b)) {assert_failed((uint8_t*)__FILE__, (uint32_t)__LINE__); }
+#ifdef DEBUG
+#define ASSERT(b) if (!(b)) {asm("bkpt 0");}
 #else
-#define ASSERT(b) assert(b);
+#define ASSERT(b)
+#endif
+
+#ifdef DEBUG
+#define ASSERT_VALID_PTR(p) ASSERT((uint32_t)p >= 0x20000000 && (uint32_t)p <= 0x20009FFF)
+#else
+#define ASSERT_VALID_PTR(p)
 #endif
 
 

@@ -40,6 +40,8 @@ Receiver::Receiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort,
   mSwitchToChannel = mChannel;
   mRXByte = 0;
   mBitWindow = 0;
+  mRXPacket = EventPool::instance().newRXPacket();
+  ASSERT_VALID_PTR(mRXPacket);
 }
 
 Receiver::~Receiver()
@@ -100,7 +102,7 @@ void Receiver::resetBitScanner()
   mRXByte = 0;
   mBitState = BIT_STATE_PREAMBLE_SYNC;
 
-  mRXPacket.reset();
+  mRXPacket->reset();
 }
 
 void Receiver::onBitClock()
@@ -109,20 +111,16 @@ void Receiver::onBitClock()
   if ( gRadioState == RADIO_TRANSMITTING )
     return;
 
-  bsp_signal_high();
+  //bsp_signal_high();
 
   uint8_t bit = HAL_GPIO_ReadPin(mDataPort, mDataPin);
   processNRZIBit(bit);
-#if 1
   if ( mSlotBitNumber != 0xffff && mSlotBitNumber++ == CCA_SLOT_BIT - 1 )
     {
       uint8_t rssi = reportRSSI();
-      mRXPacket.setRSSI(rssi);
+      mRXPacket->setRSSI(rssi);
     }
-#else
-  ++mSlotBitNumber;
-#endif
-  bsp_signal_low();
+  //bsp_signal_low();
 }
 
 void Receiver::timeSlotStarted(uint32_t slot)
@@ -136,7 +134,7 @@ void Receiver::timeSlotStarted(uint32_t slot)
   if ( mBitState == BIT_STATE_IN_PACKET )
     return;
 
-  mRXPacket.setSlot(slot);
+  mRXPacket->setSlot(slot);
   if ( mSwitchAtNextSlot )
     {
       mSwitchAtNextSlot = false;
@@ -168,14 +166,14 @@ void Receiver::processNRZIBit(uint8_t bit)
       if ( mBitWindow == 0b1010101001111110 || mBitWindow == 0b0101010101111110 )
         {
           mBitState = BIT_STATE_IN_PACKET;
-          mRXPacket.setChannel(mChannel);
+          mRXPacket->setChannel(mChannel);
         }
 
       break;
     }
   case BIT_STATE_IN_PACKET:
     {
-      if ( mRXPacket.size() >= MAX_AIS_RX_PACKET_SIZE )
+      if ( mRXPacket->size() >= MAX_AIS_RX_PACKET_SIZE )
         {
           // Start over
           startReceiving(mChannel);
@@ -240,7 +238,7 @@ bool Receiver::addBit(uint8_t bit)
   if ( mBitCount == 8 )
     {
       // Commit to the packet!
-      mRXPacket.addByte(mRXByte);
+      mRXPacket->addByte(mRXByte);
       mBitCount = 0;
       mRXByte = 0;
     }
@@ -251,14 +249,19 @@ bool Receiver::addBit(uint8_t bit)
 void Receiver::pushPacket()
 {
   Event *p = EventPool::instance().newEvent(AIS_PACKET_EVENT);
+  RXPacket *currPacket = mRXPacket;
+  mRXPacket = EventPool::instance().newRXPacket();
+  ASSERT_VALID_PTR(mRXPacket);
+
   if ( p )
     {
       bsp_signal_high();
-      p->rxPacket = mRXPacket;
-      bsp_signal_low();
+      p->rxPacket = currPacket;
       EventQueue::instance().push(p);
+      bsp_signal_low();
     }
-  mRXPacket.reset();
+
+  mRXPacket->reset();
 }
 
 uint8_t Receiver::reportRSSI()

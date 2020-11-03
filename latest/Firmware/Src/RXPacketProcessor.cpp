@@ -15,11 +15,13 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include <stdio.h>
+#include "_assert.h"
 #include "config.h"
+#include "RadioManager.hpp"
 #include "RXPacketProcessor.hpp"
 #include "AISMessages.hpp"
 #include "DataTerminal.hpp"
@@ -51,13 +53,14 @@ void RXPacketProcessor::processEvent(const Event &e)
   {
   case AIS_PACKET_EVENT:
     {
-      if (e.rxPacket.isBad() || !e.rxPacket.checkCRC ())
+      ASSERT(e.rxPacket);
+      if (e.rxPacket->isBad() || !e.rxPacket->checkCRC ())
         return;
 
-      if ( e.rxPacket.messageType() == 15 )
+      if ( e.rxPacket->messageType() == 15 )
         {
           AISMessage15 msg;
-          if ( msg.decode(e.rxPacket) )
+          if ( msg.decode(*e.rxPacket) )
             {
               // Make sure we actually can transmit something
               if ( mStationData.magic != STATION_DATA_MAGIC )
@@ -100,9 +103,8 @@ void RXPacketProcessor::processEvent(const Event &e)
 
       mSentences.clear();
 
-      // Need to make a copy to mutate the packet
-      RXPacket p(e.rxPacket);
-      mEncoder.encode(p, mSentences);
+      ASSERT_VALID_PTR(e.rxPacket);
+      mEncoder.encode(*(e.rxPacket), mSentences);
       for (vector<string>::iterator i = mSentences.begin(); i != mSentences.end(); ++i)
         {
 #ifdef MULTIPLEXED_OUTPUT
@@ -116,7 +118,7 @@ void RXPacketProcessor::processEvent(const Event &e)
 
 
       // Special handling for specific messages that we care about
-      switch (e.rxPacket.messageType())
+      switch (e.rxPacket->messageType())
       {
       case 20:
         // TODO: This is a time slot reservation from a base station. Use this information to block those time slots.

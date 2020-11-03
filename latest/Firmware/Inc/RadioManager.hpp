@@ -30,7 +30,7 @@
 #include "AISChannels.h"
 
 
-class RadioManager : public GPSDelegate, public EventConsumer
+class RadioManager : public GPSDelegate, EventConsumer
 {
 public:
   static RadioManager &instance();
@@ -49,7 +49,6 @@ public:
   void transmitCW(VHFChannel channel);
   VHFChannel alternateChannel(VHFChannel channel);
 
-
 private:
   RadioManager();
   void spiOff();
@@ -58,9 +57,9 @@ private:
   Transceiver *mTransceiverIC;
   Receiver *mReceiverIC;
   bool mInitializing;
-
-  CircularQueue<TXPacket*>    *mTXQueue;
   time_t mUTC;
+
+  CircularQueue<TXPacket*>  mTXQueue;
 };
 
 #endif /* RADIOMANAGER_HPP_ */

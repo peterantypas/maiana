@@ -21,17 +21,52 @@
 #include "Events.hpp"
 #include "printf_serial.h"
 
-#if 1
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Event
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Event::Event()
+  : type(UNKNOWN_EVENT), flags(0), rxPacket(nullptr)
+{
+}
+
+void Event::reset()
+{
+  if ( rxPacket )
+    {
+      ASSERT_VALID_PTR(rxPacket);
+      EventPool::instance().releaseRXPacket(rxPacket);
+    }
+
+  rxPacket = nullptr;
+
+  type = UNKNOWN_EVENT;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// EventPool
+//
+///////////////////////////////////////////////////////////////////////////////
+
 EventPool &EventPool::instance()
 {
   static EventPool __instance;
   return __instance;
 }
 
+
+EventPool::EventPool()
+  : mISRPool(25), mThreadPool(10), mRXPool(20)
+{
+
+}
+
 void EventPool::init()
 {
-  mISRPool = new ObjectPool<Event>(25);
-  mThreadPool = new ObjectPool<Event>(10);
 }
 
 Event *EventPool::newEvent(EventType type)
@@ -39,20 +74,22 @@ Event *EventPool::newEvent(EventType type)
   Event *result = nullptr;
   if ( Utils::inISR() )
     {
-      result = mISRPool->get();
+      result = mISRPool.get();
       if ( result )
         {
           result->type = type;
           result->flags = 1;
+          ASSERT(!result->rxPacket);
         }
     }
   else
     {
-      result = mThreadPool->get();
+      result = mThreadPool.get();
       if ( result )
         {
           result->type = type;
           result->flags = 0;
+          ASSERT(!result->rxPacket);
         }
     }
 
@@ -60,25 +97,43 @@ Event *EventPool::newEvent(EventType type)
   //if ( !result)
     //printf2_now("\r\n[DEBUG]newEvent(0x%.8x) failed\r\n", type);
 
+  if ( result == nullptr )
+    return result;
+
+  ASSERT_VALID_PTR(result);
   return result;
 }
 
 void EventPool::deleteEvent(Event *event)
 {
-  ASSERT(event);
+  ASSERT_VALID_PTR(event);
+  event->reset();
   if ( event->flags )
-    mISRPool->put(event);
+    mISRPool.put(event);
   else
-    mThreadPool->put(event);
+    mThreadPool.put(event);
 }
 
 uint32_t EventPool::maxUtilization()
 {
-  return std::max(mISRPool->maxUtilization(), mThreadPool->maxUtilization());
+  return std::max(mISRPool.maxUtilization(), mThreadPool.maxUtilization());
 }
 
 uint32_t EventPool::utilization()
 {
-  return std::max(mISRPool->utilization(), mThreadPool->utilization());
+  return std::max(mISRPool.utilization(), mThreadPool.utilization());
 }
-#endif
+
+RXPacket *EventPool::newRXPacket()
+{
+  RXPacket *p = mRXPool.get();
+  ASSERT_VALID_PTR(p);
+  return p;
+}
+
+void EventPool::releaseRXPacket(RXPacket *packet)
+{
+  ASSERT_VALID_PTR(packet);
+  mRXPool.put(packet);
+}
+

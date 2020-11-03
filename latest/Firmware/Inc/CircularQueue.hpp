@@ -22,8 +22,8 @@
 #define CIRCULARQUEUE_HPP_
 
 
+#include <stddef.h>
 #include "_assert.h"
-
 
 template<typename T> class CircularQueue
 {
@@ -35,7 +35,7 @@ public:
     mWritePosition = 0;
     mSize = size;
     mBuffer = new T[mSize];
-    ASSERT(mBuffer);
+    ASSERT_VALID_PTR(mBuffer);
   }
 
   inline bool empty()
@@ -77,7 +77,7 @@ private:
   volatile int mReadPosition;
   volatile int mWritePosition;
   size_t mSize;
-  volatile T* mBuffer;
+  volatile T* mBuffer = nullptr;
 };
 
 #endif /* CIRCULARQUEUE_HPP_ */

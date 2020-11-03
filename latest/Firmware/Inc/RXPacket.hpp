@@ -25,6 +25,8 @@
 #include "_assert.h"
 #include "AISChannels.h"
 #include "config.h"
+#include "ObjectPool.hpp"
+
 
 using namespace std;
 

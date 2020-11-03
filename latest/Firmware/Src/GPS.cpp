@@ -182,15 +182,14 @@ void GPS::onPPS()
 
 void GPS::processEvent(const Event &event)
 {
-  //printf2("-> GPS::processEvent()\r\n");
-
   processLine(event.nmeaBuffer.sentence);
-  //printf2("<- GPS::processEvent()\r\n");
+  ASSERT(event.rxPacket == nullptr);
 }
 
 void GPS::processLine(const char* buff)
 {
-  if ( buff[0] == '$' && buff[1] != '$' ) {
+  if ( buff[0] == '$' && buff[1] != '$' )
+    {
       unsigned reportedHash;
       char *starPos = strstr(buff, "*");
       if ( starPos && sscanf(starPos + 1, "%x", &reportedHash) == 1 )
@@ -205,7 +204,7 @@ void GPS::processLine(const char* buff)
             }
 
         }
-  }
+    }
 }
 
 void GPS::parseSentence(const char *buff)

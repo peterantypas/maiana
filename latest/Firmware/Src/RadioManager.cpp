@@ -34,11 +34,12 @@ RadioManager &RadioManager::instance()
 }
 
 RadioManager::RadioManager()
+  : mTXQueue(4)
 {
   mTransceiverIC = NULL;
   mReceiverIC = NULL;
   mInitializing = true;
-  mTXQueue = new CircularQueue<TXPacket*>(4);
+  //mTXQueue = new CircularQueue<TXPacket*>(4);
   mUTC = 0;
   EventQueue::instance().addObserver(this, CLOCK_EVENT);
 }
@@ -104,11 +105,11 @@ void RadioManager::processEvent(const Event &e)
   // Evaluate the state of the transceiver IC and our queue ...
   if ( mTransceiverIC->assignedTXPacket() == NULL )
     {
-      if ( !mTXQueue->empty() )
+      if ( !mTXQueue.empty() )
         {
           // There is no current TX operation pending, so we assign one
           TXPacket *packet = NULL;
-          mTXQueue->pop(packet);
+          mTXQueue.pop(packet);
           ASSERT(packet);
 
           VHFChannel txChannel = packet->channel();
@@ -161,7 +162,7 @@ void RadioManager::timeSlotStarted(uint32_t slotNumber)
 
 void RadioManager::scheduleTransmission(TXPacket *packet)
 {
-  if ( mTXQueue->push(packet) )
+  if ( mTXQueue.push(packet) )
     {
       //DBG("RadioManager queued TX packet for channel %d\r\n", ORDINAL_TO_ITU(packet->channel()));
     }

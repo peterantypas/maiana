@@ -29,6 +29,7 @@
 #include "RXPacket.hpp"
 #include "ObjectPool.hpp"
 #include "AISChannels.h"
+//#include "RadioManager.hpp"
 
 using namespace std;
 
@@ -67,23 +68,27 @@ typedef struct {
   uint8_t rssi;
 } RSSISample;
 
+
 class Event
 {
 public:
   EventType type;
   uint32_t flags;
 
-  Event()
-  : type(UNKNOWN_EVENT), flags(0) {
-  }
+  Event();
 
+#if 0
   Event(EventType t)
-  : type(t), flags(0)
+    : type(t), flags(0), rxPacket(nullptr)
   {
-
   }
+#endif
 
-  RXPacket rxPacket;
+
+  void reset();
+
+  // This is an object, so it can't be a member of the union ...
+  RXPacket *rxPacket;
 
   union {
     NMEABuffer nmeaBuffer;
@@ -108,7 +113,7 @@ public:
   virtual void processEvent(const Event &event)=0;
 };
 
-#if 1
+
 class EventPool
 {
 public:
@@ -119,11 +124,15 @@ public:
   void deleteEvent(Event *event);
   uint32_t utilization();
   uint32_t maxUtilization();
+  RXPacket *newRXPacket();
+  void releaseRXPacket(RXPacket *);
+private:
+  EventPool();
 
 private:
-  ObjectPool<Event> *mISRPool;
-  ObjectPool<Event> *mThreadPool;
+  ObjectPool<Event>     mISRPool;
+  ObjectPool<Event>     mThreadPool;
+  ObjectPool<RXPacket>  mRXPool;
 };
-#endif
 
 #endif /* EVENTS_HPP_ */
