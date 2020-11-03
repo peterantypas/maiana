@@ -492,7 +492,8 @@
 //   PREAMBLE_PATTERN_15_8 - Configuration of the bit values describing a Non-Standard Preamble pattern.
 //   PREAMBLE_PATTERN_7_0 - Configuration of the bit values describing a Non-Standard Preamble pattern.
 */
-#define RF_PREAMBLE_TX_LENGTH_9 0x11, 0x10, 0x09, 0x00, 0x08, 0x14, 0x00, 0x0F, 0x31, 0x00, 0x00, 0x00, 0x00
+//#define RF_PREAMBLE_TX_LENGTH_9 0x11, 0x10, 0x09, 0x00, 0x08, 0x14, 0x00, 0x0F, 0x31, 0x00, 0x00, 0x00, 0x00
+#define RF_PREAMBLE_TX_LENGTH_9 0x11, 0x10, 0x09, 0x00, 0x08, 0x20|0x80, 0x00, 0x0F, 0x31, 0x00, 0x00, 0x00, 0x00
 
 /*
 // Set properties:           RF_SYNC_CONFIG_6
@@ -538,7 +539,7 @@
 //   PKT_LEN_FIELD_SOURCE - Field number containing the received packet length byte(s).
 //   PKT_LEN_ADJUST - Provides for adjustment/offset of the received packet length value (in order to accommodate a variety of methods of defining total packet length).
 //   PKT_TX_THRESHOLD - TX FIFO almost empty threshold.
-//   PKT_RX_THRESHOLD - RX FIFO Almost Full threshold.
+//   PKT_HOLD - RX FIFO Almost Full threshold.
 //   PKT_FIELD_1_LENGTH_12_8 - Unsigned 13-bit Field 1 length value.
 //   PKT_FIELD_1_LENGTH_7_0 - Unsigned 13-bit Field 1 length value.
 //   PKT_FIELD_1_CONFIG - General data processing and packet configuration bits for Field 1.
