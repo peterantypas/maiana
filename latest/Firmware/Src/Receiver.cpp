@@ -58,7 +58,7 @@ bool Receiver::init()
   //DBG("Configuring IC\r\n");
   configure();
   resetBitScanner();
-  //configureGPIOsForRX();
+  configureGPIOsForRX();
 
   return true;
 }
@@ -76,10 +76,11 @@ void Receiver::switchToChannel(VHFChannel channel)
   mSwitchToChannel = channel;
 }
 
-// TODO: This is a really, really long operation - over 150us !!!
+// TODO: This is a really, really long operation - over 320us !!!
 void Receiver::startListening(VHFChannel channel)
 {
-  configureGPIOsForRX();
+  bsp_signal_high();
+  //configureGPIOsForRX();
 
   mChannel = channel;
   RX_OPTIONS options;
@@ -91,6 +92,7 @@ void Receiver::startListening(VHFChannel channel)
   options.next_state3 = 0;
 
   sendCmd (START_RX, &options, sizeof options, NULL, 0);
+  bsp_signal_low();
 }
 
 void Receiver::resetBitScanner()
@@ -255,10 +257,10 @@ void Receiver::pushPacket()
 
   if ( p )
     {
-      bsp_signal_high();
+      //bsp_signal_high();
       p->rxPacket = currPacket;
       EventQueue::instance().push(p);
-      bsp_signal_low();
+      //bsp_signal_low();
     }
 
   mRXPacket->reset();
