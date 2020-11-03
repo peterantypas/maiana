@@ -184,7 +184,7 @@ void bsp_hw_init()
 
   HAL_TIM_Base_Init(&htim2);
 
-  HAL_NVIC_SetPriority(TIM2_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(TIM2_IRQn, 6, 0);
   HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
   // I2C
@@ -220,11 +220,11 @@ void bsp_hw_init()
 
 
   // RF IC clock interrupts
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
 
-  HAL_NVIC_SetPriority(EXTI3_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
   // This is our HAL tick timer now
@@ -325,6 +325,10 @@ void HAL_MspInit(void)
 
   HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 
+  /**
+   * Some of these interrupts will be managed and configured in FreeRTOS
+   */
+
   /* System interrupt init*/
   /* MemoryManagement_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0);
@@ -333,13 +337,13 @@ void HAL_MspInit(void)
   /* UsageFault_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(UsageFault_IRQn, 0, 0);
   /* SVCall_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SVCall_IRQn, 0, 0);
+  //HAL_NVIC_SetPriority(SVCall_IRQn, 2, 0);
   /* DebugMonitor_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0);
   /* PendSV_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(PendSV_IRQn, 0, 0);
+  //HAL_NVIC_SetPriority(PendSV_IRQn, 2, 0);
   /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+  //HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 
   /* USER CODE BEGIN MspInit 1 */
 

@@ -29,8 +29,8 @@
 
 Transceiver::Transceiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort,
     uint32_t csPin, GPIO_TypeDef *dataPort, uint32_t dataPin,
-    GPIO_TypeDef *clockPort, uint32_t clockPin)
-: Receiver(sdnPort, sdnPin, csPort, csPin, dataPort, dataPin, clockPort, clockPin)
+    GPIO_TypeDef *clockPort, uint32_t clockPin, int chipId)
+: Receiver(sdnPort, sdnPin, csPort, csPin, dataPort, dataPin, clockPort, clockPin, chipId)
 {
   mTXPacket = NULL;
   EventQueue::instance().addObserver(this, CLOCK_EVENT);

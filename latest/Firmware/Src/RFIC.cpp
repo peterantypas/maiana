@@ -33,7 +33,8 @@ RFIC::RFIC(GPIO_TypeDef *sdnPort,
     GPIO_TypeDef *dataPort,
     uint32_t dataPin,
     GPIO_TypeDef *clockPort,
-    uint32_t clockPin)
+    uint32_t clockPin,
+    int chipID)
 {
   mSDNP = sdnPort;
   mCSPort = csPort;
@@ -47,6 +48,7 @@ RFIC::RFIC(GPIO_TypeDef *sdnPort,
 
   //mRSSIAdjustment = 0;
   mSPIBusy = false;
+  mChipID = chipID;
 
   if ( !isInitialized() )
     powerOnReset();
@@ -70,7 +72,7 @@ inline void RFIC::spiOff()
 bool RFIC::sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, uint8_t resultLen)
 {
   mSPIBusy = true;
-
+  //bsp_signal_high();
   spiOn();
 
   bsp_tx_spi_byte(cmd);
@@ -81,9 +83,13 @@ bool RFIC::sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, ui
       bsp_tx_spi_byte(b[i]);
     }
   spiOff();
+  //bsp_signal_low();
 
+  //bsp_signal_high();
   while ( readSPIResponse(result, resultLen) == false)
     ;
+
+  //bsp_signal_low();
 
   mSPIBusy = false;
   return true;

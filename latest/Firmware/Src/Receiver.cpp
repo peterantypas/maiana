@@ -27,8 +27,8 @@
 
 Receiver::Receiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort, uint32_t csPin,
     GPIO_TypeDef *dataPort, uint32_t dataPin,
-    GPIO_TypeDef *clockPort, uint32_t clockPin)
-: RFIC(sdnPort, sdnPin, csPort, csPin, dataPort, dataPin, clockPort, clockPin)
+    GPIO_TypeDef *clockPort, uint32_t clockPin, int chipId)
+: RFIC(sdnPort, sdnPin, csPort, csPin, dataPort, dataPin, clockPort, clockPin, chipId)
 {
   mSlotBitNumber = 0xffff;
   mSwitchAtNextSlot = false;
@@ -85,7 +85,6 @@ void Receiver::startListening(VHFChannel channel, bool reconfigGPIOs)
       configureGPIOsForRX();
     }
 
-  // This takes 180us
   mChannel = channel;
   RX_OPTIONS options;
   options.channel = AIS_CHANNELS[channel].ordinal;
@@ -119,8 +118,7 @@ void Receiver::resetBitScanner()
  * TODO: Under a worst case scenario, this interrupt service method
  * can take up to 320us to complete (that's 4 clock bits!!!)
  *
- * Re-architecting will be necessary to resolve this, and it will almost certainly
- * require ditching FreeRTOS in favor of "bare metal".
+ * Re-architecting will be necessary to resolve this.
  */
 
 void Receiver::onBitClock()
@@ -133,7 +131,8 @@ void Receiver::onBitClock()
 
   uint8_t bit = HAL_GPIO_ReadPin(mDataPort, mDataPin);
   processNRZIBit(bit);
-  if ( mSlotBitNumber != 0xffff && mSlotBitNumber++ == CCA_SLOT_BIT - 1 )
+  if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff &&
+      mTimeSlot % 17 == mChipID && mSlotBitNumber++ == CCA_SLOT_BIT - 1 )
     {
       uint8_t rssi = reportRSSI();
       mRXPacket->setRSSI(rssi);
@@ -149,6 +148,7 @@ void Receiver::timeSlotStarted(uint32_t slot)
   //DBG("    **** WTF??? Transmitting past slot boundary? **** \r\n");
 
   mSlotBitNumber = 0;
+  mTimeSlot = slot;
   if ( mBitState == BIT_STATE_IN_PACKET )
     return;
 
@@ -284,9 +284,12 @@ void Receiver::pushPacket()
 
 uint8_t Receiver::reportRSSI()
 {
+  bsp_signal_high();
   uint8_t rssi = readRSSI();
+  bsp_signal_low();
   char channel = AIS_CHANNELS[mChannel].designation;
   NoiseFloorDetector::instance().report(channel, rssi);
+
   return rssi;
 }
 

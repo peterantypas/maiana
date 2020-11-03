@@ -38,7 +38,8 @@ public:
           GPIO_TypeDef *dataPort,
           uint32_t dataPin,
           GPIO_TypeDef *clockPort,
-          uint32_t clockPin);
+          uint32_t clockPin,
+          int chipId);
 
   virtual ~Receiver();
 
@@ -68,6 +69,7 @@ protected:
   uint16_t mSlotBitNumber;
   bool mSwitchAtNextSlot;
   VHFChannel mSwitchToChannel;
+  uint32_t mTimeSlot = 0xffffffff;
 };
 
 #endif /* RECEIVER_HPP_ */

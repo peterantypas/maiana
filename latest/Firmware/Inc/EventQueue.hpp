@@ -24,8 +24,6 @@
 #include <map>
 #include "CircularQueue.hpp"
 #include "Events.hpp"
-#include "FreeRTOS.h"
-#include "queue.h"
 
 
 using namespace std;
@@ -58,8 +56,6 @@ public:
   void dispatch();
 private:
   EventQueue();
-  //QueueHandle_t mQueueHandle;
-  //StaticQueue_t mQueue;
   CircularQueue<Event*> mISRQueue;
   CircularQueue<Event*> mTaskQueue;
   map<EventConsumer *, uint32_t> mConsumers;

@@ -41,7 +41,8 @@ public:
        GPIO_TypeDef *dataPort,
        uint32_t dataPin,
        GPIO_TypeDef *clockPort,
-       uint32_t clockPin);
+       uint32_t clockPin,
+       int chipId);
 
   virtual ~RFIC();
 
@@ -71,6 +72,7 @@ protected:
   uint8_t             mLastNRZIBit;
   BitState            mBitState;
   bool                mSPIBusy;
+  uint32_t            mChipID;
 };
 
 #endif /* RFIC_HPP_ */

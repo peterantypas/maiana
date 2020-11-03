@@ -36,7 +36,8 @@ public:
               GPIO_TypeDef *dataPort,
               uint32_t dataPin,
               GPIO_TypeDef *clockPort,
-              uint32_t clockPin);
+              uint32_t clockPin,
+              int chipId);
 
 
   void onBitClock();
