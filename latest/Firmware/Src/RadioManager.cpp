@@ -180,14 +180,6 @@ void RadioManager::sendTestPacketNow(TXPacket *packet)
     }
 }
 
-void RadioManager::noiseFloorUpdated(VHFChannel channel, uint8_t rssi)
-{
-  if ( mTransceiverIC )
-    {
-      mTransceiverIC->noiseFloorUpdated(channel, rssi);
-    }
-}
-
 void rxClockCB()
 {
   RadioManager::instance().onBitClock(2);

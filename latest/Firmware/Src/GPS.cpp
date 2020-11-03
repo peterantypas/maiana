@@ -214,12 +214,11 @@ void GPS::parseSentence(const char *buff)
 #ifdef MULTIPLEXED_OUTPUT
   DataTerminal::instance ().write ("NMEA", buff);
 #else
-  //
+  DataTerminal::instance().write(buff);
 #endif
 
   if (sentence.code ().find ("RMC") == 2)
     {
-      DataTerminal::instance().write(buff);
       const vector<string> &fields = sentence.fields ();
 
       /*

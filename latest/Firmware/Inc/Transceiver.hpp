@@ -47,7 +47,6 @@ public:
   void startListening(VHFChannel channel);
   void transmitCW(VHFChannel channel);
   void processEvent(const Event &);
-  void noiseFloorUpdated(VHFChannel channel, uint8_t rssi);
 
 protected:
   void configure();
@@ -61,7 +60,7 @@ private:
   TXPacket    *mTXPacket;
   time_t      mUTC;
   time_t      mLastTXTime;
-  map<VHFChannel, uint8_t> mNoiseFloorCache;
+  //map<VHFChannel, uint8_t> mNoiseFloorCache;
 };
 
 #endif /* TRANSCEIVER_HPP_ */

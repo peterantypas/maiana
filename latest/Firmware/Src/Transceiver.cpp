@@ -88,11 +88,6 @@ void Transceiver::processEvent(const Event &e)
   }
 }
 
-void Transceiver::noiseFloorUpdated(VHFChannel channel, uint8_t rssi)
-{
-  mNoiseFloorCache[channel] = rssi;
-}
-
 void Transceiver::transmitCW(VHFChannel channel)
 {
   startReceiving(channel);
@@ -146,15 +141,6 @@ void Transceiver::setTXPower(tx_power_level powerLevel)
 void Transceiver::configureGPIOsForTX(tx_power_level powerLevel)
 {
   bsp_set_tx_mode();
-
-  /*
-   * Configure radio GPIOs for TX:
-   * GPIO 0: Don't care
-   * GPIO 1: INPUT of TX bits
-   * GPIO 2: Don't care
-   * GPIO 3: RX_TX_DATA_CLK
-   * NIRQ  : SYNC_WORD_DETECT
-   */
 
   GPIO_PIN_CFG_PARAMS gpiocfg;
   gpiocfg.GPIO0 = 0x20;       // TX_STATE; low during RX and high during TX
@@ -329,21 +315,12 @@ void Transceiver::configureGPIOsForRX()
 {
   bsp_set_rx_mode();
 
-  /*
-   * Configure radio GPIOs for RX:
-   * GPIO 0: TX_STATE
-   * GPIO 1: RX_DATA
-   * GPIO 2: RX_TX_DATA_CLK
-   * GPIO 3: RX_STATE
-   * NIRQ  : SYNC_WORD_DETECT
-   */
-
   GPIO_PIN_CFG_PARAMS gpiocfg;
   gpiocfg.GPIO0 = 0x20;       // TX_STATE; low during RX and high during TX
   gpiocfg.GPIO1 = 0x14;       // RX data bits
   gpiocfg.GPIO2 = 0x1F;       // RX/TX data clock
   gpiocfg.GPIO3 = 0x21;       // RX_STATE; high during RX and low during TX
-  gpiocfg.NIRQ  = 0x1A;       // Sync word detect
+  gpiocfg.NIRQ  = 0x00;       // Nothing
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
   sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, &gpiocfg, sizeof gpiocfg);

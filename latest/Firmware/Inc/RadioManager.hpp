@@ -49,7 +49,6 @@ public:
   void transmitCW(VHFChannel channel);
   VHFChannel alternateChannel(VHFChannel channel);
 
-  void noiseFloorUpdated(VHFChannel channel, uint8_t rssi);
 
 private:
   RadioManager();

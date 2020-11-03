@@ -31,7 +31,7 @@
 
 #define EVENT_QUEUE_SIZE  50
 
-static Event* __queue[EVENT_QUEUE_SIZE];
+//static Event* __queue[EVENT_QUEUE_SIZE];
 
 EventQueue &EventQueue::instance()
 {
@@ -40,26 +40,29 @@ EventQueue &EventQueue::instance()
 }
 
 EventQueue::EventQueue()
+  : mISRQueue(25), mTaskQueue(10)
 {
 }
 
 void EventQueue::init()
 {
-  mQueueHandle = xQueueCreateStatic(EVENT_QUEUE_SIZE, sizeof(Event*), (uint8_t*)&__queue[0], &mQueue);
-  configASSERT(mQueueHandle);
+  //mQueueHandle = xQueueCreateStatic(EVENT_QUEUE_SIZE, sizeof(Event*), (uint8_t*)&__queue[0], &mQueue);
+  //configASSERT(mQueueHandle);
 }
 
 void EventQueue::push(Event *e)
 {
-  if ( xTaskGetSchedulerState() != taskSCHEDULER_RUNNING )
-    return;
+  //if ( xTaskGetSchedulerState() != taskSCHEDULER_RUNNING )
+    //return;
 
-  BaseType_t xHighPriorityTaskWoken = pdTRUE;
+  //BaseType_t xHighPriorityTaskWoken = pdTRUE;
   if ( Utils::inISR() )
     {
       //bsp_signal_high();
-      xQueueSendFromISR(mQueueHandle, &e, &xHighPriorityTaskWoken);
+      //xQueueSendFromISR(mQueueHandle, &e, &xHighPriorityTaskWoken);
       //bsp_signal_low();
+      if ( !mISRQueue.push(e) )
+        EventPool::instance().deleteEvent(e);
 #if 0
       if ( xHighPriorityTaskWoken )
         portYIELD_FROM_ISR(xHighPriorityTaskWoken);
@@ -67,7 +70,9 @@ void EventQueue::push(Event *e)
     }
   else
     {
-      xQueueSend(mQueueHandle, &e, 0);
+      //xQueueSend(mQueueHandle, &e, 0);
+      if ( !mTaskQueue.push(e) )
+        EventPool::instance().deleteEvent(e);
     }
 }
 
@@ -89,7 +94,21 @@ void EventQueue::dispatch()
 {
   Event *e = nullptr;
 
-  while ( xQueueReceive(mQueueHandle, &e, 10) == pdTRUE )
+  //while ( xQueueReceive(mQueueHandle, &e, 10) == pdTRUE )
+  while (mISRQueue.pop(e))
+    {
+      for ( map<EventConsumer*, uint32_t>::iterator c = mConsumers.begin(); c != mConsumers.end(); ++c )
+        {
+          if ( c->second & e->type )
+            {
+              c->first->processEvent(*e);
+            }
+        }
+
+      EventPool::instance().deleteEvent(e);
+    }
+
+  while (mTaskQueue.pop(e))
     {
       for ( map<EventConsumer*, uint32_t>::iterator c = mConsumers.begin(); c != mConsumers.end(); ++c )
         {

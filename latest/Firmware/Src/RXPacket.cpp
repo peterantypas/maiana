@@ -15,12 +15,14 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include <cassert>
 #include <cstring>
 #include "RXPacket.hpp"
+
+//#define memcpy my_on_steroids_memcpy
 
 
 RXPacket::RXPacket ()
@@ -34,16 +36,18 @@ RXPacket::~RXPacket ()
 
 void RXPacket::setChannel(VHFChannel channel)
 {
-  mChannel = channel;
+  mState.mChannel = channel;
 }
 
 VHFChannel RXPacket::channel() const
 {
-  return mChannel;
+  return mState.mChannel;
 }
 
+#if 1
 RXPacket::RXPacket(const RXPacket &copy)
 {
+#if 0
   memcpy(mPacket, copy.mPacket, sizeof mPacket);
   mSize = copy.mSize;
   mCRC = copy.mCRC;
@@ -53,10 +57,13 @@ RXPacket::RXPacket(const RXPacket &copy)
   mMMSI = copy.mMMSI;
   mSlot = copy.mSlot;
   mChannel = copy.mChannel;
+#endif
+  memcpy(&mState, &copy.mState, sizeof mState);
 }
 
 RXPacket &RXPacket::operator =(const RXPacket &copy)
 {
+#if 0
   memcpy(mPacket, copy.mPacket, sizeof mPacket);
   mSize = copy.mSize;
   mCRC = copy.mCRC;
@@ -66,11 +73,16 @@ RXPacket &RXPacket::operator =(const RXPacket &copy)
   mMMSI = copy.mMMSI;
   mChannel = copy.mChannel;
   mSlot = copy.mSlot;
+#endif
+  memcpy(&mState, &copy.mState, sizeof mState);
   return *this;
 }
+#endif
 
 void RXPacket::reset()
 {
+  mState = {{0}, 0, 0xffff, 0, 0, 0, 0xffffffff, CH_18, 0};
+#if 0
   mType = 0;
   mRI = 0;
   mMMSI = 0;
@@ -79,52 +91,53 @@ void RXPacket::reset()
   mSlot = 0xffffffff;
   mRSSI = 0;
   memset(mPacket, 0, sizeof mPacket);
+#endif
 }
 
 void RXPacket::setSlot(uint32_t slot)
 {
-  mSlot = slot;
+  mState.mSlot = slot;
 }
 
 uint32_t RXPacket::slot() const
 {
-  return mSlot;
+  return mState.mSlot;
 }
 
 
 void RXPacket::setRSSI(uint8_t rssi)
 {
-  mRSSI = rssi;
+  mState.mRSSI = rssi;
 }
 
 uint8_t RXPacket::rssi() const
 {
-  return mRSSI;
+  return mState.mRSSI;
 }
 
 
 void RXPacket::addBit(uint8_t bit)
 {
-  ASSERT(mSize < MAX_AIS_RX_PACKET_SIZE);
+  //ASSERT(mSize < MAX_AIS_RX_PACKET_SIZE);
 
-  uint16_t index = mSize / 8;
-  uint8_t offset = mSize % 8;
+  uint16_t index = mState.mSize / 8;
+  uint8_t offset = mState.mSize % 8;
 
   if ( bit )
-    mPacket[index] |= ( 1 << offset );
+    mState.mPacket[index] |= ( 1 << offset );
   else
-    mPacket[index] &= ~( 1 << offset );
+    mState.mPacket[index] &= ~( 1 << offset );
 
-  ++mSize;
+  ++mState.mSize;
 }
 
 uint8_t RXPacket::bit(uint16_t pos) const
 {
-  if ( pos < mSize ) {
+  if ( pos < mState.mSize ) {
       uint16_t index = pos / 8;
       uint8_t offset = pos % 8;
 
-      return (mPacket[index] & (1 << offset)) != 0;
+      return (mState.mPacket[index] & (1 << offset)) != 0;
   }
   else
     return 0;
@@ -145,17 +158,17 @@ uint32_t RXPacket::bits(uint16_t pos, uint8_t count) const
 
 void RXPacket::addBitCRC(uint8_t data)
 {
-  if ( (data ^ mCRC) & 0x0001 )
-    mCRC = (mCRC >> 1) ^ 0x8408;
+  if ( (data ^ mState.mCRC) & 0x0001 )
+    mState.mCRC = (mState.mCRC >> 1) ^ 0x8408;
   else
-    mCRC >>= 1;
+    mState.mCRC >>= 1;
 }
 
 void RXPacket::addByte(uint8_t byte)
 {
   // The payload is LSB (inverted MSB bytes). This brings it back into MSB format
 
-      addBit(byte & 0x01);
+  addBit(byte & 0x01);
   addBit(byte & 0x02);
   addBit(byte & 0x04);
   addBit(byte & 0x08);
@@ -179,7 +192,7 @@ void RXPacket::addByte(uint8_t byte)
 
 uint16_t RXPacket::size() const
 {
-  return mSize;
+  return mState.mSize;
 }
 
 
@@ -190,26 +203,26 @@ bool RXPacket::isBad() const
    */
 
   //return mSize < 184;
-  return mSize < 32;
+  return mState.mSize < 32;
 }
 
 uint16_t RXPacket::crc() const
 {
-  return mCRC;
+  return mState.mCRC;
 }
 
 void RXPacket::discardCRC()
 {
-  if ( mCRC == 0xffff )
+  if ( mState.mCRC == 0xffff )
     return;
-  mSize -= 16;
-  mCRC = 0xffff;
+  mState.mSize -= 16;
+  mState.mCRC = 0xffff;
 
   // Explicitly set those bits to zero, no matter how they align
   for ( uint8_t i = 0; i < 16; ++i )
     addBit(0);
 
-  mSize -= 16;
+  mState.mSize -= 16;
 }
 
 void RXPacket::addFillBits(uint8_t numBits)
@@ -224,43 +237,43 @@ bool RXPacket::checkCRC() const
 {
   //uint16_t rcrc = ((mCRC & 0xff00) >> 8) | ((mCRC & 0x00ff) << 8);
   //trace_printf("%.4x %.4x %.4x\n", mCRC, ~(mCRC), ~(rcrc));
-  return mCRC == 0xf0b8;
+  return mState.mCRC == 0xf0b8;
 
 }
 
 uint8_t RXPacket::messageType() const
 {
-  if ( mType )
-    return mType;
+  if ( mState.mType )
+    return mState.mType;
 
   for ( int i = 0; i < 6; ++i ) {
-      mType <<= 1;
-      mType |= bit(i);
+      mState.mType <<= 1;
+      mState.mType |= bit(i);
   }
 
-  return mType;
+  return mState.mType;
 }
 
 uint8_t RXPacket::repeatIndicator() const
 {
-  if ( mRI )
-    return mRI;
+  if ( mState.mRI )
+    return mState.mRI;
 
-  mRI = bit(6) << 1 | bit(7);
-  return mRI;
+  mState.mRI = bit(6) << 1 | bit(7);
+  return mState.mRI;
 }
 
 uint32_t RXPacket::mmsi() const
 {
-  if ( mMMSI )
-    return mMMSI;
+  if ( mState.mMMSI )
+    return mState.mMMSI;
 
   for ( int i = 8; i < 38; ++i ) {
-      mMMSI <<= 1;
-      mMMSI |= bit(i);
+      mState.mMMSI <<= 1;
+      mState.mMMSI |= bit(i);
   }
 
-  return mMMSI;
+  return mState.mMMSI;
 }
 
 

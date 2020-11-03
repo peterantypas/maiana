@@ -56,6 +56,8 @@ bool Receiver::init()
   //DBG("Configuring IC\r\n");
   configure();
   resetBitScanner();
+  //configureGPIOsForRX();
+
   return true;
 }
 
@@ -72,6 +74,7 @@ void Receiver::switchToChannel(VHFChannel channel)
   mSwitchToChannel = channel;
 }
 
+// TODO: This is a really, really long operation - over 150us !!!
 void Receiver::startListening(VHFChannel channel)
 {
   configureGPIOsForRX();
@@ -106,6 +109,7 @@ void Receiver::onBitClock()
   if ( gRadioState == RADIO_TRANSMITTING )
     return;
 
+  bsp_signal_high();
 
   uint8_t bit = HAL_GPIO_ReadPin(mDataPort, mDataPin);
   processNRZIBit(bit);
@@ -118,6 +122,7 @@ void Receiver::onBitClock()
 #else
   ++mSlotBitNumber;
 #endif
+  bsp_signal_low();
 }
 
 void Receiver::timeSlotStarted(uint32_t slot)
@@ -245,61 +250,36 @@ bool Receiver::addBit(uint8_t bit)
 
 void Receiver::pushPacket()
 {
-  //bsp_signal_high();
-#ifndef TX_TEST_MODE
   Event *p = EventPool::instance().newEvent(AIS_PACKET_EVENT);
   if ( p )
     {
+      bsp_signal_high();
       p->rxPacket = mRXPacket;
+      bsp_signal_low();
       EventQueue::instance().push(p);
     }
   mRXPacket.reset();
-#else
-  mRXPacket.reset();
-#endif
-  //bsp_signal_low();
 }
 
 uint8_t Receiver::reportRSSI()
 {
   uint8_t rssi = readRSSI();
-
-#if 0
-  Event e(RSSI_SAMPLE_EVENT);
-  e.rssiSample.channel = mChannel;
-  e.rssiSample.rssi = rssi;
-  EventQueue::instance().push(e);
-#endif
-
-
   char channel = AIS_CHANNELS[mChannel].designation;
   NoiseFloorDetector::instance().report(channel, rssi);
-
   return rssi;
 }
 
 void Receiver::configureGPIOsForRX()
 {
-  /*
-   * Configure radio GPIOs for RX:
-   * GPIO 0: Don't care
-   * GPIO 1: RX_DATA
-   * GPIO 2: Don't care
-   * GPIO 3: RX_TX_DATA_CLK
-   * NIRQ  : SYNC_WORD_DETECT
-   */
-
   GPIO_PIN_CFG_PARAMS gpiocfg;
   gpiocfg.GPIO0 = 0x00;       // No change
   gpiocfg.GPIO1 = 0x14;       // RX data bits
   gpiocfg.GPIO2 = 0x00;       // No change
   gpiocfg.GPIO3 = 0x1F;       // RX/TX data clock
-  gpiocfg.NIRQ  = 0x1A;       // Sync word detect
+  gpiocfg.NIRQ  = 0x00;       // Nothing
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
   sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, &gpiocfg, sizeof gpiocfg);
-
-  bsp_set_rx_mode();
 }
 
 

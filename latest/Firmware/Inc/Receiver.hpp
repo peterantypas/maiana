@@ -47,9 +47,9 @@ public:
   virtual void startReceiving(VHFChannel channel);
   virtual void onBitClock();
   virtual void timeSlotStarted(uint32_t slot);
-  void startListening(VHFChannel channel);
   void switchToChannel(VHFChannel channel);
-private:
+protected:
+  void startListening(VHFChannel channel);
   bool addBit(uint8_t bit);
   void resetBitScanner();
   uint8_t reportRSSI();

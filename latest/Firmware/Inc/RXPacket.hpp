@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #ifndef RXPACKET_HPP_
@@ -70,15 +70,19 @@ private:
   void addBit(uint8_t bit);
   void addBitCRC(uint8_t bit);
 private:
-  uint8_t mPacket[MAX_AIS_RX_PACKET_SIZE/8+1];
-  uint16_t mSize;
-  uint16_t mCRC;
-  mutable uint8_t mType;
-  mutable uint8_t mRI;
-  mutable uint32_t mMMSI;
-  uint32_t mSlot;
-  VHFChannel mChannel;
-  uint8_t mRSSI;
+  struct
+  {
+    uint8_t mPacket[MAX_AIS_RX_PACKET_SIZE/8+1];
+    uint16_t mSize;
+    uint16_t mCRC;
+    mutable uint8_t mType;
+    mutable uint8_t mRI;
+    mutable uint32_t mMMSI;
+    uint32_t mSlot;
+    VHFChannel mChannel;
+    uint8_t mRSSI;
+  }
+  mState;
 };
 
 #endif /* RXPACKET_HPP_ */
