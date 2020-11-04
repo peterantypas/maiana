@@ -48,7 +48,7 @@ public:
   /*
    * We push events here to be processed by the dispatching task
    */
-  void push(Event *event);
+  bool push(Event *event);
 
   /*
    * This method must be called repeatedly by an RTOS task or main() (never an ISR)

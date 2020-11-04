@@ -24,6 +24,8 @@
 #include "EventQueue.hpp"
 #include "NoiseFloorDetector.hpp"
 #include "bsp.hpp"
+#include "Stats.hpp"
+
 
 Receiver::Receiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort, uint32_t csPin,
     GPIO_TypeDef *dataPort, uint32_t dataPin,
@@ -119,13 +121,16 @@ void Receiver::resetBitScanner()
 
 void Receiver::onBitClock()
 {
+  bsp_signal_high();
   ++mSlotBitNumber;
 
   // Don't waste time processing bits when the transceiver is transmitting
   if ( gRadioState == RADIO_TRANSMITTING )
-    return;
+    {
+      bsp_signal_low();
+      return;
+    }
 
-  bsp_signal_high();
 
   if ( !mRXPacket )
     {
@@ -153,8 +158,7 @@ void Receiver::onBitClock()
   else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff &&
       mTimeSlot % 17 == mChipID && mSlotBitNumber == CCA_SLOT_BIT - 1 )
     {
-      uint8_t rssi = reportRSSI();
-      mRXPacket->setRSSI(rssi);
+      reportRSSI();
     }
 #endif
 
@@ -224,13 +228,13 @@ Receiver::Action Receiver::processNRZIBit(uint8_t bit)
           // Start over
           return RESTART_RX;
         }
-#if 0
+
+      // We can never have 7 consecutive "1" bits in a proper NRZI encoded packet
       if ( mOneBitCount >= 7 )
         {
-          // Bad packet!
           return RESTART_RX;
         }
-#endif
+
       mLastNRZIBit = bit;
       mBitWindow <<= 1;
       mBitWindow |= decodedBit;
@@ -302,12 +306,23 @@ void Receiver::pushPacket()
     {
       //bsp_signal_high();
       p->rxPacket = mRXPacket;
-      EventQueue::instance().push(p);
+      if ( !EventQueue::instance().push(p) )
+        {
+          // Count this
+          ++Stats::instance().eventQueuePushFailures;
+        }
       //bsp_signal_low();
       mRXPacket = EventPool::instance().newRXPacket();
+      if ( !mRXPacket )
+        {
+          // TODO: Count this
+          ++Stats::instance().rxPacketPoolPopFailures;
+        }
     }
   else
     {
+      // TODO: Count this
+      ++Stats::instance().eventQueuePopFailures;
       /**
        * We're out of resources so just keep using the existing packet.
        * If this happens, the most logical outcome is a watchdog reset
@@ -323,9 +338,11 @@ void Receiver::pushPacket()
  */
 uint8_t Receiver::reportRSSI()
 {
+  //bsp_signal_high();
   uint8_t rssi = readRSSI();
   char channel = AIS_CHANNELS[mChannel].designation;
   NoiseFloorDetector::instance().report(channel, rssi);
+  //bsp_signal_low();
   return rssi;
 }
 

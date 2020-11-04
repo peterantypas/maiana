@@ -28,6 +28,9 @@
 #include "CommandProcessor.hpp"
 #include "bsp.hpp"
 #include "printf_serial.h"
+#include "Stats.hpp"
+
+
 #ifdef RTOS
 #include "FreeRTOS.h"
 #include "task.h"
@@ -59,6 +62,7 @@ void mainTask(void *params)
   Configuration::instance().init();
   CommandProcessor::instance().init();
   DataTerminal::instance().init();
+  Stats::instance().init();
 
   RXPacketProcessor packetProcessor;
 

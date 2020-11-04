@@ -29,9 +29,6 @@
 #include "task.h"
 #include "bsp.hpp"
 
-#define EVENT_QUEUE_SIZE  50
-
-//static Event* __queue[EVENT_QUEUE_SIZE];
 
 EventQueue &EventQueue::instance()
 {
@@ -46,34 +43,28 @@ EventQueue::EventQueue()
 
 void EventQueue::init()
 {
-  //mQueueHandle = xQueueCreateStatic(EVENT_QUEUE_SIZE, sizeof(Event*), (uint8_t*)&__queue[0], &mQueue);
-  //configASSERT(mQueueHandle);
 }
 
-void EventQueue::push(Event *e)
+bool EventQueue::push(Event *e)
 {
-  //if ( xTaskGetSchedulerState() != taskSCHEDULER_RUNNING )
-    //return;
-
-  //BaseType_t xHighPriorityTaskWoken = pdTRUE;
   if ( Utils::inISR() )
     {
-      //bsp_signal_high();
-      //xQueueSendFromISR(mQueueHandle, &e, &xHighPriorityTaskWoken);
-      //bsp_signal_low();
       if ( !mISRQueue.push(e) )
-        EventPool::instance().deleteEvent(e);
-#if 0
-      if ( xHighPriorityTaskWoken )
-        portYIELD_FROM_ISR(xHighPriorityTaskWoken);
-#endif
+        {
+          EventPool::instance().deleteEvent(e);
+          return false;
+        }
     }
   else
     {
-      //xQueueSend(mQueueHandle, &e, 0);
       if ( !mTaskQueue.push(e) )
-        EventPool::instance().deleteEvent(e);
+        {
+          EventPool::instance().deleteEvent(e);
+          return false;
+        }
     }
+
+  return true;
 }
 
 void EventQueue::addObserver(EventConsumer *c, uint32_t eventMask)

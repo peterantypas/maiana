@@ -24,8 +24,8 @@
 #include "radio_config.h"
 #include "TXPowerSettings.h"
 
-// Set to non-zero to enable FreeRTOS instead of "bare metal". Doesn't add much value at the moment.
-#define RTOS 0
+// Define to enable FreeRTOS instead of "bare metal". Doesn't add much value at the moment.
+//#define RTOS
 
 /**
  * If this is defined, the device transmits carrier on channel 87 (161.975MHz) for 1 second after reset.
@@ -74,7 +74,7 @@
 #define MAX_TX_PACKETS_IN_QUEUE        4
 
 // Headroom above noise floor (in dB) that constitutes a clear channel for transmission
-#define TX_CCA_HEADROOM                6
+#define TX_CCA_HEADROOM                3
 
 // Transmission intervals in seconds
 #define MIN_TX_INTERVAL                5

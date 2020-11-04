@@ -205,9 +205,13 @@ uint8_t RFIC::readRSSI()
 {
   MODEM_STATUS_REPLY s;
   if ( sendCmd(GET_MODEM_STATUS, NULL, 0, &s, sizeof s) )
-    return s.CurrentRSSI;
+    {
+      return s.CurrentRSSI;
+    }
   else
-    return 0;
+    {
+      return 0;
+    }
 }
 
 bool RFIC::checkStatus()
