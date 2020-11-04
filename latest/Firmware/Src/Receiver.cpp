@@ -284,9 +284,9 @@ void Receiver::pushPacket()
 
 uint8_t Receiver::reportRSSI()
 {
-  bsp_signal_high();
+  //bsp_signal_high();
   uint8_t rssi = readRSSI();
-  bsp_signal_low();
+  //bsp_signal_low();
   char channel = AIS_CHANNELS[mChannel].designation;
   NoiseFloorDetector::instance().report(channel, rssi);
 

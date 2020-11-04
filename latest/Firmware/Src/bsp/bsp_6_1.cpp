@@ -184,9 +184,6 @@ void bsp_hw_init()
 
   HAL_TIM_Base_Init(&htim2);
 
-  HAL_NVIC_SetPriority(TIM2_IRQn, 6, 0);
-  HAL_NVIC_EnableIRQ(TIM2_IRQn);
-
   // I2C
   hi2c1.Instance = I2C1;
   hi2c1.Init.Timing = 0x00702991;
@@ -218,6 +215,9 @@ void bsp_hw_init()
   HAL_NVIC_SetPriority(EXTI2_IRQn, 6, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
+  // SOTDMA
+  HAL_NVIC_SetPriority(TIM2_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
   // RF IC clock interrupts
   HAL_NVIC_SetPriority(EXTI1_IRQn, 1, 0);
@@ -297,7 +297,7 @@ void SystemClock_Config()
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
   /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+  // HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
 void gpio_pin_init()
