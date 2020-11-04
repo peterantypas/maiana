@@ -121,7 +121,7 @@ bool TXPacket::eof()
 
 bool TXPacket::canRampDown()
 {
-  return mPosition >= mSize - 3;
+  return mPosition == mSize - 3;
 }
 
 uint8_t TXPacket::nextBit()

@@ -121,13 +121,13 @@ void Receiver::resetBitScanner()
 
 void Receiver::onBitClock()
 {
-  bsp_signal_high();
+  //bsp_signal_high();
   ++mSlotBitNumber;
 
   // Don't waste time processing bits when the transceiver is transmitting
   if ( gRadioState == RADIO_TRANSMITTING )
     {
-      bsp_signal_low();
+      //bsp_signal_low();
       return;
     }
 
@@ -162,7 +162,7 @@ void Receiver::onBitClock()
     }
 #endif
 
-  bsp_signal_low();
+  //bsp_signal_low();
 }
 
 /**
