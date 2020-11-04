@@ -18,6 +18,7 @@
 */
 
 #include "stm32l4xx_hal.h"
+#include "config.h"
 #include "RadioManager.hpp"
 #include "RXPacketProcessor.hpp"
 #include "DataTerminal.hpp"
@@ -27,9 +28,10 @@
 #include "CommandProcessor.hpp"
 #include "bsp.hpp"
 #include "printf_serial.h"
+#ifdef RTOS
 #include "FreeRTOS.h"
 #include "task.h"
-#include "timers.h"
+#endif
 
 void jump_to_bootloader()
 {
@@ -78,8 +80,13 @@ void mainTask(void *params)
   while (1)
     {
       EventQueue::instance().dispatch();
+#ifdef RTOS
       vTaskDelay(10);
+#endif
       bsp_refresh_wdt();
+#ifndef RTOS
+      __WFI();
+#endif
     }
 }
 
@@ -95,7 +102,7 @@ int main(void)
   // This is for debugging imprecise bus faults
   //*(uint8_t *)0xe000ed08 |= 2;
   bsp_hw_init();
-
+#ifdef RTOS
   TaskHandle_t xHandle;
   if ( xTaskCreate(mainTask, "main", 2248u, NULL, tskIDLE_PRIORITY+4, &xHandle) != pdPASS )
     {
@@ -103,6 +110,10 @@ int main(void)
     }
 
   vTaskStartScheduler();
+#else
+  mainTask(nullptr);
+#endif
+
   asm("BKPT 0");
   return 1;
 }

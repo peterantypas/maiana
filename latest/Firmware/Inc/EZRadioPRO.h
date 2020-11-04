@@ -126,11 +126,11 @@ typedef struct
   uint8_t Pending;
   uint8_t Status;
   uint8_t CurrentRSSI;
-  uint8_t LatchedRSSI;
-  uint8_t Ant1RSSI;
-  uint8_t Ant2RSSI;
-  uint8_t AFCFreqOffH;
-  uint8_t AFCFreqOffL;
+  //uint8_t LatchedRSSI;
+  //uint8_t Ant1RSSI;
+  //uint8_t Ant2RSSI;
+  //uint8_t AFCFreqOffH;
+  //uint8_t AFCFreqOffL;
 } MODEM_STATUS_REPLY;
 
 typedef struct

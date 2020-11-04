@@ -34,6 +34,7 @@
 #include "stm32l4xx_hal.h"
 #include "stm32l4xx.h"
 #include "stm32l4xx_it.h"
+#include "config.h"
 
 extern TIM_HandleTypeDef htim6;
 
@@ -254,7 +255,7 @@ void PendSV_Handler(void)
 }
 #endif
 
-#if 0
+#ifndef RTOS
 /**
  * @brief This function handles System tick timer.
  */

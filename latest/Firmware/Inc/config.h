@@ -23,19 +23,17 @@
 
 #include "radio_config.h"
 #include "TXPowerSettings.h"
-#include "config.h"
 
+// Set to non-zero to enable FreeRTOS instead of "bare metal". Doesn't add much value at the moment.
+#define RTOS 0
 
 /**
  * If this is defined, the device transmits carrier on channel 87 (161.975MHz) for 1 second after reset.
  */
 //#define CALIBRATION_MODE               1
 
-// Undefine to disable AIS transmission
+// Set to non-zero to enable transmission support
 #define ENABLE_TX                       1
-
-// Defining this fires a single packet after reset. Only do this during conducted testing, never with antenna attached!
-//#define TX_TEST_MODE                    1
 
 
 #ifdef CALIBRATION_MODE

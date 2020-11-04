@@ -80,10 +80,13 @@ bool RFIC::sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, ui
 
   bsp_tx_spi_byte(cmd);
 
-  uint8_t *b = (uint8_t*) params;
-  for ( int i = 0; i < paramLen; ++i )
+  if ( params )
     {
-      bsp_tx_spi_byte(b[i]);
+      uint8_t *b = (uint8_t*) params;
+      for ( int i = 0; i < paramLen; ++i )
+        {
+          bsp_tx_spi_byte(b[i]);
+        }
     }
   spiOff();
   //bsp_signal_low();
@@ -195,6 +198,9 @@ void RFIC::powerOnReset()
     ;
 }
 
+/**
+ * This exhibits a lot of jitter, occassionally taking more than 100us to return
+ */
 uint8_t RFIC::readRSSI()
 {
   MODEM_STATUS_REPLY s;

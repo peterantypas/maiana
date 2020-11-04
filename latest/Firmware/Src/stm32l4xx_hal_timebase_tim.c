@@ -17,6 +17,9 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
+#include "config.h"
+
+#ifdef RTOS
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
@@ -39,7 +42,7 @@ TIM_HandleTypeDef        htim6;
   * @param  TickPriority: Tick interrupt priority.
   * @retval HAL status
   */
-#if 1
+
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 {
   RCC_ClkInitTypeDef    clkconfig;
@@ -88,7 +91,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   return HAL_ERROR;
 }
 
-#endif
+
 /**
   * @brief  Suspend Tick increment.
   * @note   Disable the tick increment by disabling TIM6 update interrupt.
@@ -139,3 +142,4 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif

@@ -4,7 +4,9 @@
  *  Created on: Oct 8, 2020
  *      Author: peter
  */
+#include "config.h"
 
+#ifdef RTOS
 #include "FreeRTOS.h"
 
 void * operator new( size_t size )
@@ -26,3 +28,4 @@ void operator delete[]( void * ptr )
 {
   vPortFree ( ptr );
 }
+#endif

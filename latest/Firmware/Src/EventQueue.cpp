@@ -94,7 +94,6 @@ void EventQueue::dispatch()
 {
   Event *e = nullptr;
 
-  //while ( xQueueReceive(mQueueHandle, &e, 10) == pdTRUE )
   while (mISRQueue.pop(e))
     {
       for ( map<EventConsumer*, uint32_t>::iterator c = mConsumers.begin(); c != mConsumers.end(); ++c )

@@ -47,6 +47,8 @@
 /* Section where include file can be added */
 /* USER CODE END Includes */ 
 
+#include "config.h"
+
 /* Ensure definitions are only used by the compiler, and not by the assembler. */
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
   #include <stdint.h>
@@ -134,13 +136,14 @@ header file. */
 
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
 standard names. */
-#define vPortSVCHandler    SVC_Handler
-#define xPortPendSVHandler PendSV_Handler
 
 /* IMPORTANT: This define is commented when used with STM32Cube firmware, when the timebase source is SysTick,
               to prevent overwriting SysTick_Handler defined within STM32Cube HAL */
- 
+#ifdef RTOS
+#define vPortSVCHandler    SVC_Handler
+#define xPortPendSVHandler PendSV_Handler
 #define xPortSysTickHandler SysTick_Handler
+#endif
 
 /* USER CODE BEGIN Defines */   	      
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */

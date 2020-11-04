@@ -143,6 +143,7 @@ void Receiver::onBitClock()
     {
       startReceiving(mChannel, false);
     }
+#if ENABLE_TX
   /**
    * This trick ensures that we only sample RSSI every 17 time slots and never in the
    * same time slot for both ICs, so we don't conduct long SPI operations on consecutive
@@ -155,6 +156,7 @@ void Receiver::onBitClock()
       uint8_t rssi = reportRSSI();
       mRXPacket->setRSSI(rssi);
     }
+#endif
 
   bsp_signal_low();
 }
@@ -222,13 +224,13 @@ Receiver::Action Receiver::processNRZIBit(uint8_t bit)
           // Start over
           return RESTART_RX;
         }
-
+#if 0
       if ( mOneBitCount >= 7 )
         {
           // Bad packet!
           return RESTART_RX;
         }
-
+#endif
       mLastNRZIBit = bit;
       mBitWindow <<= 1;
       mBitWindow |= decodedBit;
