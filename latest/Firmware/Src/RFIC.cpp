@@ -15,15 +15,14 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include "RFIC.hpp"
 #include "radio_config.h"
 #include "Utils.hpp"
 #include "EZRadioPRO.h"
-#include <cstring>
-#include "printf_serial.h"
+#include <string.h>
 #include "bsp.hpp"
 
 RFIC::RFIC(GPIO_TypeDef *sdnPort,
@@ -46,8 +45,6 @@ RFIC::RFIC(GPIO_TypeDef *sdnPort,
   mDataPin = dataPin;
   mClockPin = clockPin;
 
-  //mRSSIAdjustment = 0;
-  mSPIBusy = false;
   mChipID = chipID;
 
   if ( !isInitialized() )
@@ -71,7 +68,13 @@ inline void RFIC::spiOff()
 
 bool RFIC::sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, uint8_t resultLen)
 {
-  mSPIBusy = true;
+  if ( mCTSPending )
+    {
+      while ( readSPIResponse(NULL, 0) == false)
+        ;
+      mCTSPending = false;
+    }
+
   //bsp_signal_high();
   spiOn();
 
@@ -90,10 +93,33 @@ bool RFIC::sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, ui
     ;
 
   //bsp_signal_low();
-
-  mSPIBusy = false;
   return true;
 }
+
+bool RFIC::sendCmdNoWait(uint8_t cmd, void* params, uint8_t paramLen)
+{
+  if ( mCTSPending )
+    {
+      while ( readSPIResponse(NULL, 0) == false)
+        ;
+      mCTSPending = false;
+    }
+
+  spiOn();
+
+  bsp_tx_spi_byte(cmd);
+
+  uint8_t *b = (uint8_t*) params;
+  for ( int i = 0; i < paramLen; ++i )
+    {
+      bsp_tx_spi_byte(b[i]);
+    }
+  spiOff();
+  mCTSPending = true;
+
+  return true;
+}
+
 
 // This is borrowed from the dAISy project. Thank you Adrian :)
 bool RFIC::readSPIResponse(void *data, uint8_t length)
@@ -106,12 +132,15 @@ bool RFIC::readSPIResponse(void *data, uint8_t length)
       return false;
     }
 
-  uint8_t* b = (uint8_t*) data;
-  uint8_t i = 0;
-  while (i < length)
+  if ( data )
     {
-      b[i] = bsp_tx_spi_byte(0);
-      ++i;
+      uint8_t* b = (uint8_t*) data;
+      uint8_t i = 0;
+      while (i < length)
+        {
+          b[i] = bsp_tx_spi_byte(0);
+          ++i;
+        }
     }
 
   spiOff();
@@ -138,11 +167,9 @@ bool RFIC::isInitialized()
   HAL_GPIO_WritePin(mSDNP, mSDNPin, GPIO_PIN_RESET);
   HAL_Delay(100);
 
-  //DBG("Checking RF chip status\r\n");
   CHIP_STATUS_REPLY chip_status;
   memset(&chip_status, 0, sizeof chip_status);
   sendCmd(GET_CHIP_STATUS, NULL, 0, &chip_status, sizeof chip_status);
-  //DBG("Chip status: 0x%.2x\r\n", chip_status.Current);
   if ( chip_status.Current & 0x08 )
     {
       return false;
@@ -150,13 +177,11 @@ bool RFIC::isInitialized()
   else
     {
       return true;
-  }
+    }
 }
 
 void RFIC::powerOnReset()
 {
-  //DBG("Performing Power On Reset\r\n");
-
   // Pull SDN high to shut down the IC
   HAL_GPIO_WritePin(mSDNP, mSDNPin, GPIO_PIN_SET);
 
@@ -166,12 +191,8 @@ void RFIC::powerOnReset()
   // Pull SDN low and poll the status of GPIO1
   HAL_GPIO_WritePin(mSDNP, mSDNPin, GPIO_PIN_RESET);
 
-  //DBG("Waiting for GPIO1\r\n");
   while ( HAL_GPIO_ReadPin(mDataPort, mDataPin) == GPIO_PIN_RESET )
     ;
-
-  // We're done!
-  //DBG("Radio Ready!\r\n");
 }
 
 uint8_t RFIC::readRSSI()

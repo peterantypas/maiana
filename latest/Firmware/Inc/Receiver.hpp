@@ -50,12 +50,19 @@ public:
   virtual void timeSlotStarted(uint32_t slot);
   void switchToChannel(VHFChannel channel);
 protected:
+  typedef enum
+  {
+    NO_ACTION,
+    RESTART_RX,
+    RETRIEVE_RSSI
+  } Action;
+
   void startListening(VHFChannel channel, bool reconfigGPIOs);
   bool addBit(uint8_t bit);
   void resetBitScanner();
   uint8_t reportRSSI();
   void pushPacket();
-  void processNRZIBit(uint8_t level);
+  Action processNRZIBit(uint8_t level);
   virtual void configureGPIOsForRX();
 protected:
   RXPacket *mRXPacket = nullptr;
@@ -66,9 +73,8 @@ protected:
   BitState mBitState;
   uint8_t mRXByte;
   VHFChannel mChannel;
-  uint16_t mSlotBitNumber;
-  bool mSwitchAtNextSlot;
-  VHFChannel mSwitchToChannel;
+  int mSlotBitNumber;
+  VHFChannel mNextChannel;
   uint32_t mTimeSlot = 0xffffffff;
 };
 

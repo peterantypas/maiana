@@ -50,6 +50,7 @@ public:
 protected:
   virtual void configure();
   bool sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, uint8_t resultLen);
+  bool sendCmdNoWait(uint8_t cmd, void* params, uint8_t paramLen);
   bool isInitialized();
   void powerOnReset();
   bool isReceiving();
@@ -71,8 +72,8 @@ protected:
   uint32_t            mClockPin;
   uint8_t             mLastNRZIBit;
   BitState            mBitState;
-  bool                mSPIBusy;
   uint32_t            mChipID;
+  bool                mCTSPending = false;
 };
 
 #endif /* RFIC_HPP_ */

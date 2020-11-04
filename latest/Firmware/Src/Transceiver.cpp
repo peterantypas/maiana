@@ -150,7 +150,7 @@ void Transceiver::configureGPIOsForTX(tx_power_level powerLevel)
   gpiocfg.NIRQ  = 0x1A;       // Sync word detect
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
-  sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, &gpiocfg, sizeof gpiocfg);
+  sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, NULL, 0);
 
   setTXPower(powerLevel);
 }
@@ -323,7 +323,7 @@ void Transceiver::configureGPIOsForRX()
   gpiocfg.NIRQ  = 0x00;       // Nothing
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
-  sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, &gpiocfg, sizeof gpiocfg);
+  sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, NULL, 0);
 }
 
 void Transceiver::reportTXEvent()

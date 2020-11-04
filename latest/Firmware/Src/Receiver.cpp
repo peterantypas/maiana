@@ -30,14 +30,13 @@ Receiver::Receiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort,
     GPIO_TypeDef *clockPort, uint32_t clockPin, int chipId)
 : RFIC(sdnPort, sdnPin, csPort, csPin, dataPort, dataPin, clockPort, clockPin, chipId)
 {
-  mSlotBitNumber = 0xffff;
-  mSwitchAtNextSlot = false;
+  mSlotBitNumber = -1;
   mOneBitCount = 0;
   mChannel = CH_88;
   mBitCount = 0;
   mBitState = BIT_STATE_PREAMBLE_SYNC;
   mLastNRZIBit=0x00;
-  mSwitchToChannel = mChannel;
+  mNextChannel = mChannel;
   mRXByte = 0;
   mBitWindow = 0;
   mRXPacket = EventPool::instance().newRXPacket();
@@ -55,25 +54,22 @@ VHFChannel Receiver::channel()
 
 bool Receiver::init()
 {
-  //DBG("Configuring IC\r\n");
   configure();
   resetBitScanner();
-  //configureGPIOsForRX();
-
   return true;
 }
 
 void Receiver::startReceiving(VHFChannel channel, bool reconfigGPIOs)
 {
   mChannel = channel;
+  mNextChannel = channel;
   startListening(mChannel, reconfigGPIOs);
   resetBitScanner();
 }
 
 void Receiver::switchToChannel(VHFChannel channel)
 {
-  mSwitchAtNextSlot = true;
-  mSwitchToChannel = channel;
+  mNextChannel = channel;
 }
 
 // TODO: This is a really, really long operation - over 320us !!!
@@ -95,10 +91,10 @@ void Receiver::startListening(VHFChannel channel, bool reconfigGPIOs)
   options.next_state3 = 0;
 
   /**
-   * This can take up to 220us, that's 3 bit clocks!!!
+   * This never takes more than 65us now :D
    */
   //bsp_signal_high();
-  sendCmd (START_RX, &options, sizeof options, NULL, 0);
+  sendCmdNoWait(START_RX, &options, sizeof options);//, NULL, 0);
   //bsp_signal_low();
 }
 
@@ -110,8 +106,8 @@ void Receiver::resetBitScanner()
   mLastNRZIBit = 0xff;
   mRXByte = 0;
   mBitState = BIT_STATE_PREAMBLE_SYNC;
-
-  mRXPacket->reset();
+  if ( mRXPacket )
+    mRXPacket->reset();
 }
 
 /*
@@ -123,49 +119,79 @@ void Receiver::resetBitScanner()
 
 void Receiver::onBitClock()
 {
+  ++mSlotBitNumber;
+
   // Don't waste time processing bits when the transceiver is transmitting
   if ( gRadioState == RADIO_TRANSMITTING )
     return;
 
-  //bsp_signal_high();
+  bsp_signal_high();
+
+  if ( !mRXPacket )
+    {
+      mRXPacket = EventPool::instance().newRXPacket();
+      if ( !mRXPacket )
+        {
+          return;
+        }
+    }
+
 
   uint8_t bit = HAL_GPIO_ReadPin(mDataPort, mDataPin);
-  processNRZIBit(bit);
-  if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff &&
-      mTimeSlot % 17 == mChipID && mSlotBitNumber++ == CCA_SLOT_BIT - 1 )
+  Receiver::Action action = processNRZIBit(bit);
+  if ( action == RESTART_RX )
+    {
+      startReceiving(mChannel, false);
+    }
+  /**
+   * This trick ensures that we only sample RSSI every 17 time slots and never in the
+   * same time slot for both ICs, so we don't conduct long SPI operations on consecutive
+   * interrupt handlers that might exceed the bit clock period. There is no reason for RSSI
+   * collection to have a high duty cycle anyway, it just serves to establish the noise floor.
+   */
+  else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff &&
+      mTimeSlot % 17 == mChipID && mSlotBitNumber == CCA_SLOT_BIT - 1 )
     {
       uint8_t rssi = reportRSSI();
       mRXPacket->setRSSI(rssi);
     }
-  //bsp_signal_low();
+
+  bsp_signal_low();
 }
+
+/**
+ * This is called from the SOTDMA timer interrupt, which is at the same priority as the bit clock.
+ * So timeSlotStarted() and onBitClock() cannot preempt each other.
+ */
 
 void Receiver::timeSlotStarted(uint32_t slot)
 {
   // This should never be called while transmitting. Transmissions start after the slot boundary and end before the end of it.
-  //assert(gRadioState == RADIO_RECEIVING);
-  //if ( gRadioState != RADIO_RECEIVING )
-  //DBG("    **** WTF??? Transmitting past slot boundary? **** \r\n");
+  ASSERT(gRadioState == RADIO_RECEIVING);
 
-  mSlotBitNumber = 0;
+  mSlotBitNumber = -1;
   mTimeSlot = slot;
   if ( mBitState == BIT_STATE_IN_PACKET )
     return;
 
-  mRXPacket->setSlot(slot);
-  if ( mSwitchAtNextSlot )
+  if ( mRXPacket )
+    mRXPacket->setSlot(slot);
+
+  if ( mChannel != mNextChannel )
     {
-      mSwitchAtNextSlot = false;
-      startReceiving(mSwitchToChannel, false);
+      startReceiving(mNextChannel, false);
     }
 }
 
-void Receiver::processNRZIBit(uint8_t bit)
+/**
+ * This method must complete in a few microseconds, worst case!
+ */
+Receiver::Action Receiver::processNRZIBit(uint8_t bit)
 {
   if ( mLastNRZIBit == 0xff )
     {
       mLastNRZIBit = bit;
-      return;
+      return NO_ACTION;
     }
 
   uint8_t decodedBit = !(mLastNRZIBit ^ bit);
@@ -178,7 +204,7 @@ void Receiver::processNRZIBit(uint8_t bit)
       mBitWindow |= decodedBit;
 
       /*
-       * By checking for the last few training bits plus the HDLC start flag,
+       * By checking for the last few preamble bits plus the HDLC start flag,
        * we gain enough confidence that this is not random noise.
        */
       if ( mBitWindow == 0b1010101001111110 || mBitWindow == 0b0101010101111110 )
@@ -194,29 +220,29 @@ void Receiver::processNRZIBit(uint8_t bit)
       if ( mRXPacket->size() >= MAX_AIS_RX_PACKET_SIZE )
         {
           // Start over
-          startReceiving(mChannel, false);
-
-          return;
+          return RESTART_RX;
         }
 
       if ( mOneBitCount >= 7 )
         {
           // Bad packet!
-          startReceiving(mChannel, false);
-          return;
+          return RESTART_RX;
         }
 
       mLastNRZIBit = bit;
       mBitWindow <<= 1;
       mBitWindow |= decodedBit;
 
-
-
       if ( (mBitWindow & 0x00ff) == 0x7E )
         {
+          // We have a complete packet
           mBitState = BIT_STATE_PREAMBLE_SYNC;
+          /**
+           * This is the longest operation undertaken here. Now that we use object pools and pointers,
+           * it completes in about 14us
+           */
           pushPacket();
-          startReceiving(mChannel, false);
+          return RESTART_RX;
         }
       else
         {
@@ -227,6 +253,7 @@ void Receiver::processNRZIBit(uint8_t bit)
     }
   }
 
+  return NO_ACTION;
 }
 
 
@@ -267,29 +294,36 @@ bool Receiver::addBit(uint8_t bit)
 void Receiver::pushPacket()
 {
   Event *p = EventPool::instance().newEvent(AIS_PACKET_EVENT);
-  RXPacket *currPacket = mRXPacket;
-  mRXPacket = EventPool::instance().newRXPacket();
-  ASSERT_VALID_PTR(mRXPacket);
+  ASSERT_VALID_PTR(p);
 
   if ( p )
     {
       //bsp_signal_high();
-      p->rxPacket = currPacket;
+      p->rxPacket = mRXPacket;
       EventQueue::instance().push(p);
       //bsp_signal_low();
+      mRXPacket = EventPool::instance().newRXPacket();
     }
-
-  mRXPacket->reset();
+  else
+    {
+      /**
+       * We're out of resources so just keep using the existing packet.
+       * If this happens, the most logical outcome is a watchdog reset
+       * because something has blocked the main task and the pool is not
+       * getting replenished
+       */
+      mRXPacket->reset();
+    }
 }
 
+/**
+ * This operation typically takes under 85us
+ */
 uint8_t Receiver::reportRSSI()
 {
-  //bsp_signal_high();
   uint8_t rssi = readRSSI();
-  //bsp_signal_low();
   char channel = AIS_CHANNELS[mChannel].designation;
   NoiseFloorDetector::instance().report(channel, rssi);
-
   return rssi;
 }
 
@@ -303,7 +337,7 @@ void Receiver::configureGPIOsForRX()
   gpiocfg.NIRQ  = 0x00;       // Nothing
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
-  sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, &gpiocfg, sizeof gpiocfg);
+  sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, NULL, 0);
 }
 
 
