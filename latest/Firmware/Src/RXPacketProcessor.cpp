@@ -29,6 +29,7 @@
 #include "Utils.hpp"
 #include "AISChannels.h"
 #include "printf_serial.h"
+#include "bsp.hpp"
 
 
 #if MULTIPLEXED_OUTPUT
@@ -56,6 +57,8 @@ void RXPacketProcessor::processEvent(const Event &e)
       ASSERT(e.rxPacket);
       if (e.rxPacket->isBad() || !e.rxPacket->checkCRC ())
         return;
+
+      bsp_signal_rx_event();
 
       if ( e.rxPacket->messageType() == 15 )
         {

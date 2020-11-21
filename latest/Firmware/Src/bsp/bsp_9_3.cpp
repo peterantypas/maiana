@@ -25,7 +25,7 @@
 #include <string.h>
 
 
-#if BOARD_REV==53
+#if BOARD_REV==93
 
 I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
@@ -53,9 +53,11 @@ typedef struct
 } GPIO;
 
 static const GPIO __gpios[] = {
-    {EEPROM_WREN_PORT, {EEPROM_WREN_PIN, GPIO_MODE_OUTPUT_OD, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
-    {CS2_PORT, {CS2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
+    {GNSS_EN_PORT, {GNSS_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {TRX_IC_CLK_PORT, {TRX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    {TX_DISABLE_PORT, {TX_DISABLE_PIN, GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
+    {CS2_PORT, {CS2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
+    {RX_EVT_PORT, {RX_EVT_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {GNSS_1PPS_PORT, {GNSS_1PPS_PIN, GPIO_MODE_IT_FALLING, GPIO_PULLUP, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {GNSS_NMEA_RX_PORT, {GNSS_NMEA_RX_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART2}, GPIO_PIN_RESET},
     {CS1_PORT, {CS1_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
@@ -64,9 +66,10 @@ static const GPIO __gpios[] = {
     {MOSI_PORT, {MOSI_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, GPIO_AF5_SPI1}, GPIO_PIN_SET},
     {SDN1_PORT, {SDN1_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {TRX_IC_DATA_PORT, {TRX_IC_DATA_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
-    {DFU_EN_PORT, {DFU_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    {TX_EVT_PORT, {TX_EVT_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {UART_TX_PORT, {UART_TX_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
     {UART_RX_PORT, {UART_RX_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
+    {GNSS_STATE_PORT, {GNSS_STATE_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {SDN2_PORT, {SDN2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {RX_IC_CLK_PORT, {RX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {RX_IC_DATA_PORT, {RX_IC_DATA_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
@@ -77,11 +80,12 @@ static const GPIO __gpios[] = {
 
 extern "C"
 {
-  void Error_Handler(void)
+  void Error_Handler(uint8_t i)
   {
-    printf_serial_now("[ERROR]\r\n");
-    printf_serial_now("[ERROR] ***** System error handler resetting *****\r\n");
-    NVIC_SystemReset();
+    asm("BKPT 0");
+    printf_serial_now("[ERROR %d]\r\n", i);
+    //printf_serial_now("[ERROR] ***** System error handler resetting *****\r\n");
+    //NVIC_SystemReset();
   }
 }
 
@@ -105,18 +109,6 @@ void bsp_hw_init()
 
   gpio_pin_init();
 
-  // 1PPS signal
-  HAL_NVIC_SetPriority(EXTI2_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-
-
-  // RF IC clock interrupts
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-
-
-  HAL_NVIC_SetPriority(EXTI3_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
 
   // USART1 (main UART)
@@ -132,7 +124,7 @@ void bsp_hw_init()
   huart1.AdvancedInit.AdvFeatureInit  = UART_ADVFEATURE_NO_INIT;
   HAL_UART_Init(&huart1);
 
-  HAL_NVIC_SetPriority(USART1_IRQn, 6, 0);
+  HAL_NVIC_SetPriority(USART1_IRQn, 7, 0);
   HAL_NVIC_EnableIRQ(USART1_IRQn);
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 
@@ -156,7 +148,7 @@ void bsp_hw_init()
 
   if (HAL_SPI_Init(&hspi1) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
 
   __HAL_SPI_ENABLE(&hspi1);
@@ -175,7 +167,7 @@ void bsp_hw_init()
   huart2.AdvancedInit.AdvFeatureInit  = UART_ADVFEATURE_NO_INIT;
   HAL_UART_Init(&huart2);
 
-  HAL_NVIC_SetPriority(USART2_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(USART2_IRQn, 7, 0);
   HAL_NVIC_EnableIRQ(USART2_IRQn);
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 
@@ -192,9 +184,6 @@ void bsp_hw_init()
 
   HAL_TIM_Base_Init(&htim2);
 
-  HAL_NVIC_SetPriority(TIM2_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(TIM2_IRQn);
-
   // I2C
   hi2c1.Instance = I2C1;
   hi2c1.Init.Timing = 0x00702991;
@@ -207,26 +196,41 @@ void bsp_hw_init()
   hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
   if (HAL_I2C_Init(&hi2c1) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
   /** Configure Analogue filter
    */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
   /** Configure Digital filter
    */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
+
+  // 1PPS signal
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
+  // SOTDMA
+  HAL_NVIC_SetPriority(TIM2_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(TIM2_IRQn);
+
+  // RF IC clock interrupts
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+
+  // This is our HAL tick timer now
+  HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 0, 0);
 }
 
-bool bsp_is_tx_disabled()
-{
-  return false;
-}
+
 
 void SystemClock_Config()
 {
@@ -238,14 +242,13 @@ void SystemClock_Config()
    */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = 16;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 1;
   RCC_OscInitStruct.PLL.PLLN = 10;  // 80 MHz
   //RCC_OscInitStruct.PLL.PLLN = 8; // 64 MHz
   //RCC_OscInitStruct.PLL.PLLN = 6; // 48 MHz
-
 #ifdef STM32L432xx
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
 #endif
@@ -253,7 +256,7 @@ void SystemClock_Config()
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
 
   /**Initializes the CPU, AHB and APB bus clocks
@@ -267,21 +270,21 @@ void SystemClock_Config()
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
 
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_HSI;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
 
   /**Configure the main internal regulator output voltage
    */
   if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
     {
-      Error_Handler();
+      Error_Handler(0);
     }
 
   /**Configure the Systick interrupt time
@@ -321,6 +324,10 @@ void HAL_MspInit(void)
 
   HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 
+  /**
+   * Some of these interrupts will be managed and configured in FreeRTOS
+   */
+
   /* System interrupt init*/
   /* MemoryManagement_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0);
@@ -329,13 +336,16 @@ void HAL_MspInit(void)
   /* UsageFault_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(UsageFault_IRQn, 0, 0);
   /* SVCall_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SVCall_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(SVCall_IRQn, 10, 0);
   /* DebugMonitor_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0);
   /* PendSV_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(PendSV_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(PendSV_IRQn, 10, 0);
   /* SysTick_IRQn interrupt configuration */
+
+#ifndef RTOS
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+#endif
 
   /* USER CODE BEGIN MspInit 1 */
 
@@ -344,7 +354,7 @@ void HAL_MspInit(void)
 
 void bsp_set_rx_mode()
 {
-  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_RESET);       // Kill the RF MOSFET bias voltage
 
   GPIO_InitTypeDef gpio;
   gpio.Pin = TRX_IC_DATA_PIN;
@@ -363,18 +373,20 @@ void bsp_set_tx_mode()
   gpio.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(TRX_IC_DATA_PORT, &gpio);
 
-  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_SET);       // RF MOSFET bias voltage
 }
 
 void bsp_gnss_on()
 {
-  // Do nothing
+  HAL_GPIO_WritePin(GNSS_EN_PORT, GNSS_EN_PIN, GPIO_PIN_SET);
 }
 
 void bsp_gnss_off()
 {
-  // Do nothing
+  HAL_GPIO_WritePin(GNSS_EN_PORT, GNSS_EN_PIN, GPIO_PIN_RESET);
+  HAL_Delay(10);
 }
+
 
 void USART_putc(USART_TypeDef* USARTx, char c)
 {
@@ -471,14 +483,13 @@ uint32_t bsp_get_system_clock()
 uint8_t bsp_tx_spi_byte(uint8_t data)
 {
   uint8_t result = 0;
-  HAL_SPI_TransmitReceive(&hspi1, &data, &result, 1, 10);
+  HAL_SPI_TransmitReceive(&hspi1, &data, &result, 1, 2);
   return result;
 }
 
 bool bsp_erase_station_data()
 {
   uint8_t b = 0xff;
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_RESET);
   HAL_Delay(1);
 
   for ( unsigned i = 0; i < sizeof(StationData); ++i )
@@ -486,14 +497,12 @@ bool bsp_erase_station_data()
       HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i, 1, &b, 1, 100);
       HAL_Delay(6);
     }
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_SET);
 
   return true;
 }
 
 bool bsp_save_station_data(const StationData &data)
 {
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_RESET);
   HAL_Delay(1);
 
   uint8_t *b = (uint8_t*)&data;
@@ -502,8 +511,6 @@ bool bsp_save_station_data(const StationData &data)
       HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i, 1, b, 1, 100);
       HAL_Delay(6);
     }
-
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_SET);
 
   return true;
 }
@@ -524,22 +531,35 @@ bool bsp_read_station_data(StationData &data)
   return true;
 }
 
+bool bsp_is_tx_disabled()
+{
+  return HAL_GPIO_ReadPin(TX_DISABLE_PORT, TX_DISABLE_PIN) == GPIO_PIN_RESET;
+}
+
 void bsp_enter_dfu()
 {
-  /**
-   * The RC delay circuit feeding BOOT0 from this GPIO will latch the voltage high
-   * long enough for the next reset to invoke the ROM bootloader. This is the cleanest
-   * way to go about it. The alternative requires that we shut down all peripherals and
-   * disable every interrupt including Systick.
-   */
+  // Cut off the GPS signals immediately to prevent its UART from transmitting and hijacking the bootloader upon reset
+  bsp_gnss_off();
 
-  /**
-   * BUG: This can never work with this board, because the GNSS UART is constantly sending data, so the bootloader
-   * will enable DFU protocol on that USART instead of the main one :(
-   */
-  HAL_GPIO_WritePin(DFU_EN_PORT, DFU_EN_PIN, GPIO_PIN_SET);
-  HAL_Delay(5);
+  // This flag simply tells main() to jump to the ROM bootloader immediately upon reset, before initializing anything
+  *(uint32_t*)DFU_FLAG_ADDRESS = DFU_FLAG_MAGIC;
+
   bsp_reboot();
+}
+
+void bsp_signal_rx_event()
+{
+  HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_SET);
+}
+
+void bsp_signal_tx_event()
+{
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_SET);
+}
+
+void bsp_signal_gps_status(bool tracking)
+{
+  HAL_GPIO_WritePin(GNSS_STATE_PORT, GNSS_STATE_PIN, tracking ? GPIO_PIN_SET: GPIO_PIN_RESET);
 }
 
 extern "C"
@@ -601,13 +621,24 @@ extern "C"
       }
   }
 
-  void EXTI1_IRQHandler(void)
+  void EXTI15_10_IRQHandler(void)
   {
-    if ( __HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1) != RESET )
+    if ( __HAL_GPIO_EXTI_GET_IT(GPIO_PIN_15) != RESET )
       {
-        __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
+        __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_15);
         if ( trxClockCallback )
           trxClockCallback();
+      }
+  }
+
+  void HAL_SYSTICK_Callback()
+  {
+    static int count = 1;
+    if ( count++ % 20 == 0 )
+      {
+        count = 1;
+        HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
       }
   }
 

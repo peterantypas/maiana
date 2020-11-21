@@ -96,6 +96,7 @@ void GPS::enable()
 void GPS::disable()
 {
   bsp_gnss_off();
+  bsp_signal_gps_status(false);
 }
 
 void GPS::onRX(char c)
@@ -123,9 +124,6 @@ void GPS::onRX(char c)
     }
 }
 
-/*
- * What happens if PPS stops and resumes? Isn't our timestamp wrong?
- */
 void GPS::onPPS()
 {
   // If we don't have time yet, we can't use this
@@ -234,7 +232,7 @@ void GPS::parseSentence(const char *buff)
       if (fields[1].length () < 6 || fields[9].length () < 6)
         {
           // TODO: A loss of fix while the SOTDMA timer is active, MUST stop the timer
-
+          bsp_signal_gps_status(false);
           return;
         }
 
@@ -253,6 +251,7 @@ void GPS::parseSentence(const char *buff)
       // Do we have a fix?
       if (mUTC && sentence.fields()[3].length() > 0 && sentence.fields()[5].length() > 0)
         {
+          bsp_signal_gps_status(true);
           mLat = Utils::latitudeFromNMEA (sentence.fields()[3], sentence.fields()[4]);
           mLng = Utils::longitudeFromNMEA (sentence.fields()[5], sentence.fields()[6]);
           mSpeed = atof(sentence.fields()[7].c_str());

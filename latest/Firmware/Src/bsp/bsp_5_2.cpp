@@ -553,6 +553,21 @@ void bsp_enter_dfu()
   bsp_reboot();
 }
 
+void bsp_signal_rx_event()
+{
+
+}
+
+void bsp_signal_tx_event()
+{
+
+}
+
+void bsp_signal_gps_status(bool tracking)
+{
+
+}
+
 extern "C"
 {
 

@@ -223,15 +223,9 @@ Receiver::Action Receiver::processNRZIBit(uint8_t bit)
     }
   case BIT_STATE_IN_PACKET:
     {
-      if ( mRXPacket->size() >= MAX_AIS_RX_PACKET_SIZE )
+      if ( mOneBitCount >= 7 || mRXPacket->size() >= MAX_AIS_RX_PACKET_SIZE )
         {
           // Start over
-          return RESTART_RX;
-        }
-
-      // We can never have 7 consecutive "1" bits in a proper NRZI encoded packet
-      if ( mOneBitCount >= 7 )
-        {
           return RESTART_RX;
         }
 

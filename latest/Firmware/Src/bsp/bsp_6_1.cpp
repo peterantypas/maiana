@@ -555,23 +555,21 @@ void bsp_enter_dfu()
   bsp_reboot();
 }
 
-uint8_t bsp_noise_floor()
+void bsp_signal_rx_event()
 {
-  /**
-   * This is the result of extensive characterization with this hardware
-   */
-  return 0x22;
+
 }
 
-void bsp_signal_high()
+void bsp_signal_tx_event()
 {
-  HAL_GPIO_WritePin(SPARE_PORT, SPARE_PIN, GPIO_PIN_SET);
+
 }
 
-void bsp_signal_low()
+void bsp_signal_gps_status(bool tracking)
 {
-  HAL_GPIO_WritePin(SPARE_PORT, SPARE_PIN, GPIO_PIN_RESET);
+
 }
+
 
 extern "C"
 {

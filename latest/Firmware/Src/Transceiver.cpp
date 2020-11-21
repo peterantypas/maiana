@@ -143,11 +143,11 @@ void Transceiver::configureGPIOsForTX(tx_power_level powerLevel)
   bsp_set_tx_mode();
 
   GPIO_PIN_CFG_PARAMS gpiocfg;
-  gpiocfg.GPIO0 = 0x20;       // TX_STATE; low during RX and high during TX
-  gpiocfg.GPIO1 = 0x04;       // Input
-  gpiocfg.GPIO2 = 0x1F;       // RX/TX data clock
+  gpiocfg.GPIO0 = 0x00;       // No change
+  gpiocfg.GPIO1 = 0x04;       // RX/TX bit data
+  gpiocfg.GPIO2 = 0x1F;       // RX/TX bit clock
   gpiocfg.GPIO3 = 0x21;       // RX_STATE; high in RX, low in TX
-  gpiocfg.NIRQ  = 0x1A;       // Sync word detect
+  gpiocfg.NIRQ  = 0x00;       // No change
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
   sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, NULL, 0);
@@ -316,11 +316,11 @@ void Transceiver::configureGPIOsForRX()
   bsp_set_rx_mode();
 
   GPIO_PIN_CFG_PARAMS gpiocfg;
-  gpiocfg.GPIO0 = 0x20;       // TX_STATE; low during RX and high during TX
+  gpiocfg.GPIO0 = 0x00;       // No change
   gpiocfg.GPIO1 = 0x14;       // RX data bits
   gpiocfg.GPIO2 = 0x1F;       // RX/TX data clock
   gpiocfg.GPIO3 = 0x21;       // RX_STATE; high during RX and low during TX
-  gpiocfg.NIRQ  = 0x00;       // Nothing
+  gpiocfg.NIRQ  = 0x00;       // No change
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
   sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, NULL, 0);
@@ -335,4 +335,5 @@ void Transceiver::reportTXEvent()
   snprintf(e->nmeaBuffer.sentence, sizeof e->nmeaBuffer.sentence, "$PAITX,%c,%s*", AIS_CHANNELS[mTXPacket->channel()].designation, mTXPacket->messageType());
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
+  bsp_signal_tx_event();
 }

@@ -27,7 +27,7 @@
 // Either modify this header or define a different symbol in the preprocessor to build for a different board
 
 #ifndef BOARD_REV
-#define BOARD_REV 61
+#define BOARD_REV 93
 #endif
 
 /**
@@ -47,9 +47,9 @@ void bsp_enter_dfu();
 void bsp_gnss_on();
 void bsp_gnss_off();
 bool bsp_is_tx_disabled();
-uint8_t bsp_noise_floor();
-void bsp_signal_high();
-void bsp_signal_low();
+void bsp_signal_rx_event();
+void bsp_signal_tx_event();
+void bsp_signal_gps_status(bool tracking);
 
 // Callback for processing UART input (interrupt)
 typedef void(*char_input_cb)(char c);
@@ -83,14 +83,12 @@ bool bsp_read_station_data(StationData &data);
 
 // Board-specific headers go here
 
-#if BOARD_REV == 50
-#include "bsp_5_0.hpp"
-#elif BOARD_REV == 52
+#if BOARD_REV == 52
 #include "bsp_5_2.hpp"
-#elif BOARD_REV == 53
-#include "bsp_5_3.hpp"
 #elif BOARD_REV == 61
 #include <bsp_6_1.hpp>
+#elif BOARD_REV == 93
+#include <bsp_9_3.hpp>
 #endif
 
 
