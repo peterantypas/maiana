@@ -10,4 +10,5 @@ The application is mainly interrupt driven, with a single event queue being disp
  - DFU can be achieved by jumping directly into the ROM bootloader, so there is no need for hardware to manipulate the BOOT0 pin
  - The TX_DISABLE signal is now supported
  - Board 9.3 adds 3 "status" (LED driving) signals for GPS, RX and TX
+
  
