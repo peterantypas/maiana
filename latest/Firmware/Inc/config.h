@@ -73,8 +73,18 @@
 // Maximum allowed backlog in TX queue
 #define MAX_TX_PACKETS_IN_QUEUE        4
 
+
+// Set to true to force RSSI sampling at every SOTDMA timer slot on both channels
+#define FULL_RSSI_SAMPLING             1
+
 // Headroom above noise floor (in dB) that constitutes a clear channel for transmission
-#define TX_CCA_HEADROOM                3
+#if FULL_RSSI_SAMPLING
+#define TX_CCA_HEADROOM                2
+#else
+// When sampling RSSI sparsely, there is a tendency to overestimate the noise floor, so there is no need for headroom
+#define TX_CCA_HEADROOM                0
+#endif
+
 
 // Transmission intervals in seconds
 #define MIN_TX_INTERVAL                5

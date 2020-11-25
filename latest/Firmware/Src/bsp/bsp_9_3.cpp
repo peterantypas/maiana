@@ -58,7 +58,7 @@ static const GPIO __gpios[] = {
     {TX_DISABLE_PORT, {TX_DISABLE_PIN, GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {CS2_PORT, {CS2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
     {RX_EVT_PORT, {RX_EVT_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
-    {GNSS_1PPS_PORT, {GNSS_1PPS_PIN, GPIO_MODE_IT_FALLING, GPIO_PULLUP, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    {GNSS_1PPS_PORT, {GNSS_1PPS_PIN, GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {GNSS_NMEA_RX_PORT, {GNSS_NMEA_RX_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART2}, GPIO_PIN_RESET},
     {CS1_PORT, {CS1_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
     {SCK_PORT, {SCK_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, GPIO_AF5_SPI1}, GPIO_PIN_SET},
@@ -384,7 +384,6 @@ void bsp_gnss_on()
 void bsp_gnss_off()
 {
   HAL_GPIO_WritePin(GNSS_EN_PORT, GNSS_EN_PIN, GPIO_PIN_RESET);
-  HAL_Delay(10);
 }
 
 
@@ -540,6 +539,8 @@ void bsp_enter_dfu()
 {
   // Cut off the GPS signals immediately to prevent its UART from transmitting and hijacking the bootloader upon reset
   bsp_gnss_off();
+
+  HAL_Delay(1000);
 
   // This flag simply tells main() to jump to the ROM bootloader immediately upon reset, before initializing anything
   *(uint32_t*)DFU_FLAG_ADDRESS = DFU_FLAG_MAGIC;

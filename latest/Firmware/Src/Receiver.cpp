@@ -150,16 +150,24 @@ void Receiver::onBitClock()
     }
 #if ENABLE_TX
   /**
-   * This trick ensures that we only sample RSSI every 17 time slots and never in the
+   * This trick ensures that we only sample RSSI every N time slots and never in the
    * same time slot for both ICs, so we don't conduct long SPI operations on consecutive
    * interrupt handlers that might exceed the bit clock period. There is no reason for RSSI
    * collection to have a high duty cycle anyway, it just serves to establish the noise floor.
    */
-  else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff &&
-      mTimeSlot % 17 == mChipID && mSlotBitNumber == CCA_SLOT_BIT - 1 )
+#if FULL_RSSI_SAMPLING
+  else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff && mSlotBitNumber == CCA_SLOT_BIT )
     {
-      reportRSSI();
+      mRXPacket->setRSSI(reportRSSI());
     }
+#else
+  else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff &&
+      mTimeSlot % 17 == mChipID &&
+      mSlotBitNumber == CCA_SLOT_BIT - 1 )
+    {
+      mRXPacket->setRSSI(reportRSSI());
+    }
+#endif
 #endif
 
   //bsp_signal_low();

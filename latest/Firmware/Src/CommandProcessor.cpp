@@ -107,8 +107,8 @@ void CommandProcessor::processCommand(const char *buff)
 
       memset(&station, 0, sizeof station);
       station.mmsi = Utils::toInt(tokens[0]);
-      strncpy(station.name, tokens[1].c_str(), sizeof station.name);
-      strncpy(station.callsign, tokens[2].c_str(), sizeof station.callsign);
+      strlcpy(station.name, tokens[1].c_str(), sizeof station.name);
+      strlcpy(station.callsign, tokens[2].c_str(), sizeof station.callsign);
       int type = (VesselType)Utils::toInt(tokens[3]);
       if ( type == 30 || type == 34 || type == 36 || type == 37 )
         station.type = (VesselType)type;

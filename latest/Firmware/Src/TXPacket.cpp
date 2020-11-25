@@ -73,7 +73,7 @@ time_t TXPacket::timestamp()
 
 void TXPacket::setMessageType(const char *t)
 {
-  strncpy(mMessageType, t, sizeof mMessageType);
+  strlcpy(mMessageType, t, sizeof mMessageType);
 }
 
 bool TXPacket::isTestPacket()

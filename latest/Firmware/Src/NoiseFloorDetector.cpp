@@ -46,17 +46,8 @@ NoiseFloorDetector::NoiseFloorDetector()
 
 void NoiseFloorDetector::report(char channel, uint8_t rssi)
 {
-  if ( rssi < 0x20 ) // Not realistic, likely a bug
+  if ( rssi < 0x32 ) // Not realistic, likely a bug
     return;
-
-#if 0
-  processSample(channel == 'A' ? mChannelASamples : mChannelBSamples, rssi);
-
-  if ( channel == 'A' )
-    mChannelACurrent = medianValue(mChannelASamples);
-  else
-    mChannelBCurrent = medianValue(mChannelBSamples);
-#endif
 
   if ( channel == 'A' )
     {
@@ -90,60 +81,15 @@ void NoiseFloorDetector::processEvent(const Event &e)
     if ( mTicks == 30 )
       {
         //DBG("Event pool utilization = %d, max = %d\r\n", EventPool::instance().utilization(), EventPool::instance().maxUtilization());
-        mChannelACurrent = mAFloor;
-        mChannelBCurrent = mBFloor;
+        recalculate();
         dump();
-        reset();
         mTicks = 0;
       }
     break;
-#if 0
-  case RSSI_SAMPLE_EVENT:
-    {
-      report(e.rssiSample.channel, e.rssiSample.rssi);
-      uint8_t rssi = getNoiseFloor(e.rssiSample.channel);
-      RadioManager::instance().noiseFloorUpdated(e.rssiSample.channel, rssi);
-    }
-    break;
-#endif
   default:
     break;
   }
 }
-
-#if 0
-void NoiseFloorDetector::processSample(ChannelReadings &window, uint8_t rssi)
-{
-  while ( window.size() >= WINDOW_SIZE )
-    window.pop_back();
-
-  if ( window.empty() )
-    {
-      window.push_back(rssi);
-      return;
-    }
-
-  // Insert the reading at the start if it qualifies
-  for ( ChannelReadings::iterator i = window.begin(); i != window.end(); ++i )
-    {
-      if ( rssi <= *i )
-        {
-          window.insert(i, rssi);
-          break;
-        }
-    }
-
-}
-
-uint8_t NoiseFloorDetector::medianValue(ChannelReadings &window)
-{
-  if ( window.size() < WINDOW_SIZE )
-    return 0xff;
-
-  return window[window.size()/2];
-}
-
-#endif
 
 void NoiseFloorDetector::dump()
 {
@@ -164,10 +110,19 @@ void NoiseFloorDetector::dump()
   EventQueue::instance().push(e);
 }
 
-void NoiseFloorDetector::reset()
+void NoiseFloorDetector::recalculate()
 {
-  //mChannelASamples.clear();
-  //mChannelBSamples.clear();
+  if ( mChannelACurrent == 0xff || mChannelBCurrent == 0xff )
+    {
+      mChannelACurrent = mAFloor;
+      mChannelBCurrent = mBFloor;
+    }
+  else
+    {
+      mChannelACurrent = (mChannelACurrent + mAFloor) / 2;
+      mChannelBCurrent = (mChannelBCurrent + mBFloor) / 2;
+    }
+
   mAFloor = 0xff;
   mBFloor = 0xff;
 }

@@ -116,7 +116,7 @@ void GPS::onRX(char c)
       Event *e = EventPool::instance().newEvent(GPS_NMEA_SENTENCE);
       if ( e )
         {
-          strncpy(e->nmeaBuffer.sentence, mBuff, sizeof e->nmeaBuffer.sentence);
+          strlcpy(e->nmeaBuffer.sentence, mBuff, sizeof e->nmeaBuffer.sentence);
           EventQueue::instance ().push(e);
         }
       mBuffPos = 0;

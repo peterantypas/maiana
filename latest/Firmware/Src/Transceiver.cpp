@@ -217,7 +217,12 @@ void Transceiver::onBitClock()
         }
       else if ( mUTC && mSlotBitNumber == CCA_SLOT_BIT && mTXPacket->channel() == mChannel )
         {
+#if FULL_RSSI_SAMPLING
+          // It has already been sampled during Receiver::onBitClock();
+          int rssi = mRXPacket->rssi();
+#else
           int rssi = readRSSI();
+#endif
           int nf = NoiseFloorDetector::instance().getNoiseFloor(AIS_CHANNELS[mChannel].designation);
           if ( rssi <= nf + TX_CCA_HEADROOM )
             {

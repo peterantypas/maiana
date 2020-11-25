@@ -34,7 +34,7 @@ public:
   // Called directly by each receiver to report every RSSI reading at every SOTDMA slot
   void report(char channel, uint8_t rssi);
 
-  void reset();
+  void recalculate();
 
   // Returns the current noise floor of the channel, 0xff if unknown
   uint8_t getNoiseFloor(char channel);

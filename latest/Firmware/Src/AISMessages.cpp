@@ -107,8 +107,8 @@ void AISMessage::addString(uint8_t *bitVector, uint16_t &size, const string &val
   ASSERT(value.length() <= maxChars);
   ASSERT(maxChars < 30); // There should be no application for such long strings here
   char s[30];
-  memset(s, 0, sizeof s);
-  strncpy(s, value.c_str(), value.length());
+  //memset(s, 0, sizeof s);
+  strlcpy(s, value.c_str(), sizeof s);
 
   uint8_t buffer[32];
   for ( uint8_t c = 0; c < maxChars; ++c ) {
