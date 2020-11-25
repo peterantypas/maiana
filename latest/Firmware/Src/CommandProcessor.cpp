@@ -28,7 +28,7 @@
 #include "bsp.hpp"
 #include "GPS.hpp"
 #include "RadioManager.hpp"
-
+#include <stdlib.h>
 
 CommandProcessor &CommandProcessor::instance()
 {

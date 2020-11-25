@@ -38,8 +38,7 @@ will simply run as a receiver and never transmit.
 
 The system draws about 30mA from 12V in RX mode, and spikes up to 600mA during transmission (for about 30 milliseconds).
 
-The latest design (9.3 pictured above) relies on plain Ethernet cable for power, data, and control signals such as "TX OFF". I will include a reference design for a
-control box that I'm working on but every boat is different, so your mileage will absolutely vary.
+The latest design (9.3 pictured above) relies on plain Ethernet cable for power, data, and control signals such as "TX OFF". Although it is possible to wire just 4 signals (12V,GND,RX,TX), I strongly recommend the use of twisted pair cable, it makes a big difference!
 
 
 ### Software
@@ -49,10 +48,11 @@ the required symbols in the preprocessor to build for different board revisions.
 
 ### Building the unit
 
-This is going to be difficult for all but the most technically advanced.
+This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. Unless you're skilled with stencils and reflow, you will find it challenging. 
 
-The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. Unless you're skilled with stencils and reflow, you will find it challenging. So I am going to make it available as part of a kit on tindie.com. The kit will include a 95% finished PCBA as well as the VHF antenna, 
-enclosure and sealing components (which are NOT open sourced). The board will be programmed, tested and calibrated, and the antenna will be perfectly matched. The cable and whatever lies on the other side of it will be the buyer's responsibility. 
+To make this easier I will release a kit on tindie.com, hopefully by the start of the 2021 boating season (March or April). The kit will include a 95% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed, tested and calibrated, and the antenna will be perfectly matched. 
+
+In addition, I am going to offer an optional control box & signal adapter for the other end of the Cat5 cable. I built one for my boat years ago and I always find myself glancing at it to check the system status, so I think it's really useful. The control box will be open source too, but if you think the transponder board is tight, wait until you see that one ;) 
 
 ### License
 

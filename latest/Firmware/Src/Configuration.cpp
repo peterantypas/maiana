@@ -25,6 +25,8 @@
 #include "config.h"
 #include "EventQueue.hpp"
 #include "bsp.hpp"
+#include <stdio.h>
+
 
 #if 0
 

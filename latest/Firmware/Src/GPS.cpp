@@ -25,6 +25,8 @@
 #include "Utils.hpp"
 #include "EventQueue.hpp"
 #include "bsp.hpp"
+#include <stdio.h>
+#include <stdlib.h>
 
 
 void gnssInputCB(char c);
