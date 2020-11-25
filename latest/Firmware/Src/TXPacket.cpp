@@ -21,6 +21,8 @@
 #include <cstring>
 #include <cassert>
 #include "TXPacket.hpp"
+#include <stdlib.h>
+
 
 TXPacket::TXPacket ()
 {

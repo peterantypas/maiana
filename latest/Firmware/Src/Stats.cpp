@@ -9,6 +9,7 @@
 #include "Stats.hpp"
 #include "Utils.hpp"
 #include "EventQueue.hpp"
+#include <stdio.h>
 
 static int count = 0;
 

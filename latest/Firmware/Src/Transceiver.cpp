@@ -25,7 +25,7 @@
 #include "EZRadioPRO.h"
 #include "AISChannels.h"
 #include "bsp.hpp"
-
+#include <stdio.h>
 
 Transceiver::Transceiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort,
     uint32_t csPin, GPIO_TypeDef *dataPort, uint32_t dataPin,

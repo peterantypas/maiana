@@ -21,7 +21,7 @@
 #include "NoiseFloorDetector.hpp"
 #include "EventQueue.hpp"
 #include "AISChannels.h"
-
+#include <stdio.h>
 
 #define WINDOW_SIZE 10
 
