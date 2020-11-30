@@ -50,7 +50,7 @@ will simply run as a receiver and never transmit.
 
 The system draws about 30mA from 12V in RX mode, and spikes up to 600mA during transmission (for about 30 milliseconds).
 
-The latest design (9.3 pictured above) relies on plain Ethernet cable for power, data, and control signals such as "TX OFF". Although it is possible to wire just 4 signals (12V,GND,RX,TX), I strongly recommend the use of twisted pair cable, it makes a big difference!
+The latest design (9.3 pictured above) relies on plain Cat5 cable for power, data, as well as control signals such as "TX OFF" and and status LED drivers (RX/TX/GPS). 
 
 
 ### Software
