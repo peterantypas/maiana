@@ -50,7 +50,7 @@ will simply run as a receiver and never transmit.
 
 The system draws about 30mA from 12V in RX mode, and spikes up to 600mA during transmission (for about 30 milliseconds).
 
-The latest design (9.3 pictured above) relies on plain Cat5 cable for power, data, as well as control signals such as "TX OFF" and and status LED drivers (RX/TX/GPS). 
+The latest design (9.3 pictured above) relies on plain Cat5 cable for power, data, as well as control signals such as "TX OFF" and status LED drivers (RX/TX/GPS). 
 
 
 ### Software
