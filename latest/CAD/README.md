@@ -13,7 +13,6 @@ features a CH330N USB-to-UART adapter IC as well as a TX "on/off" switch so you 
 unit from your own system. The Gerbers for the breakout are here as well.
 
 The 9.3 board adds 3 "status" signals that can drive LEDs (with appropriate current limiting resistors!). These are optional.
-Instead of RJ45 and Cat 5 cable, you can use a 4-wire 0.1" pitch Phoenix type terminal mounted on pads 1,3,5 and 7 of the RJ45
-footprint and use a 4-wire cable instead. This will carry power and UART Rx/Tx only.
+
 
 
