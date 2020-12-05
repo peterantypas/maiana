@@ -456,9 +456,13 @@ void AISMessage24B::encode(const StationData &station, TXPacket &packet)
   value = station.type;
   addBits(payload, size, value, 8);   // Type of ship
 
-  addString(payload, size, "", 7);    // Vendor ID -- not available
+  addString(payload, size, "@@@@@@@", 7);    // Vendor ID -- not available
 
-  addString(payload, size, station.callsign, 7);
+  if ( strlen(station.callsign) )
+    addString(payload, size, station.callsign, 7);
+  else
+    addString(payload, size, "@@@@@@@", 7);
+
 
   if ( station.len == 0 || station.beam == 0 )
     {
@@ -489,8 +493,8 @@ void AISMessage24B::encode(const StationData &station, TXPacket &packet)
 
   addBits(payload, size, value, 30);  // Dimension information
 
-  value = 3;
-  addBits(payload, size, value, 4);   // Using GPS/GLONASS
+  value = 1;
+  addBits(payload, size, value, 4);   // We are using GPS only
 
   value = 0;
   addBits(payload, size, value, 2);   // Spare bits
