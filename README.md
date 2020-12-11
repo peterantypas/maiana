@@ -62,7 +62,7 @@ the required symbols in the preprocessor to build for different board revisions.
 
 This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. Unless you're skilled with stencils and reflow, you will find it challenging. 
 
-To make this easier I will release a kit on tindie.com. I was hoping to have it ready by the start of the 2021 boating season (March or April), but the supply chain for Silicon Labs parts looks really bad across the board right now, so this may not happen until the second half of 2021. The kit will include a 95% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed, tested and calibrated, and the antenna will be perfectly matched. 
+To make this easier I will release a kit on tindie.com. I was hoping to have it ready by the start of the 2021 boating season (March or April), but the supply chain for Silicon Labs parts looks really bad across the board right now, so this may not happen until the second half of 2021. The kit will include a 95% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed, tested and calibrated, and the antenna will be perfectly matched. That said, I cannot legally ship this as a transponder yet, so it will be billed as a receiver. To turn it into a transponder, you will have to install a 470nH inductor (L17) on the PCBA yourself ;)
 
 In addition, I am going to offer a more advanced version of the control box & signal adapter for the other end of the Cat5 cable. It will be open source too, but if you think the transponder board is tight, wait until you see that one ;) 
 
