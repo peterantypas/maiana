@@ -21,7 +21,12 @@
 #ifndef RADIO_CONFIG_STUB_H_
 #define RADIO_CONFIG_STUB_H_
 
-
+#include <stdint.h>
 #include "radio_config_ph_all_channels.h"
+#include "radio_config_si4362.h"
+
+static const uint8_t si4463_radio_configuration[] = SI4463_RADIO_CONFIGURATION_DATA_ARRAY;
+static const uint8_t si4362_radio_configuration[] = SI4362_RADIO_CONFIGURATION_DATA_ARRAY;
+
 
 #endif /* RADIO_CONFIG_H_ */

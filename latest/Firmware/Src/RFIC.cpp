@@ -50,6 +50,16 @@ RFIC::RFIC(GPIO_TypeDef *sdnPort,
   if ( !isInitialized() )
     powerOnReset();
 
+  PART_INFO_REPLY r;
+  if ( sendCmd(PART_INFO, nullptr, 0, &r, sizeof r) )
+    {
+      mPartID = r.PartIDH << 8 | r.PartIDL;
+    }
+  else
+    {
+      // TODO: Now what?
+    }
+
 }
 
 RFIC::~RFIC()
@@ -66,7 +76,7 @@ inline void RFIC::spiOff()
   HAL_GPIO_WritePin(mCSPort, mCSPin, GPIO_PIN_SET);
 }
 
-bool RFIC::sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, uint8_t resultLen)
+bool RFIC::sendCmd(uint8_t cmd, const void* params, uint8_t paramLen, void* result, uint8_t resultLen)
 {
   if ( mCTSPending )
     {
@@ -99,7 +109,7 @@ bool RFIC::sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, ui
   return true;
 }
 
-bool RFIC::sendCmdNoWait(uint8_t cmd, void* params, uint8_t paramLen)
+bool RFIC::sendCmdNoWait(uint8_t cmd, const void* params, uint8_t paramLen)
 {
   if ( mCTSPending )
     {
@@ -152,8 +162,7 @@ bool RFIC::readSPIResponse(void *data, uint8_t length)
 
 void RFIC::configure()
 {
-  uint8_t radio_configuration[] = RADIO_CONFIGURATION_DATA_ARRAY;
-  uint8_t *cfg = radio_configuration;
+  const uint8_t *cfg = (mPartID == 0x4463 ? si4463_radio_configuration : si4362_radio_configuration);
   while (*cfg)
     {                              // configuration array stops with 0
       uint8_t count = (*cfg++) - 1;           // 1st byte: number of bytes, incl. command

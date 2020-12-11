@@ -49,8 +49,8 @@ public:
   void setRSSIAdjustment(short rssiAdj);
 protected:
   virtual void configure();
-  bool sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, uint8_t resultLen);
-  bool sendCmdNoWait(uint8_t cmd, void* params, uint8_t paramLen);
+  bool sendCmd(uint8_t cmd, const void* params, uint8_t paramLen, void* result, uint8_t resultLen);
+  bool sendCmdNoWait(uint8_t cmd, const void* params, uint8_t paramLen);
   bool isInitialized();
   void powerOnReset();
   bool isReceiving();
@@ -74,6 +74,7 @@ protected:
   BitState            mBitState;
   uint32_t            mChipID;
   bool                mCTSPending = false;
+  uint16_t            mPartID;
 };
 
 #endif /* RFIC_HPP_ */
