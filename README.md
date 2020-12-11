@@ -62,9 +62,7 @@ the required symbols in the preprocessor to build for different board revisions.
 
 This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. Unless you're skilled with stencils and reflow, you will find it challenging. 
 
-To make this easier I will release a kit on tindie.com, hopefully by the start of the 2021 boating season (March or April). The kit will include a 95% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed, tested and calibrated, and the antenna will be perfectly matched. 
-
-In addition, I am going to offer a more advanced version of the control box & signal adapter for the other end of the Cat5 cable. It will be open source too, but if you think the transponder board is tight, wait until you see that one ;) 
+To make this easier I will release a kit on tindie.com. I was hoping to have it ready by the start of the 2021 boating season (March or April), but Silicon Labs is experiencing a severe supply chain disruption right now, so this may not happen until the second half of 2021. The kit will include a 98% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed, tested and calibrated, and the antenna will be perfectly matched, but there's one caveat: <b>I cannot legally ship this as a transponder yet</b>. The workaround is to bill it as an AIS+GPS receiver. To turn it into a transponder, you will have to <b>procure and install inductor L17 (470nH) on the PCBA yourself</b>. Now, to make this extra easy, I will design a large SMD footprint there so you can do it with a soldering iron, a bit of flux and only basic skills. More instructions to follow ;)
 
 ### License
 
