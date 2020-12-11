@@ -51,13 +51,15 @@ RFIC::RFIC(GPIO_TypeDef *sdnPort,
     powerOnReset();
 
   PART_INFO_REPLY r;
+  memset(&r, 0, sizeof r);
   if ( sendCmd(PART_INFO, nullptr, 0, &r, sizeof r) )
     {
-      mPartID = r.PartIDH << 8 | r.PartIDL;
+      mPartID = r.PartNumberH << 8 | r.PartNumberL;
     }
   else
     {
       // TODO: Now what?
+      mPartID = 0x4463;
     }
 
 }
