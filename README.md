@@ -64,9 +64,7 @@ This is going to be difficult for all but the most technically advanced. The boa
 
 To make this easier I will release a kit on tindie.com. I was hoping to have it ready by the start of the 2021 boating season (March or April), but the supply chain for Silicon Labs parts looks really bad across the board right now, so this may not happen until the second half of 2021. The kit will include a 95% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed, tested and calibrated, and the antenna will be perfectly matched. 
 
-That said, <b>I cannot legally ship this as a transponder yet</b>, so it will be billed as a receiver. To turn it into a transponder, you will have to <b>install a specific inductor on the PCBA yourself</b>. To make it extra easy, this will be a large (1206) package so you can do it with a soldering iron, a bit of flux and zero SMD skills. More instructions to follow.
-
-In addition, I am going to offer a more advanced version of the control box & signal adapter for the other end of the Cat5 cable. It will be open source too, but if you think the transponder board is tight, wait until you see that one ;) 
+That said, <b>I cannot legally ship this as a transponder yet</b>, so it will be billed as a receiver. To turn it into a transponder, you will have to <b>procure and install inductor L17 (470nH) on the PCBA yourself</b>. To make it extra easy, I will design a large SMD package in there so you can do it with a soldering iron, a bit of flux and only basic skills. More instructions to follow ...
 
 ### License
 
