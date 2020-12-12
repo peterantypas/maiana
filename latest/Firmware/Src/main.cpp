@@ -28,7 +28,6 @@
 #include "CommandProcessor.hpp"
 #include "bsp.hpp"
 #include "printf_serial.h"
-#include "Stats.hpp"
 
 
 #ifdef RTOS
@@ -62,7 +61,6 @@ void mainTask(void *params)
   Configuration::instance().init();
   CommandProcessor::instance().init();
   DataTerminal::instance().init();
-  Stats::instance().init();
 
   RXPacketProcessor packetProcessor;
 
@@ -106,6 +104,7 @@ int main(void)
   // This is for debugging imprecise bus faults
   //*(uint8_t *)0xe000ed08 |= 2;
   bsp_hw_init();
+
 #ifdef RTOS
   TaskHandle_t xHandle;
   if ( xTaskCreate(mainTask, "main", 2248u, NULL, tskIDLE_PRIORITY+4, &xHandle) != pdPASS )

@@ -24,7 +24,6 @@
 #include "EventQueue.hpp"
 #include "NoiseFloorDetector.hpp"
 #include "bsp.hpp"
-#include "Stats.hpp"
 
 
 Receiver::Receiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort, uint32_t csPin,
@@ -121,16 +120,13 @@ void Receiver::resetBitScanner()
 
 void Receiver::onBitClock()
 {
-  //bsp_signal_high();
   ++mSlotBitNumber;
 
   // Don't waste time processing bits when the transceiver is transmitting
   if ( gRadioState == RADIO_TRANSMITTING )
     {
-      //bsp_signal_low();
       return;
     }
-
 
   if ( !mRXPacket )
     {
@@ -149,28 +145,16 @@ void Receiver::onBitClock()
       startReceiving(mChannel, false);
     }
 #if ENABLE_TX
-  /**
-   * This trick ensures that we only sample RSSI every N time slots and never in the
-   * same time slot for both ICs, so we don't conduct long SPI operations on consecutive
-   * interrupt handlers that might exceed the bit clock period. There is no reason for RSSI
-   * collection to have a high duty cycle anyway, it just serves to establish the noise floor.
-   */
 #if FULL_RSSI_SAMPLING
   else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff && mSlotBitNumber == CCA_SLOT_BIT )
     {
       mRXPacket->setRSSI(reportRSSI());
     }
 #else
-  else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff &&
-      mTimeSlot % 17 == mChipID &&
-      mSlotBitNumber == CCA_SLOT_BIT - 1 )
-    {
-      mRXPacket->setRSSI(reportRSSI());
-    }
+#error "Every single time slot must be sampled for RSSI"
 #endif
 #endif
 
-  //bsp_signal_low();
 }
 
 /**
@@ -306,30 +290,25 @@ void Receiver::pushPacket()
 
   if ( p )
     {
-      //bsp_signal_high();
       p->rxPacket = mRXPacket;
       if ( !EventQueue::instance().push(p) )
         {
-          // Count this
-          ++Stats::instance().eventQueuePushFailures;
+          // This has never happened
         }
-      //bsp_signal_low();
+
       mRXPacket = EventPool::instance().newRXPacket();
       if ( !mRXPacket )
         {
-          // TODO: Count this
-          ++Stats::instance().rxPacketPoolPopFailures;
+          // This has never happened
         }
     }
   else
     {
-      // TODO: Count this
-      ++Stats::instance().eventQueuePopFailures;
       /**
        * We're out of resources so just keep using the existing packet.
        * If this happens, the most logical outcome is a watchdog reset
        * because something has blocked the main task and the pool is not
-       * getting replenished
+       * getting replenished. That said, this has never happened.
        */
       mRXPacket->reset();
     }
@@ -340,11 +319,9 @@ void Receiver::pushPacket()
  */
 uint8_t Receiver::reportRSSI()
 {
-  //bsp_signal_high();
   uint8_t rssi = readRSSI();
   char channel = AIS_CHANNELS[mChannel].designation;
   NoiseFloorDetector::instance().report(channel, rssi);
-  //bsp_signal_low();
   return rssi;
 }
 
