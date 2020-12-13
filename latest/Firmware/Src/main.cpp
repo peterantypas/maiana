@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 #include "stm32l4xx_hal.h"
 #include "config.h"
@@ -28,7 +28,6 @@
 #include "CommandProcessor.hpp"
 #include "bsp.hpp"
 #include "printf_serial.h"
-#include "Stats.hpp"
 
 
 #ifdef RTOS
@@ -57,28 +56,32 @@ void jump_to_bootloader()
 
 void mainTask(void *params)
 {
+  bool cliBootMode = *(uint32_t*)BOOTMODE_ADDRESS == CLI_FLAG_MAGIC;
+
   EventPool::instance().init();
   EventQueue::instance().init();
   Configuration::instance().init();
   CommandProcessor::instance().init();
   DataTerminal::instance().init();
-  Stats::instance().init();
 
   RXPacketProcessor packetProcessor;
-
-#if not defined CALIBRATION_MODE && not defined TX_TEST_MODE
   GPS::instance().init();
-  GPS::instance().enable();
-#endif
+  if ( !cliBootMode )
+    {
+      GPS::instance().enable();
 
+      TXPacketPool::instance().init();
+      TXScheduler::instance().init();
 
-#ifdef ENABLE_TX
-  TXPacketPool::instance().init();
-  TXScheduler::instance().init();
-#endif
+      RadioManager::instance().init();
+      RadioManager::instance().start();
+    }
+  else
+    {
+      DataTerminal::instance().write("\r\n\r\nCLI mode. Send the 'reboot' command or cycle power to exit.\r\n");
+    }
 
-  RadioManager::instance().init();
-  RadioManager::instance().start();
+  *(uint32_t*)BOOTMODE_ADDRESS = 0;
 
   bsp_start_wdt();
   while (1)
@@ -97,9 +100,9 @@ void mainTask(void *params)
 
 int main(void)
 {
-  if ( *(uint32_t*)DFU_FLAG_ADDRESS == DFU_FLAG_MAGIC )
+  if ( *(uint32_t*)BOOTMODE_ADDRESS == DFU_FLAG_MAGIC )
     {
-      *(uint32_t*)DFU_FLAG_ADDRESS = 0;
+      *(uint32_t*)BOOTMODE_ADDRESS = 0;
       jump_to_bootloader();
     }
 

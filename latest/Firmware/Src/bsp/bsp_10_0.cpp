@@ -543,7 +543,7 @@ void bsp_enter_dfu()
   HAL_Delay(1000);
 
   // This flag simply tells main() to jump to the ROM bootloader immediately upon reset, before initializing anything
-  *(uint32_t*)DFU_FLAG_ADDRESS = DFU_FLAG_MAGIC;
+  *(uint32_t*)BOOTMODE_ADDRESS = DFU_FLAG_MAGIC;
 
   bsp_reboot();
 }

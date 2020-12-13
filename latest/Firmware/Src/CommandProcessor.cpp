@@ -120,6 +120,10 @@ void CommandProcessor::processCommand(const char *buff)
 
       Configuration::instance().writeStationData(station);
     }
+  else if ( s.find("station?") == 0 )
+    {
+      Configuration::instance().reportStationData();
+    }
   else if ( s.find("dfu") == 0 )
     {
       jumpToBootloader();
@@ -137,6 +141,16 @@ void CommandProcessor::processCommand(const char *buff)
     {
       bsp_reboot();
     }
+  else if ( s.find("cli") == 0 )
+    {
+      enterCLIMode();
+    }
+}
+
+void CommandProcessor::enterCLIMode()
+{
+  *(uint32_t*)BOOTMODE_ADDRESS = CLI_FLAG_MAGIC;
+  bsp_reboot();
 }
 
 void CommandProcessor::jumpToBootloader()

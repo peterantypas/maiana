@@ -59,7 +59,9 @@ Configuration::Configuration()
 
 void Configuration::init()
 {
-  reportStationData();
+  bool cliBootMode = *(uint32_t*)BOOTMODE_ADDRESS == CLI_FLAG_MAGIC;
+  if ( !cliBootMode )
+    reportStationData();
 }
 
 void Configuration::reportStationData()
@@ -89,14 +91,14 @@ void Configuration::reportStationData()
 void Configuration::resetToDefaults()
 {
   if ( bsp_erase_station_data() )
-    bsp_reboot();
+    reportStationData();
 }
 
 bool Configuration::writeStationData(const StationData &data)
 {
   if ( bsp_save_station_data(data) )
     {
-      bsp_reboot();
+      reportStationData();
       return true;
     }
 

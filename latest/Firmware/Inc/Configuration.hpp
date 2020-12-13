@@ -43,11 +43,11 @@ public:
   bool writeStationData(const StationData &data);
   bool readStationData(StationData &data);
   void resetToDefaults();
+  void reportStationData();
 private:
   Configuration();
   bool erasePage();
   bool writePage();
-  void reportStationData();
 };
 
 #endif /* CONFIGURATION_HPP_ */

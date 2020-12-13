@@ -24,7 +24,6 @@
 #include "EventQueue.hpp"
 #include "NoiseFloorDetector.hpp"
 #include "bsp.hpp"
-#include "Stats.hpp"
 
 
 Receiver::Receiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort, uint32_t csPin,
@@ -310,21 +309,19 @@ void Receiver::pushPacket()
       p->rxPacket = mRXPacket;
       if ( !EventQueue::instance().push(p) )
         {
-          // Count this
-          ++Stats::instance().eventQueuePushFailures;
+          // This has never happened
         }
       //bsp_signal_low();
       mRXPacket = EventPool::instance().newRXPacket();
       if ( !mRXPacket )
         {
-          // TODO: Count this
-          ++Stats::instance().rxPacketPoolPopFailures;
+          // This has never happened
         }
     }
   else
     {
-      // TODO: Count this
-      ++Stats::instance().eventQueuePopFailures;
+      // This has never happened
+
       /**
        * We're out of resources so just keep using the existing packet.
        * If this happens, the most logical outcome is a watchdog reset

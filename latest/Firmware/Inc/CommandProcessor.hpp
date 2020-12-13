@@ -36,6 +36,7 @@ public:
 private:
   void processCommand(const char *);
   void jumpToBootloader();
+  void enterCLIMode();
   CommandProcessor();
 };
 
