@@ -12,4 +12,5 @@ The application is mainly interrupt driven, with a single event queue being disp
  - Board 9.3 adds 3 "status" (LED driving) signals for GPS, RX and TX
  - Board 10.x needed a GPIO swap to make routing viable and inverted the logic of the TX_DISABLE signal
 
+The new 'cli' command was introduced to reboot the board into 'quiet' mode, making a lot easier to program and verify the station data
  
