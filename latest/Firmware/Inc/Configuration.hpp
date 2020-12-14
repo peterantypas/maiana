@@ -15,21 +15,20 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
-
+ */
 
 #ifndef CONFIGURATION_HPP_
 #define CONFIGURATION_HPP_
 
-// This singleton manages user-definable configuration data stored in Flash (or EEPROM).
+// This singleton manages user-definable configuration data stored in Flash.
 
 #include "StationData.h"
 
-// Defining this as a union of data fields or 32 double words, as the L4 expects flash writes to be 8 bytes long
+// This should be plenty big (no need to be a whole flash page)
 typedef union
 {
   StationData station;
-  uint64_t dw[32];
+  uint64_t dw[64];
 } ConfigPage;
 
 class Configuration

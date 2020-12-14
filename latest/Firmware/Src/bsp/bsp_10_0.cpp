@@ -27,7 +27,7 @@
 
 #if BOARD_REV==100
 
-I2C_HandleTypeDef hi2c1;
+//I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
 IWDG_HandleTypeDef hiwdg;
 UART_HandleTypeDef huart2;
@@ -74,8 +74,10 @@ static const GPIO __gpios[] = {
     {RX_IC_CLK_PORT, {RX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {RX_IC_DATA_PORT, {RX_IC_DATA_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {TX_CTRL_PORT, {TX_CTRL_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+#if 0
     {I2C_SCL_PORT, {I2C_SCL_PIN, GPIO_MODE_AF_OD, GPIO_PULLUP, GPIO_SPEED_HIGH, GPIO_AF4_I2C1}, GPIO_PIN_SET},
     {I2C_SDA_PORT, {I2C_SDA_PIN, GPIO_MODE_AF_OD, GPIO_PULLUP, GPIO_SPEED_HIGH, GPIO_AF4_I2C1}, GPIO_PIN_SET},
+#endif
 };
 
 extern "C"
@@ -184,6 +186,7 @@ void bsp_hw_init()
 
   HAL_TIM_Base_Init(&htim2);
 
+#if 0
   // I2C
   hi2c1.Instance = I2C1;
   hi2c1.Init.Timing = 0x00702991;
@@ -210,6 +213,7 @@ void bsp_hw_init()
     {
       Error_Handler(0);
     }
+#endif
 
   // 1PPS signal
   HAL_NVIC_SetPriority(EXTI2_IRQn, 6, 0);
@@ -488,6 +492,7 @@ uint8_t bsp_tx_spi_byte(uint8_t data)
 
 bool bsp_erase_station_data()
 {
+#if 0
   uint8_t b = 0xff;
   HAL_Delay(1);
 
@@ -496,12 +501,14 @@ bool bsp_erase_station_data()
       HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i, 1, &b, 1, 100);
       HAL_Delay(6);
     }
+#endif
 
-  return true;
+  return false;
 }
 
 bool bsp_save_station_data(const StationData &data)
 {
+#if 0
   HAL_Delay(1);
 
   uint8_t *b = (uint8_t*)&data;
@@ -510,8 +517,9 @@ bool bsp_save_station_data(const StationData &data)
       HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i, 1, b, 1, 100);
       HAL_Delay(6);
     }
+#endif
 
-  return true;
+  return false;
 }
 
 void bsp_reboot()
@@ -521,13 +529,14 @@ void bsp_reboot()
 
 bool bsp_read_station_data(StationData &data)
 {
+#if 0
   uint8_t *b = (uint8_t*)&data;
   for ( unsigned i = 0; i < sizeof(StationData); ++i, ++b )
     {
       HAL_I2C_Mem_Read(&hi2c1, EEPROM_ADDRESS, i, 1, b, 1, 100);
     }
-
-  return true;
+#endif
+  return false;
 }
 
 bool bsp_is_tx_disabled()

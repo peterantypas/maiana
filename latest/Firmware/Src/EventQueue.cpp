@@ -19,14 +19,9 @@
 
 
 #include "EventQueue.hpp"
-//#include <stm32l4xx.h>
-
 #include "printf_serial.h"
 #include "printf_serial.h"
 #include "Utils.hpp"
-#include "FreeRTOS.h"
-#include "queue.h"
-#include "task.h"
 #include "bsp.hpp"
 
 
