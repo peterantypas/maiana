@@ -24,17 +24,9 @@
 #include "radio_config.h"
 #include "TXPowerSettings.h"
 
-// Define to enable FreeRTOS instead of "bare metal". Doesn't add much value at the moment.
-//#define RTOS
-
-/**
- * If this is defined, the device transmits carrier on channel 87 (161.975MHz) for 1 second after reset.
- */
-//#define CALIBRATION_MODE               1
 
 // Set to non-zero to enable transmission support
 #define ENABLE_TX                       1
-
 
 #ifdef CALIBRATION_MODE
 #define TX_POWER_LEVEL              PWR_P33
