@@ -32,11 +32,10 @@ The core design is based on two Silicon Labs "EZRadio Pro" series ICs. The first
 
 The MCU is a STM32L4x2 series microcontroller (412 and 432 supported). I chose this series because the 80MHz clock speed allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is crucial, as a transponder is a hard real-time application that relies on interrupts for precise timing of the transmit function, so SPI latency must be minimized.
 
-The GPS is a Quectel L70R module and relies on a Johanson ceramic SMD antenna. It usually takes a minute to acquire a fix outdoors (cold start).
+The GPS is a Quectel L70R module and relies on a Johanson ceramic SMD antenna. It usually takes a minute to acquire a fix outdoors from a cold start.
 The transmitter output is 2 Watts (+33dBm) and it has a verified range of over 10 nautical miles.
 
-The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps.
-On my boat, it is wired to a box that converts the UART to USB and feeds it to a RPi Zero W, which acts as a WiFi access point / NMEA distributor:
+The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. On my boat, it is wired to a box that converts the UART to USB and feeds it to a RPi Zero W, which acts as a WiFi access point / NMEA distributor:
 
 ![Image](images/MAIANA-ControlBox.jpg?raw=True "Control Box")
 
