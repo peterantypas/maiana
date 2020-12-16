@@ -28,25 +28,22 @@ The complete design is intended for mounting on 1" railing, similar to these ant
 
 In one of those examples, MAIANA&trade; would take the place of the GPS antenna and add AIS functionality.
 
-The design is based on two Silicon Labs 4463 transceiver ICs and an STM32L412 series microcontroller. The 80MHz clock speed
-of the MCU allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is crucial, as a transponder is
-a hard real-time application that relies on interrupts for precise timing of the transmit function, so SPI latency must be minimized.
+The core design is based on two Silicon Labs "EZRadio Pro" series ICs. The first IC is a transceiver and the second one is a full-time receiver. For the transceiver, I originally used the Si4463. For the receiver, either the 4463 or the 4362 work. I'm in the process of evaluating alternatives to the Si4463 to see if I can get enough power output with chips that are currently available, namely the 4460 and 4467. See [this discussion](https://github.com/peterantypas/ais_transponder/discussions/24) for more details on that effort.
 
-The GPS is a Quectel L70R module and relies on a Johanson ceramic SMD antenna. It usually takes a little over a minute to acquire a fix outdoors.
+The MCU is a STM32L4x2 series microcontroller (412 and 432 supported). I chose this series because the 80MHz clock speed allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is crucial, as a transponder is a hard real-time application that relies on interrupts for precise timing of the transmit function, so SPI latency must be minimized.
+
+The GPS is a Quectel L70R module and relies on a Johanson ceramic SMD antenna. It usually takes a minute to acquire a fix outdoors from a cold start.
 The transmitter output is 2 Watts (+33dBm) and it has a verified range of over 10 nautical miles.
 
-The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps.
-On my boat, it is wired to a control box that converts the UART to USB and feeds it to a RPi Zero W, which acts as a WiFi access point / NMEA distributor for iNavx
-running on an iPad:
+The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. On my boat, it is wired to a box that converts the UART to USB and feeds it to a RPi Zero W, which acts as a WiFi access point / NMEA distributor:
 
 ![Image](images/MAIANA-ControlBox.jpg?raw=True "Control Box")
 
-Of course, there are many different solutions available and every boater has different preferences.
+Of course, there are many different solutions available and every boater has different preferences. This interface box is a separate project and it will eventually support NMEA0183 (RS422) as well as NMEA2000 interfaces.
 
-Persistent station data (MMSI, call sign, name, dimensions, etc) is stored on a 1Kbit EEPROM and is provisioned via a command interface.
-The unit implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GNSS and the UTC clock, but being a class B, it will not attempt to reserve time slots.
-It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for class B devices. If station data is not provisioned, the device
-will simply run as a receiver and never transmit.
+For the circuit to transmit, it must be configured with persistent station data (MMSI, call sign, name, dimensions, etc). This is stored in MCU flash and is provisioned via a command line interface. If station data is not provisioned, the device will simply run as a receiver.
+
+The unit implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GPS and the UTC clock, but being a class B, it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for class B devices. 
 
 The system draws about 30mA from 12V in RX mode, and spikes up to 600mA during transmission (for about 30 milliseconds).
 
@@ -62,7 +59,9 @@ the required symbols in the preprocessor to build for different board revisions.
 
 This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. Unless you're skilled with stencils and reflow, you will find it challenging. 
 
-To make this easier I will release a kit on tindie.com. I was hoping to have it ready by the start of the 2021 boating season (March or April), but Silicon Labs is experiencing a severe supply chain disruption right now, so this may not happen until the second half of 2021. The kit will include a 98% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed, tested and calibrated, and the antenna will be perfectly matched, but there's one caveat: <b>I cannot legally ship this as a transponder yet</b>. The workaround is to bill it as an AIS+GPS receiver. To turn it into a transponder, you will have to <b>procure and install [inductor L17](https://github.com/peterantypas/ais_transponder/blob/master/latest/CAD/Board-9.3/transponder-9.3.0-schematic.pdf) on the PCBA yourself</b> (see page 5 of the schematic). Without this part, the board is physically incapable of transmitting. Now, to make this extra easy, I will design a large SMD footprint there so you can do it with a soldering iron, a bit of flux and only basic skills. More instructions to follow ;)
+To make this easier I will release a kit on tindie.com. I was hoping to have it ready by the start of the 2021 boating season (March or April), but Silicon Labs is experiencing a severe supply chain disruption right now, so this may not happen until Q2 of 2021. The kit will include a 98% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed, tested and calibrated, and the antenna will be perfectly matched.
+
+There is, however, one caveat: <b>I cannot legally ship this as a transponder yet</b>. The workaround is to bill it as an AIS+GPS receiver. To turn it into a transponder, you will have to <b>procure and install [inductor L4](https://github.com/peterantypas/ais_transponder/blob/master/latest/CAD/Board-9.3/transponder-9.3.0-schematic.pdf) on the PCBA yourself</b> (see page 5 of the schematic). Without this part, the circuit is physically incapable of transmitting. Soldering this should be easy as it is an 0805 package and the pads will already have solder paste from the original SMT and test process. The inductor is a Taiyo Yuden BRC2012T2R2MD and it's widely available at both DigiKey and Mouser. It is quite cheap, so your main cost will be shipping.
 
 ### License
 
