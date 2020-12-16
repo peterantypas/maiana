@@ -91,6 +91,11 @@ void RadioManager::start()
   //DBG("Radio Manager started\r\n");
 }
 
+void RadioManager::stop()
+{
+  // TODO: Implement this
+}
+
 
 void RadioManager::configureInterrupts()
 {

@@ -49,7 +49,7 @@ void jump_to_bootloader()
   systemBootloader();
 }
 
-void mainTask(void *params)
+void mainLoop()
 {
   bool cliBootMode = *(uint32_t*)BOOTMODE_ADDRESS == CLI_FLAG_MAGIC;
 
@@ -61,14 +61,13 @@ void mainTask(void *params)
 
   RXPacketProcessor packetProcessor;
   GPS::instance().init();
+  TXPacketPool::instance().init();
+  TXScheduler::instance().init();
+  RadioManager::instance().init();
+
   if ( !cliBootMode )
     {
       GPS::instance().enable();
-
-      TXPacketPool::instance().init();
-      TXScheduler::instance().init();
-
-      RadioManager::instance().init();
       RadioManager::instance().start();
     }
   else
@@ -100,6 +99,6 @@ int main(void)
   //*(uint8_t *)0xe000ed08 |= 2;
 
   bsp_hw_init();
-  mainTask(nullptr);
+  mainLoop();
   return 1;
 }

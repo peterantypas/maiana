@@ -145,6 +145,14 @@ void CommandProcessor::processCommand(const char *buff)
     {
       enterCLIMode();
     }
+  else if ( s.find("gps off") == 0 )
+    {
+      bsp_gnss_off();
+    }
+  else if ( s.find("gps on") == 0 )
+    {
+      bsp_gnss_on();
+    }
 }
 
 void CommandProcessor::enterCLIMode()

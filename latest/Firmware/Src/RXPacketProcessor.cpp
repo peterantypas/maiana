@@ -46,6 +46,7 @@ RXPacketProcessor::RXPacketProcessor ()
 RXPacketProcessor::~RXPacketProcessor ()
 {
   // Should never be called
+  EventQueue::instance().removeObserver(this);
 }
 
 void RXPacketProcessor::processEvent(const Event &e)
@@ -128,20 +129,21 @@ void RXPacketProcessor::processEvent(const Event &e)
         break;
       case 22:
         /*
-                  TODO: 
-                  This is the frequency management message. Since we support all of the upper VHF band (161.500 MHz - 162.025 MHz), 
-                  we use this to switch our primary 2 channels where instructed. That said, I'm not completely clear on how channels
-                  are described in this message. The spec references ITU-R M.1084 and allocates 12 bits for the channel number,
-                  but whoever wrote this document did not care about comprehension :(
+           TODO:
 
-                  https://www.itu.int/dms_pubrec/itu-r/rec/m/R-REC-M.1084-5-201203-I!!PDF-E.pdf
+           This is the frequency management message. Since we support all of the upper VHF band (161.500 MHz - 162.025 MHz),
+           we use this to switch our primary 2 channels where instructed. That said, I'm not completely clear on how channels
+           are described in this message. The spec references ITU-R M.1084 and allocates 12 bits for the channel number,
+           but whoever wrote this document did not care about comprehension :(
+
+           https://www.itu.int/dms_pubrec/itu-r/rec/m/R-REC-M.1084-5-201203-I!!PDF-E.pdf
          */
 
         break;
       case 23:
         /*
-                  TODO: This is the group assignment message. Base stations can use this to configure our transmission interval
-                        or enforce silent periods as well. We should comply. 
+           TODO: This is the group assignment message. Base stations can use this to configure our transmission interval
+                 or enforce silent periods as well. We should comply.
          */
         break;
       }

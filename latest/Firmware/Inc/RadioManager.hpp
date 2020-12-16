@@ -37,6 +37,7 @@ public:
 
   void init();
   void start();
+  void stop();
   void onBitClock(uint8_t ic);
   void timeSlotStarted(uint32_t slotNumber);
 

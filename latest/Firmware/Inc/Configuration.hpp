@@ -20,15 +20,13 @@
 #ifndef CONFIGURATION_HPP_
 #define CONFIGURATION_HPP_
 
-// This singleton manages user-definable configuration data stored in Flash.
-
 #include "StationData.h"
 
-// This should be plenty big (no need to be a whole flash page)
+// This should be plenty big (no need to be a whole flash page though)
 typedef union
 {
   StationData station;
-  uint64_t dw[64];
+  uint64_t dw[128];
 } ConfigPage;
 
 class Configuration
@@ -38,7 +36,6 @@ public:
 
   void init();
 
-  // Station data is separate from other configuration values and occupies a different address
   bool writeStationData(const StationData &data);
   bool readStationData(StationData &data);
   void resetToDefaults();
