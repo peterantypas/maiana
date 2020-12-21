@@ -22,6 +22,7 @@
 #define RADIO_CONFIG_STUB_H_
 
 
-#include "radio_config_ph_all_channels.h"
+//#include "radio_config_ph_all_channels.h"
+#include "radio_config_Si4467.h"
 
 #endif /* RADIO_CONFIG_H_ */

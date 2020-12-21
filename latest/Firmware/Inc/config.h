@@ -71,7 +71,7 @@
 
 // Headroom above noise floor (in dB) that constitutes a clear channel for transmission
 #if FULL_RSSI_SAMPLING
-#define TX_CCA_HEADROOM                2
+#define TX_CCA_HEADROOM                3
 #else
 // When sampling RSSI sparsely, there is a tendency to overestimate the noise floor, so there is no need for headroom
 #define TX_CCA_HEADROOM                0
