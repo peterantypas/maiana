@@ -152,7 +152,22 @@ bool RFIC::readSPIResponse(void *data, uint8_t length)
 
 void RFIC::configure()
 {
-  uint8_t radio_configuration[] = RADIO_CONFIGURATION_DATA_ARRAY;
+  PART_INFO_REPLY reply;
+  sendCmd(PART_INFO, nullptr, 0, &reply, sizeof reply);
+  mPartNumber = reply.PartNumberH << 8 | reply.PartNumberL;
+
+  uint8_t *radio_configuration = nullptr;
+  switch(mPartNumber)
+  {
+  case 0x4467:
+    radio_configuration = get_si4467_config_array();
+    break;
+  default:
+    radio_configuration = get_si4463_config_array();
+  }
+
+
+  //uint8_t radio_configuration[] = RADIO_CONFIGURATION_DATA_ARRAY;
   uint8_t *cfg = radio_configuration;
   while (*cfg)
     {                              // configuration array stops with 0

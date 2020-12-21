@@ -21,8 +21,15 @@
 #ifndef RADIO_CONFIG_STUB_H_
 #define RADIO_CONFIG_STUB_H_
 
+#include <stdint.h>
 
-//#include "radio_config_ph_all_channels.h"
-#include "radio_config_Si4467.h"
+
+/**
+ * This allows us to avoid including auto-generated configuration headers for different chips
+ * which redefine the same symbols and cause conflicts.
+ */
+
+uint8_t* get_si4467_config_array();
+uint8_t* get_si4463_config_array();
 
 #endif /* RADIO_CONFIG_H_ */

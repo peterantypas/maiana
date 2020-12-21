@@ -74,6 +74,7 @@ protected:
   BitState            mBitState;
   uint32_t            mChipID;
   bool                mCTSPending = false;
+  uint16_t            mPartNumber;
 };
 
 #endif /* RFIC_HPP_ */

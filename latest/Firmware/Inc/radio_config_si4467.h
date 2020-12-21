@@ -11,8 +11,8 @@
  * @n http://www.silabs.com
  */
 
-#ifndef RADIO_CONFIG_H_
-#define RADIO_CONFIG_H_
+#ifndef _SI4467_RADIO_CONFIG_H_
+#define _SI4467_RADIO_CONFIG_H_
 
 // USER DEFINED PARAMETERS
 // Define your own parameters here

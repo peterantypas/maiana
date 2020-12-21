@@ -11,8 +11,8 @@
  * @n http://www.silabs.com
  */
 
-#ifndef RADIO_CONFIG_H_
-#define RADIO_CONFIG_H_
+#ifndef _SI4463_RADIO_CONFIG_H_
+#define _SI4463_RADIO_CONFIG_H_
 
 // USER DEFINED PARAMETERS
 // Define your own parameters here
@@ -1047,6 +1047,8 @@
 #define RADIO_CONFIGURATION_DATA_ARRAY { 0 }
 #endif
 
+
+#if 0
 // DEFAULT VALUES FOR CONFIGURATION PARAMETERS
 #define RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ_DEFAULT                     30000000L
 #define RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER_DEFAULT                    0x00
@@ -1097,3 +1099,4 @@
                             }
 
 #endif /* RADIO_CONFIG_H_ */
+#endif
