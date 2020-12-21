@@ -28,17 +28,6 @@
 // Set to non-zero to enable transmission support
 #define ENABLE_TX                       1
 
-#ifdef CALIBRATION_MODE
-#define TX_POWER_LEVEL              PWR_P33
-#else
-#ifdef TX_TEST_MODE
-#define TX_POWER_LEVEL              PWR_P33
-#else
-#define TX_POWER_LEVEL              PWR_P33
-#endif
-#endif
-
-
 /*
  * Defining this symbol forces all output (NMEA + debug) to a high-speed USART for tunneling to an application that demuxes it.
  * Multiplexed output is still ASCII, but every line of text begins with a message class in square brackets. Examples:

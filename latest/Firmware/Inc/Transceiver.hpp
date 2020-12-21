@@ -54,8 +54,8 @@ protected:
   virtual void configureGPIOsForRX();
 private:
   void startTransmitting();
-  void configureGPIOsForTX(tx_power_level pwr);
-  void setTXPower(tx_power_level pwr);
+  void configureGPIOsForTX();
+  void setTXPower(const pa_params &params);
   void reportTXEvent();
 private:
   TXPacket    *mTXPacket;

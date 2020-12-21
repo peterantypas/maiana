@@ -74,6 +74,23 @@ void Transceiver::configure()
   p.StartProperty = 0x0f;
   memcpy(p.Data, data, sizeof data);
   sendCmd(SET_PROPERTY, &p, 12, NULL, 0);
+
+  pa_params pwr;
+  switch(mPartNumber)
+  {
+  case 0x4463:
+    pwr.pa_mode = 0x48;
+    pwr.pa_level = 0x12;
+    pwr.pa_bias_clkduty = 0x00;
+    break;
+  default:
+    pwr.pa_mode = 0x48;
+    pwr.pa_level = 0x20;
+    pwr.pa_bias_clkduty = 0x00;
+    break;
+  }
+
+  setTXPower(pwr);
 }
 
 void Transceiver::processEvent(const Event &e)
@@ -91,7 +108,8 @@ void Transceiver::processEvent(const Event &e)
 void Transceiver::transmitCW(VHFChannel channel)
 {
   startReceiving(channel, false);
-  configureGPIOsForTX(TX_POWER_LEVEL);
+  configureGPIOsForTX();
+
   SET_PROPERTY_PARAMS p;
   p.Group = 0x20;
   p.NumProperties = 1;
@@ -124,9 +142,8 @@ void Transceiver::transmitCW(VHFChannel channel)
 #endif
 }
 
-void Transceiver::setTXPower(tx_power_level powerLevel)
+void Transceiver::setTXPower(const pa_params &pwr)
 {
-  const pa_params &pwr = POWER_TABLE[powerLevel];
   SET_PROPERTY_PARAMS p;
   p.Group = 0x22;
   p.NumProperties = 3;
@@ -138,7 +155,7 @@ void Transceiver::setTXPower(tx_power_level powerLevel)
 }
 
 
-void Transceiver::configureGPIOsForTX(tx_power_level powerLevel)
+void Transceiver::configureGPIOsForTX()
 {
   bsp_set_tx_mode();
 
@@ -151,8 +168,6 @@ void Transceiver::configureGPIOsForTX(tx_power_level powerLevel)
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
   sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, NULL, 0);
-
-  setTXPower(powerLevel);
 }
 
 void Transceiver::startListening(VHFChannel channel, bool reconfigGPIOs)
@@ -282,7 +297,7 @@ void Transceiver::startTransmitting()
   // Set TX power level
   // Start transmitting
   gRadioState = RADIO_TRANSMITTING;
-  configureGPIOsForTX(TX_POWER_LEVEL);
+  configureGPIOsForTX();
 
   //ASSERT(false);
 

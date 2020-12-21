@@ -22,46 +22,21 @@
 #define TXPOWERSETTINGS_H_
 
 
-#define MAX_TX_LEVEL 33;
-#define MIN_TX_LEVEL 24;
-
 #include <inttypes.h>
 
-/*
- * These settings were derived from conducted measurements using a calibrated HP8563E spectrum analyzer
- */
-
-typedef enum {
-  PWR_P33,
-  PWR_P30,
-  PWR_P27,
-  PWR_P24
-}
-tx_power_level;
-
 typedef struct {
-  tx_power_level level;       // For convenience
-  //uint16_t part_id;
   uint8_t pa_mode;            // PA Mode
   uint8_t pa_level;           // PA power level (native parameter)
   uint8_t pa_bias_clkduty;    // PA bias clock duty
 }
 pa_params;
 
-
-#if 1
-static const pa_params POWER_TABLE[] = {
-    {PWR_P33, 0x48, 0x20, 0x00},
-    {PWR_P30, 0x48, 0x18, 0x00},
-    {PWR_P27, 0x49, 0x55, 0x1a},
-    {PWR_P24, 0x49, 0x50, 0x15}
-};
-#else
+#if 0
 static const pa_params POWER_TABLE[] = {
     {0x4467, 0x48, 0x20, 0x00},
-    {0x4463, 0x48, 0x22, 0x00}
+    {0x4460, 0x48, 0x20, 0x00},
+    {0x4463, 0x48, 0x12, 0x00}
 };
 #endif
-
 
 #endif /* TXPOWERSETTINGS_H_ */
