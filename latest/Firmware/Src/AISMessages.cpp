@@ -107,8 +107,8 @@ void AISMessage::addString(uint8_t *bitVector, uint16_t &size, const string &val
   ASSERT(value.length() <= maxChars);
   ASSERT(maxChars < 30); // There should be no application for such long strings here
   char s[30];
-  //memset(s, 0, sizeof s);
-  strlcpy(s, value.c_str(), sizeof s);
+  memset(s, 0, sizeof s);
+  strncpy(s, value.c_str(), value.length());
 
   uint8_t buffer[32];
   for ( uint8_t c = 0; c < maxChars; ++c ) {
@@ -456,12 +456,9 @@ void AISMessage24B::encode(const StationData &station, TXPacket &packet)
   value = station.type;
   addBits(payload, size, value, 8);   // Type of ship
 
-  addString(payload, size, "@@@@@@@", 7);    // Vendor ID -- not available
+  addString(payload, size, "", 7);    // Vendor information
 
-  if ( strlen(station.callsign) )
-    addString(payload, size, station.callsign, 7);
-  else
-    addString(payload, size, "@@@@@@@", 7);
+  addString(payload, size, station.callsign, 7);  // Call sign
 
 
   if ( station.len == 0 || station.beam == 0 )

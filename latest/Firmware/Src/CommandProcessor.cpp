@@ -153,6 +153,10 @@ void CommandProcessor::processCommand(const char *buff)
     {
       bsp_gnss_on();
     }
+  else if ( s.find("msg24") == 0 )
+    {
+      TXScheduler::instance().queueMessage24(CH_87);
+    }
 }
 
 void CommandProcessor::enterCLIMode()
