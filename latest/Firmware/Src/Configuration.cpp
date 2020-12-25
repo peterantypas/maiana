@@ -22,6 +22,7 @@
 #include "Utils.hpp"
 #include "config.h"
 #include "EventQueue.hpp"
+#include <stdio.h>
 
 #if 0
 static StationData __THIS_STATION__ = {

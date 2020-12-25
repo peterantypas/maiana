@@ -20,7 +20,11 @@ radios and antennas and thus only needs a power and data cable to connect to the
 
 ![Image](images/transponder-9.3.jpg?raw=True "PCBA version 9.3")
 
-The complete design is intended for mounting on 1" railing, similar to these antennas here:
+In its final form, the main unit looks like this:
+
+![Image](images/Maiana-FinalAssembly.jpg?raw=True "Complete unit")
+
+As you can see, the complete design is intended for mounting on 1" railing, similar to these antennas here:
 
 ![Image](images/Antenna-Example1.jpg?raw=True "Example 1")
 ![Image](images/Antenna-Example2.jpg?raw=True "Example 2")
