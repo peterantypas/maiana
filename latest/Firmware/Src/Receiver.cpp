@@ -351,7 +351,7 @@ void Receiver::configureGPIOsForRX()
   gpiocfg.GPIO0 = 0x00;       // No change
   gpiocfg.GPIO1 = 0x14;       // RX data bits
   gpiocfg.GPIO2 = 0x00;       // No change
-  gpiocfg.GPIO3 = 0x1F;       // RX/TX data clock
+  gpiocfg.GPIO3 = 0x11;       // RX data clock
   gpiocfg.NIRQ  = 0x00;       // Nothing
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change

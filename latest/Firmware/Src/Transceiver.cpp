@@ -75,6 +75,7 @@ void Transceiver::configure()
   memcpy(p.Data, data, sizeof data);
   sendCmd(SET_PROPERTY, &p, 12, NULL, 0);
 
+  // These resulted from characterization with default BOM
   pa_params pwr;
   switch(mPartNumber)
   {
