@@ -27,6 +27,8 @@
 
 #if BOARD_REV==52
 
+#warning "This board is too old and not recommended for new builds"
+
 I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
 IWDG_HandleTypeDef hiwdg;
@@ -45,7 +47,7 @@ irq_callback sotdmaCallback = nullptr;
 irq_callback trxClockCallback = nullptr;
 irq_callback rxClockCallback = nullptr;
 
-#define EEPROM_ADDRESS  0x50 << 1
+
 
 typedef struct
 {
@@ -480,53 +482,9 @@ uint8_t bsp_tx_spi_byte(uint8_t data)
   return result;
 }
 
-bool bsp_erase_station_data()
-{
-  uint8_t b = 0xff;
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_RESET);
-  HAL_Delay(1);
-
-  for ( unsigned i = 0; i < sizeof(StationData); ++i )
-    {
-      HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i, 1, &b, 1, 100);
-      HAL_Delay(6);
-    }
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_SET);
-
-  return true;
-}
-
-bool bsp_save_station_data(const StationData &data)
-{
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_RESET);
-  HAL_Delay(1);
-
-  uint8_t *b = (uint8_t*)&data;
-  for ( unsigned i = 0; i < sizeof(StationData); ++i, ++b )
-    {
-      HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i, 1, b, 1, 100);
-      HAL_Delay(6);
-    }
-
-  HAL_GPIO_WritePin(EEPROM_WREN_PORT, EEPROM_WREN_PIN, GPIO_PIN_SET);
-
-  return true;
-}
-
 void bsp_reboot()
 {
   NVIC_SystemReset();
-}
-
-bool bsp_read_station_data(StationData &data)
-{
-  uint8_t *b = (uint8_t*)&data;
-  for ( unsigned i = 0; i < sizeof(StationData); ++i, ++b )
-    {
-      HAL_I2C_Mem_Read(&hi2c1, EEPROM_ADDRESS, i, 1, b, 1, 100);
-    }
-
-  return true;
 }
 
 bool bsp_is_tx_disabled()
