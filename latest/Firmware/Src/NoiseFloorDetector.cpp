@@ -22,6 +22,7 @@
 #include "EventQueue.hpp"
 #include "AISChannels.h"
 #include <stdio.h>
+#include <bsp/bsp.hpp>
 
 #define WINDOW_SIZE 10
 
@@ -46,7 +47,11 @@ NoiseFloorDetector::NoiseFloorDetector()
 
 void NoiseFloorDetector::report(char channel, uint8_t rssi)
 {
+#if BOARD_REV == 61 or BOARD_REV == 52
+  if ( rssi < 0x12 ) // Not realistic, likely a bug
+#else
   if ( rssi < 0x32 ) // Not realistic, likely a bug
+#endif
     return;
 
   if ( channel == 'A' )

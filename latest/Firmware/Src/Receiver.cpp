@@ -73,7 +73,6 @@ void Receiver::switchToChannel(VHFChannel channel)
   mNextChannel = channel;
 }
 
-// TODO: This is a really, really long operation - over 320us !!!
 void Receiver::startListening(VHFChannel channel, bool reconfigGPIOs)
 {
   if ( reconfigGPIOs )
@@ -94,9 +93,7 @@ void Receiver::startListening(VHFChannel channel, bool reconfigGPIOs)
   /**
    * This never takes more than 65us now :D
    */
-  //bsp_signal_high();
-  sendCmdNoWait(START_RX, &options, sizeof options);//, NULL, 0);
-  //bsp_signal_low();
+  sendCmdNoWait(START_RX, &options, sizeof options);
 }
 
 void Receiver::resetBitScanner()
@@ -111,22 +108,14 @@ void Receiver::resetBitScanner()
     mRXPacket->reset();
 }
 
-/*
- * TODO: Under a worst case scenario, this interrupt service method
- * can take up to 320us to complete (that's 4 clock bits!!!)
- *
- * Re-architecting will be necessary to resolve this.
- */
 
 void Receiver::onBitClock()
 {
-  //bsp_signal_high();
   ++mSlotBitNumber;
 
   // Don't waste time processing bits when the transceiver is transmitting
   if ( gRadioState == RADIO_TRANSMITTING )
     {
-      //bsp_signal_low();
       return;
     }
 
@@ -147,29 +136,10 @@ void Receiver::onBitClock()
     {
       startReceiving(mChannel, false);
     }
-#if ENABLE_TX
-  /**
-   * This trick ensures that we only sample RSSI every N time slots and never in the
-   * same time slot for both ICs, so we don't conduct long SPI operations on consecutive
-   * interrupt handlers that might exceed the bit clock period. There is no reason for RSSI
-   * collection to have a high duty cycle anyway, it just serves to establish the noise floor.
-   */
-#if FULL_RSSI_SAMPLING
   else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff && mSlotBitNumber == CCA_SLOT_BIT )
     {
       mRXPacket->setRSSI(reportRSSI());
     }
-#else
-  else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff &&
-      mTimeSlot % 17 == mChipID &&
-      mSlotBitNumber == CCA_SLOT_BIT - 1 )
-    {
-      mRXPacket->setRSSI(reportRSSI());
-    }
-#endif
-#endif
-
-  //bsp_signal_low();
 }
 
 /**
@@ -221,6 +191,7 @@ Receiver::Action Receiver::processNRZIBit(uint8_t bit)
        * we gain enough confidence that this is not random noise.
        */
       if ( mBitWindow == 0b1010101001111110 || mBitWindow == 0b0101010101111110 )
+      //if ( (mBitWindow & 0x0fff) == 0b101001111110 || (mBitWindow &0x0fff) == 0b010101111110 )
         {
           mBitState = BIT_STATE_IN_PACKET;
           mRXPacket->setChannel(mChannel);
@@ -230,7 +201,7 @@ Receiver::Action Receiver::processNRZIBit(uint8_t bit)
     }
   case BIT_STATE_IN_PACKET:
     {
-      if ( mOneBitCount >= 7 || mRXPacket->size() >= MAX_AIS_RX_PACKET_SIZE )
+      if ( mOneBitCount >= 7 || mRXPacket->size() >= MAX_AIS_RX_PACKET_SIZE - 2 )
         {
           // Start over
           return RESTART_RX;
@@ -337,11 +308,9 @@ void Receiver::pushPacket()
  */
 uint8_t Receiver::reportRSSI()
 {
-  //bsp_signal_high();
   uint8_t rssi = readRSSI();
   char channel = AIS_CHANNELS[mChannel].designation;
   NoiseFloorDetector::instance().report(channel, rssi);
-  //bsp_signal_low();
   return rssi;
 }
 
