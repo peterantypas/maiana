@@ -190,8 +190,8 @@ Receiver::Action Receiver::processNRZIBit(uint8_t bit)
        * By checking for the last few preamble bits plus the HDLC start flag,
        * we gain enough confidence that this is not random noise.
        */
-      if ( mBitWindow == 0b1010101001111110 || mBitWindow == 0b0101010101111110 )
-      //if ( (mBitWindow & 0x0fff) == 0b101001111110 || (mBitWindow &0x0fff) == 0b010101111110 )
+      //if ( mBitWindow == 0b1010101001111110 || mBitWindow == 0b0101010101111110 )
+      if ( (mBitWindow & 0x0fff) == 0b101001111110 || (mBitWindow &0x0fff) == 0b010101111110 )
         {
           mBitState = BIT_STATE_IN_PACKET;
           mRXPacket->setChannel(mChannel);
