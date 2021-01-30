@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include "Transceiver.hpp"
@@ -196,7 +196,6 @@ void Transceiver::onBitClock()
   if ( gRadioState == RADIO_RECEIVING )
     {
       Receiver::onBitClock();
-#ifdef ENABLE_TX
       /*
           We start transmitting a packet if:
             - We have a TX packet assigned
@@ -233,19 +232,14 @@ void Transceiver::onBitClock()
         }
       else if ( mUTC && mSlotBitNumber == CCA_SLOT_BIT && mTXPacket->channel() == mChannel )
         {
-#if FULL_RSSI_SAMPLING
           // It has already been sampled during Receiver::onBitClock();
           int rssi = mRXPacket->rssi();
-#else
-          int rssi = readRSSI();
-#endif
           int nf = NoiseFloorDetector::instance().getNoiseFloor(AIS_CHANNELS[mChannel].designation);
           if ( rssi <= nf + TX_CCA_HEADROOM )
             {
               startTransmitting();
             }
         }
-#endif
     }
   else
     {
@@ -312,6 +306,8 @@ void Transceiver::startTransmitting()
 
   sendCmd(START_TX, &options, sizeof options, NULL, 0);
 
+  // Ensure all data changes in the function have completed, otherwise gRadioState may not actually be modified
+  __DSB();
 
 #if 0
   /*

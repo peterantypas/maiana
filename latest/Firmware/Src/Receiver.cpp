@@ -134,7 +134,7 @@ void Receiver::onBitClock()
   Receiver::Action action = processNRZIBit(bit);
   if ( action == RESTART_RX )
     {
-      startReceiving(mChannel, false);
+      startReceiving(mNextChannel, false);
     }
   else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff && mSlotBitNumber == CCA_SLOT_BIT )
     {

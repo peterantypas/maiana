@@ -21,7 +21,7 @@
 #ifndef CIRCULARQUEUE_HPP_
 #define CIRCULARQUEUE_HPP_
 
-
+#include <stdint.h>
 #include <stddef.h>
 #include "_assert.h"
 

@@ -99,7 +99,7 @@
                             							
                             <option id="ilg.gnuarmeclipse.managedbuild.cross.option.target.other.554432213" name="Other target flags" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.target.other" useByScannerDiscovery="true"/>
                             							
-                            <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.1030588197" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.size" valueType="enumerated"/>
+                            <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.1030588197" name="Optimization Level" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level" useByScannerDiscovery="true" value="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.level.more" valueType="enumerated"/>
                             							
                             <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.messagelength.1195781009" name="Message length (-fmessage-length=0)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.messagelength" useByScannerDiscovery="true" value="true" valueType="boolean"/>
                             							
@@ -121,7 +121,7 @@
                             							
                             <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.PIC.1340489446" name="Position independent code (-fPIC)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.PIC" useByScannerDiscovery="true"/>
                             							
-                            <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.lto.1324308497" name="Link-time optimizer (-flto)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.lto" useByScannerDiscovery="true" value="true" valueType="boolean"/>
+                            <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.lto.1324308497" name="Link-time optimizer (-flto)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.lto" useByScannerDiscovery="true" value="false" valueType="boolean"/>
                             							
                             <option id="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.nomoveloopinvariants.790213878" name="Disable loop invariant move (-fno-move-loop-invariants)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.optimization.nomoveloopinvariants" useByScannerDiscovery="true"/>
                             							
@@ -231,6 +231,8 @@
                                 								
                                 <option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.asmlisting.1148532259" name="Generate assembler listing (-Wa,-adhlns=&quot;$@.lst&quot;)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.asmlisting" useByScannerDiscovery="false" value="true" valueType="boolean"/>
                                 								
+                                <option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.other.2013569967" name="Other compiler flags" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.other" useByScannerDiscovery="true" value="" valueType="string"/>
+                                								
                                 <inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.434150746" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
                                 							
                             </tool>
@@ -299,7 +301,7 @@
                                 								
                                 <option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.useprintffloat.1665988968" name="Use float with nano printf (-u _printf_float)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.useprintffloat" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
-                                <option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.printmap.1943968052" name="Print link map (-Xlinker --print-map)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.printmap" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                                <option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.printmap.1943968052" name="Print link map (-Xlinker --print-map)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.linker.printmap" useByScannerDiscovery="false" value="false" valueType="boolean"/>
                                 								
                                 <inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input.166504373" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.linker.input">
                                     									
