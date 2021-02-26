@@ -39,6 +39,7 @@ RFIC::RFIC(GPIO_TypeDef *sdnPort,
   mCSPort = csPort;
   mDataPort = dataPort;
   mClockGPIO = clockPort;
+  mPartNumber = 0;
 
   mSDNPin = sdnPin;
   mCSPin = csPin;
@@ -176,6 +177,11 @@ void RFIC::configure()
       sendCmd(cmd, cfg, count, NULL, 0);      // send bytes to chip
       cfg += count;                           // point at next line
     }
+}
+
+uint16_t RFIC::partNumber()
+{
+  return mPartNumber;
 }
 
 bool RFIC::isInitialized()

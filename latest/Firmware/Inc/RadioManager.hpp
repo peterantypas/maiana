@@ -58,7 +58,8 @@ private:
   Transceiver *mTransceiverIC;
   Receiver *mReceiverIC;
   bool mInitializing;
-  time_t mUTC;
+  time_t mUTC = 0;
+  time_t mStartTime = 0;
 
   CircularQueue<TXPacket*>  mTXQueue;
 };

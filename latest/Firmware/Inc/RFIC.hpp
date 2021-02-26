@@ -47,6 +47,7 @@ public:
   virtual ~RFIC();
 
   void setRSSIAdjustment(short rssiAdj);
+  uint16_t partNumber();
 protected:
   virtual void configure();
   bool sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, uint8_t resultLen);

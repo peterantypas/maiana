@@ -225,6 +225,16 @@ def boot(address):
     return True
     
 
+def enter_dfu(portname):
+    p = serial.Serial(portname, 38400, timeout=2, parity=serial.PARITY_NONE, stopbits=1)
+    if not p.is_open:
+        return False
+
+    p.write('dfu\r\n')
+    time.sleep(1)
+    s = p.readline()
+    p.close()
+    return len(s) == 0
     
 if __name__ == '__main__':
     if len(sys.argv) < 4:
@@ -246,8 +256,12 @@ if __name__ == '__main__':
         print "Image file too large"
         sys.exit(1)
 
-        
-        
+    
+    if not enter_dfu(sys.argv[1]):
+        print "Could not enter DFU mode"
+        sys.exit(1)
+    
+    
     port = serial.Serial(sys.argv[1], BAUD_RATE, timeout=2, parity=serial.PARITY_EVEN, stopbits=1)
     if not port.is_open:
         print "Failed to open port"

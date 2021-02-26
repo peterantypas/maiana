@@ -126,7 +126,7 @@ void bsp_hw_init()
   huart1.AdvancedInit.AdvFeatureInit  = UART_ADVFEATURE_NO_INIT;
   HAL_UART_Init(&huart1);
 
-  HAL_NVIC_SetPriority(USART1_IRQn, 7, 0);
+  HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(USART1_IRQn);
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 

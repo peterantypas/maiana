@@ -56,8 +56,8 @@ void mainLoop()
   EventPool::instance().init();
   EventQueue::instance().init();
   Configuration::instance().init();
-  CommandProcessor::instance().init();
   DataTerminal::instance().init();
+  CommandProcessor::instance().init();
 
   RXPacketProcessor packetProcessor;
   GPS::instance().init();

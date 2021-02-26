@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include "RadioManager.hpp"
@@ -34,7 +34,7 @@ RadioManager &RadioManager::instance()
 }
 
 RadioManager::RadioManager()
-  : mTXQueue(4)
+: mTXQueue(4)
 {
   mTransceiverIC = NULL;
   mReceiverIC = NULL;
@@ -107,34 +107,45 @@ void RadioManager::processEvent(const Event &e)
 {
   mUTC = e.clock.utc;
 
-  // Evaluate the state of the transceiver IC and our queue ...
-  if ( mTransceiverIC->assignedTXPacket() == NULL )
+  if ( mStartTime == 0 )
     {
-      if ( !mTXQueue.empty() )
+      mStartTime = mUTC;
+    }
+
+  if ( !mTXQueue.empty() && mTransceiverIC->assignedTXPacket() == NULL )
+    {
+      // There is no current TX operation pending, so we assign one
+      TXPacket *packet = NULL;
+      mTXQueue.pop(packet);
+      ASSERT(packet);
+
+      VHFChannel txChannel = packet->channel();
+
+      // Do we need to swap channels?
+      if ( txChannel != mTransceiverIC->channel() )
         {
-          // There is no current TX operation pending, so we assign one
-          TXPacket *packet = NULL;
-          mTXQueue.pop(packet);
-          ASSERT(packet);
-
-          VHFChannel txChannel = packet->channel();
-
-          // Do we need to swap channels?
-          if ( txChannel != mTransceiverIC->channel() )
-            {
-              //DBG("RadioManager swapping channels for ICs\r\n");
-              // The receiver needs to be explicitly told to switch channels
-              if ( mReceiverIC )
-                mReceiverIC->switchToChannel(alternateChannel(txChannel));
-            }
-
-          //DBG("RadioManager assigned TX packet\r\n");
-
-          // The transceiver will switch channel if the packet channel is different
-          mTransceiverIC->assignTXPacket(packet);
+          //DBG("RadioManager swapping channels for ICs\r\n");
+          // The receiver needs to be explicitly told to switch channels
+          if ( mReceiverIC )
+            mReceiverIC->switchToChannel(alternateChannel(txChannel));
         }
 
+      //DBG("RadioManager assigned TX packet\r\n");
+
+      // The transceiver will switch channel if the packet channel is different
+      mTransceiverIC->assignTXPacket(packet);
     }
+  else if ( mUTC - mStartTime >= 3600 )
+    {
+      /**
+       * For some reason, RX performance seems to go downhill after many hours
+       * of continuous operation, so the easiest remedy is to reboot every hour.
+       * The impact of this is pretty small.
+       */
+
+      bsp_reboot();
+    }
+
 }
 
 VHFChannel RadioManager::alternateChannel(VHFChannel channel)
