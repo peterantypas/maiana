@@ -36,7 +36,7 @@ The core design is based on two Silicon Labs "EZRadio Pro" series ICs. The first
 
 The MCU is a STM32L4x2 series microcontroller (412 and 432 supported). I chose this series because the 80MHz clock speed allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is crucial, as a transponder is a hard real-time application that relies on interrupts for precise timing of the transmit function, so SPI latency must be minimized.
 
-The GPS is a Quectel L70R module and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start.
+The GNSS is a Quectel L76 module and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start.
 The transmitter output is 2 Watts (+33dBm) and it has a verified range of over 10 nautical miles.
 
 The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. On my boat, it is wired to a box that converts the UART to USB and feeds it to a RPi Zero W, which acts as a WiFi access point / NMEA distributor:
@@ -63,7 +63,9 @@ the required symbols in the preprocessor to build for different board revisions.
 
 This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. Unless you're skilled with stencils and reflow, you will find it challenging. 
 
-To make this easier I will release a kit on tindie.com. I was hoping to have it ready by the start of the 2021 boating season (March or April), but Silicon Labs is experiencing a severe supply chain disruption right now, so this may not happen until Q2 of 2021. The kit will include a 98% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed, tested and calibrated, and the antenna will be perfectly matched.
+The state of the supply chain makes it even more difficult to source some of the parts now, so the design of the kit will probably change to include widely available alternates. For instance, the LDFPUR (3x3mm) will be replaced by LDFPVR (2x2mm) which is available but also more difficult to solder. The AP63203 will probably be replaced by an AP3211 which was the original buck I used years ago (it just needs some extra filtering at its input). Also, a custom GreenPAK IC may  be added to consolidate some functions and provide a hardware-based secondary watchdog. There is in fact a regulatory requirement that AIS transmitters have a hardware-based mechanism to prevent them from getting stuck in carrier transmit mode due to software lock-up and a GreenPAK is perfect for that.
+
+With the above changes, and after being able to secure a quantity of Silabs ICs from a spot market in Shenzhen, it looks like the kit will become a reality in Q2. It will include a 98% finished PCBA as well as the VHF antenna, enclosure and sealing components. The board will be programmed, tested and calibrated, and the antenna will be perfectly matched.
 
 There is, however, one caveat: <b>I cannot legally ship this as a transponder yet</b>. The workaround is to bill it as an AIS+GPS receiver. To turn it into a transponder, you will have to <b>procure and install [inductor L4](https://github.com/peterantypas/ais_transponder/blob/master/latest/CAD/Board-10.0/transponder-10.0.1-schematic.pdf) on the PCBA yourself</b> (see page 5 of the schematic). Without this part, the circuit is physically incapable of transmitting. Soldering this should be easy as it is an 0805 package and the pads will already have solder paste from the original SMT and test process. The inductor is a Taiyo Yuden BRC2012T2R2MD and it's widely available at both DigiKey and Mouser. It is quite cheap, so your main cost will be shipping.
 
