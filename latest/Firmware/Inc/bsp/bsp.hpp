@@ -27,7 +27,7 @@
 // Either modify this header or define a different symbol in the preprocessor to build for a different board
 
 #ifndef BOARD_REV
-#define BOARD_REV 100
+#define BOARD_REV 105
 #endif
 
 /**
@@ -91,6 +91,8 @@ bool bsp_read_station_data(StationData &data);
 #include <bsp_9_3.hpp>
 #elif BOARD_REV == 100
 #include <bsp_10_0.hpp>
+#elif BOARD_REV == 105
+#include <bsp_10_5.hpp>
 #endif
 
 

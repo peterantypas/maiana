@@ -163,12 +163,13 @@ void RFIC::configure()
   case 0x4467:
     radio_configuration = get_si4467_config_array();
     break;
+  case 0x4460:
+    radio_configuration = get_si4460_config_array();
+    break;
   default:
     radio_configuration = get_si4463_config_array();
   }
 
-
-  //uint8_t radio_configuration[] = RADIO_CONFIGURATION_DATA_ARRAY;
   uint8_t *cfg = radio_configuration;
   while (*cfg)
     {                              // configuration array stops with 0
