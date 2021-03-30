@@ -81,7 +81,7 @@ void Transceiver::configure()
   {
   case 0x4463:
     pwr.pa_mode = 0x48;
-    pwr.pa_level = 0x12;
+    pwr.pa_level = 0x10;
     pwr.pa_bias_clkduty = 0x00;
     break;
   default:
