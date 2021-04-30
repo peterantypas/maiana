@@ -24,6 +24,10 @@
 #include "EventQueue.hpp"
 #include <stdio.h>
 
+// These are not defined in ANY CMSIS or HAL header, WTF ST???
+#define OTP_ADDRESS   0x1FFF7000
+#define OTP_SIZE      0x00000400
+
 #if 0
 static StationData __THIS_STATION__ = {
     STATION_DATA_MAGIC,
@@ -55,7 +59,10 @@ void Configuration::init()
 {
   bool cliBootMode = *(uint32_t*)BOOTMODE_ADDRESS == CLI_FLAG_MAGIC;
   if ( !cliBootMode )
-    reportStationData();
+    {
+      reportOTPData();
+      reportStationData();
+    }
 }
 
 void Configuration::reportStationData()
@@ -75,6 +82,24 @@ void Configuration::reportStationData()
       d.beam,
       d.portOffset,
       d.bowOffset);
+
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
+}
+
+void Configuration::reportOTPData()
+{
+  const OTPData *data = readOTP();
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+
+  if ( data == nullptr )
+    {
+      strcpy(e->nmeaBuffer.sentence, "$PAISYS,,*");
+    }
+  else
+    {
+      sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s*", data->serialnum, data->hwrev);
+    }
 
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
@@ -151,6 +176,54 @@ bool Configuration::readStationData(StationData &data)
   memcpy(&__page, (const void*)CONFIGURATION_ADDRESS, sizeof __page);
   memcpy(&data, &__page.station, sizeof data);
   return data.magic == STATION_DATA_MAGIC;
+}
+
+const OTPData *Configuration::readOTP()
+{
+  uint32_t address = nextAvailableOTPSlot();
+  if ( address == OTP_ADDRESS )
+    // There's nothing written!
+    return nullptr;
+
+  address -= sizeof(OTPData);
+  if ( IS_FLASH_OTP_ADDRESS(address) )
+    return (const OTPData*)address;
+
+  return nullptr;
+}
+
+bool Configuration::writeOTP(const OTPData &data)
+{
+  uint32_t address = nextAvailableOTPSlot();
+  if ( !IS_FLASH_OTP_ADDRESS(address) )
+    return false;
+
+  uint64_t *d = (uint64_t*)&data;
+
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+  HAL_FLASH_Unlock();
+  HAL_StatusTypeDef status = HAL_OK;
+  for ( uint32_t dw = 0; dw < sizeof data/8; ++dw, ++d )
+    {
+      status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, address + dw*8, *d);
+      if ( status != HAL_OK )
+        break;
+    }
+  HAL_FLASH_Lock();
+
+  return true;
+}
+
+uint32_t Configuration::nextAvailableOTPSlot()
+{
+  for ( uint32_t p = OTP_ADDRESS; p < OTP_ADDRESS+OTP_SIZE; p += sizeof (OTPData) )
+    {
+      OTPData *d = (OTPData*)p;
+      if ( d->magic == 0xFFFFFFFF )
+        return p;
+    }
+
+  return OTP_ADDRESS+OTP_SIZE;
 }
 
 

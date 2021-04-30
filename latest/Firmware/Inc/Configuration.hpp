@@ -21,6 +21,7 @@
 #define CONFIGURATION_HPP_
 
 #include "StationData.h"
+#include "OTPData.h"
 
 // This should be plenty big (no need to be a whole flash page though)
 typedef union
@@ -28,6 +29,7 @@ typedef union
   StationData station;
   uint64_t dw[128];
 } ConfigPage;
+
 
 class Configuration
 {
@@ -40,10 +42,15 @@ public:
   bool readStationData(StationData &data);
   void resetToDefaults();
   void reportStationData();
+
+  void reportOTPData();
+  const OTPData *readOTP();
+  bool writeOTP(const OTPData &data);
 private:
   Configuration();
   bool erasePage();
   bool writePage();
+  uint32_t nextAvailableOTPSlot();
 };
 
 #endif /* CONFIGURATION_HPP_ */

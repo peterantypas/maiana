@@ -36,6 +36,8 @@ public:
 private:
   void processCommand(const char *);
   void jumpToBootloader();
+  void dumpOTPData();
+  void writeOTPData(const std::string &cmd);
   void enterCLIMode();
   CommandProcessor();
 };
