@@ -63,9 +63,7 @@ the required symbols in the preprocessor to build for different board revisions.
 
 This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. Unless you're skilled with stencils and reflow, you will find it challenging. 
 
-The state of the supply chain makes it even more difficult to source some of the parts now, so the design of the kit will probably change to include widely available alternates. For instance, the LDFPUR (3x3mm) will be replaced by LDFPVR (2x2mm) which is available but also more difficult to solder. The AP63203 will probably be replaced by an AP3211 which was the original buck I used years ago (it just needs some extra filtering at its input). 
-
-*April 24 UPDATE*: Unfortunately, the state of the supply chain is getting worse, and at this point I have to stop working on MAIANA&trade; to rescue my other project. I will try to respond to discussions and issues, but I cannot build kits and it doesn't look like I'll be able to do this until after the boating season this year.
+The current state of the supply chain makes it even more difficult to source some of the parts now, so the design of the kit will probably change to include   alternates.  
 
 
 ### License
