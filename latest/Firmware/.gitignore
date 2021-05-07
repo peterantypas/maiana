@@ -15,3 +15,5 @@ Debug
 /STM32L422-Debug/
 /STM32L422-Release/
 .settings/language.settings.xml
+/STM32L422-Release/
+/STM32L422-Debug/
