@@ -63,7 +63,8 @@ the required symbols in the preprocessor to build for different board revisions.
 
 This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. Unless you're skilled with stencils and reflow, you will find it challenging. 
 
-The current state of the supply chain makes it even more difficult to source some of the parts now, so the design of the kit will probably change to include   alternates.  
+For this reason, I'm working on a kit and I expect the first 10 or so to be available by end of June / beginning July of this year. This has been a struggle, given the state of the supply chain, so I had to make many last-minute design changes and secure enough BOM. If you're interested in the kit, sign up for my mailing list here: https://eepurl.com/hxHP-5
+
 
 
 ### License
