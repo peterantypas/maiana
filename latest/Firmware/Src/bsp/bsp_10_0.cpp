@@ -251,9 +251,7 @@ void SystemClock_Config()
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 1;
   RCC_OscInitStruct.PLL.PLLN = 10;  // 80 MHz
-  //RCC_OscInitStruct.PLL.PLLN = 8; // 64 MHz
-  //RCC_OscInitStruct.PLL.PLLN = 6; // 48 MHz
-#ifdef STM32L432xx
+#if defined(STM32L432xx) || defined(STM32L431xx)
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
 #endif
   RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;

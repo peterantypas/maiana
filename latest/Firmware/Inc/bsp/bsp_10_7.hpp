@@ -17,8 +17,8 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>
 */
 
-#ifndef INC_BSP_10_5_HPP_
-#define INC_BSP_10_5_HPP_
+#ifndef INC_BSP_10_7_HPP_
+#define INC_BSP_10_7_HPP_
 
 
 
@@ -89,7 +89,8 @@
 #define RX_EN_PORT                GPIOB
 #define RX_EN_PIN                 GPIO_PIN_6
 
-
+#define TX_EN_PORT                GPIOB
+#define TX_EN_PIN                 GPIO_PIN_7
 
 
 #endif /* INC_BSP_5_0_HPP_ */
