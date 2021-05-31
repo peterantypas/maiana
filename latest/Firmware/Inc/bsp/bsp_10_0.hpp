@@ -59,8 +59,8 @@
 #define TRX_IC_DATA_PORT          GPIOB
 #define TRX_IC_DATA_PIN           GPIO_PIN_1
 
-#define TX_CTRL_PORT              GPIOA
-#define TX_CTRL_PIN               GPIO_PIN_8
+#define PA_BIAS_PORT              GPIOA
+#define PA_BIAS_PIN               GPIO_PIN_8
 
 #define UART_TX_PORT              GPIOA
 #define UART_TX_PIN               GPIO_PIN_9

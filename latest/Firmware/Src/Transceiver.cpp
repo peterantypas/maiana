@@ -275,7 +275,7 @@ void Transceiver::onBitClock()
            *
            */
           if ( mTXPacket->canRampDown() )
-            HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_RESET);
         }
     }
 }

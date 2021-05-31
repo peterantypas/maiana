@@ -73,9 +73,9 @@ static const GPIO __gpios[] = {
     {SDN2_PORT, {SDN2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {RX_IC_CLK_PORT, {RX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {RX_IC_DATA_PORT, {RX_IC_DATA_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
-    {TX_CTRL_PORT, {TX_CTRL_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
-    {RX_EN_PORT, {RX_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
-    {TX_EN_PORT, {TX_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    {PA_BIAS_PORT, {PA_BIAS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    {LNA_PWR_PORT, {LNA_PWR_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
+    {RFSW_CTRL_PORT, {RFSW_CTRL_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
 };
 
 extern "C"
@@ -327,9 +327,9 @@ void HAL_MspInit(void)
 
 void bsp_set_rx_mode()
 {
-  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_RESET);       // Kill the RF MOSFET bias voltage. This has RC delay in hardware.
-  HAL_GPIO_WritePin(RX_EN_PORT, RX_EN_PIN, GPIO_PIN_SET);             // Power up LNA
-  HAL_GPIO_WritePin(TX_EN_PORT, TX_EN_PIN, GPIO_PIN_RESET);           // Flip the antenna switch to RX
+  HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_RESET);       // Kill the RF MOSFET bias voltage. This has RC delay in hardware.
+  HAL_GPIO_WritePin(RFSW_CTRL_PORT, RFSW_CTRL_PIN, GPIO_PIN_RESET);   // Flip the antenna switch to RX
+  HAL_GPIO_WritePin(LNA_PWR_PORT, LNA_PWR_PIN, GPIO_PIN_SET);         // Power up LNA
 
   // Data I/O pin is input (RFIC->MCU)
   GPIO_InitTypeDef gpio;
@@ -342,8 +342,8 @@ void bsp_set_rx_mode()
 
 void bsp_set_tx_mode()
 {
-  HAL_GPIO_WritePin(RX_EN_PORT, RX_EN_PIN, GPIO_PIN_RESET);           // Power down LNA
-  HAL_GPIO_WritePin(TX_EN_PORT, TX_EN_PIN, GPIO_PIN_SET);             // Flip the antenna switch to TX
+  HAL_GPIO_WritePin(LNA_PWR_PORT, LNA_PWR_PIN, GPIO_PIN_RESET);           // Power down LNA
+  HAL_GPIO_WritePin(RFSW_CTRL_PORT, RFSW_CTRL_PIN, GPIO_PIN_SET);         // Flip the antenna switch to TX
 
   // Data I/O pin is output (MCU->RFIC)
   GPIO_InitTypeDef gpio;
@@ -353,7 +353,7 @@ void bsp_set_tx_mode()
   gpio.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(TRX_IC_DATA_PORT, &gpio);
 
-  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_SET);         // RF MOSFET bias voltage will ramp via RC delay
+  HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_SET);         // RF MOSFET bias voltage will ramp via RC delay
 }
 
 void bsp_gnss_on()

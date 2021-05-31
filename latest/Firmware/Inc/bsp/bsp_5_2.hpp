@@ -76,8 +76,8 @@
 #define RX_IC_DATA_PORT           GPIOB
 #define RX_IC_DATA_PIN            GPIO_PIN_4
 
-#define TX_CTRL_PORT              GPIOB
-#define TX_CTRL_PIN               GPIO_PIN_5
+#define PA_BIAS_PORT              GPIOB
+#define PA_BIAS_PIN               GPIO_PIN_5
 
 #define I2C_SCL_PORT              GPIOB
 #define I2C_SCL_PIN               GPIO_PIN_6

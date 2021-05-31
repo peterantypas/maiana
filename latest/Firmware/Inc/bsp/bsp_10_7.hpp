@@ -59,8 +59,8 @@
 #define TRX_IC_DATA_PORT          GPIOB
 #define TRX_IC_DATA_PIN           GPIO_PIN_1
 
-#define TX_CTRL_PORT              GPIOA
-#define TX_CTRL_PIN               GPIO_PIN_8
+#define PA_BIAS_PORT              GPIOA
+#define PA_BIAS_PIN               GPIO_PIN_8
 
 #define UART_TX_PORT              GPIOA
 #define UART_TX_PIN               GPIO_PIN_9
@@ -86,11 +86,11 @@
 #define TX_EVT_PORT               GPIOB
 #define TX_EVT_PIN                GPIO_PIN_5
 
-#define RX_EN_PORT                GPIOB
-#define RX_EN_PIN                 GPIO_PIN_6
+#define LNA_PWR_PORT              GPIOB
+#define LNA_PWR_PIN               GPIO_PIN_6
 
-#define TX_EN_PORT                GPIOB
-#define TX_EN_PIN                 GPIO_PIN_7
+#define RFSW_CTRL_PORT            GPIOB
+#define RFSW_CTRL_PIN             GPIO_PIN_7
 
 
 #endif /* INC_BSP_5_0_HPP_ */
