@@ -17,8 +17,8 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>
 */
 
-#ifndef INC_BSP_10_0_HPP_
-#define INC_BSP_10_0_HPP_
+#ifndef INC_BSP_10_5_HPP_
+#define INC_BSP_10_5_HPP_
 
 
 
@@ -86,11 +86,9 @@
 #define TX_EVT_PORT               GPIOB
 #define TX_EVT_PIN                GPIO_PIN_5
 
-#define I2C_SCL_PORT              GPIOB
-#define I2C_SCL_PIN               GPIO_PIN_6
+#define LNA_PWR_PORT              GPIOB
+#define LNA_PWR_PIN               GPIO_PIN_6
 
-#define I2C_SDA_PORT              GPIOB
-#define I2C_SDA_PIN               GPIO_PIN_7
 
 
 

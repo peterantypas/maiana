@@ -31,5 +31,6 @@
 
 uint8_t* get_si4467_config_array();
 uint8_t* get_si4463_config_array();
+uint8_t* get_si4460_config_array();
 
 #endif /* RADIO_CONFIG_H_ */

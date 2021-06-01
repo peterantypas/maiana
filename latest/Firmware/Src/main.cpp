@@ -36,7 +36,7 @@ void jump_to_bootloader()
   pFunction systemBootloader;
 
   /**
-   * System bootloader for L412 and L432 series resides at 0x1fff0000,
+   * System bootloader for L4xx series resides at 0x1fff0000,
    * so the first 4 bytes contain the stack pointer and the next 4 contain the
    * program counter
    */

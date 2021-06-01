@@ -81,7 +81,12 @@ void Transceiver::configure()
   {
   case 0x4463:
     pwr.pa_mode = 0x48;
-    pwr.pa_level = 0x12;
+    pwr.pa_level = 0x10;
+    pwr.pa_bias_clkduty = 0x00;
+    break;
+  case 0x4467:
+    pwr.pa_mode = 0x48;
+    pwr.pa_level = 0x1C;
     pwr.pa_bias_clkduty = 0x00;
     break;
   default:
@@ -270,7 +275,7 @@ void Transceiver::onBitClock()
            *
            */
           if ( mTXPacket->canRampDown() )
-            HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_RESET);
         }
     }
 }

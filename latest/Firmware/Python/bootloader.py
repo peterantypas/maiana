@@ -256,11 +256,11 @@ if __name__ == '__main__':
         print "Image file too large"
         sys.exit(1)
 
-    
+    """
     if not enter_dfu(sys.argv[1]):
         print "Could not enter DFU mode"
         sys.exit(1)
-    
+    """
     
     port = serial.Serial(sys.argv[1], BAUD_RATE, timeout=2, parity=serial.PARITY_EVEN, stopbits=1)
     if not port.is_open:
