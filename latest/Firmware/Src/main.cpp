@@ -24,6 +24,7 @@
 #include "DataTerminal.hpp"
 #include "TXScheduler.hpp"
 #include "GPS.hpp"
+#include "LEDManager.hpp"
 #include "SystickTimer.hpp"
 #include "CommandProcessor.hpp"
 #include "bsp.hpp"
@@ -58,6 +59,7 @@ void mainLoop()
   Configuration::instance().init();
   DataTerminal::instance().init();
   CommandProcessor::instance().init();
+  LEDManager::instance().init();
 
   RXPacketProcessor packetProcessor;
   GPS::instance().init();

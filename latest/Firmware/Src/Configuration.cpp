@@ -87,6 +87,12 @@ void Configuration::reportStationData()
   EventQueue::instance().push(e);
 }
 
+bool Configuration::isStationDataProvisioned()
+{
+  StationData d;
+  return readStationData(d);
+}
+
 void Configuration::reportOTPData()
 {
   const OTPData *data = readOTP();

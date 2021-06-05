@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 
@@ -42,8 +42,7 @@ irq_callback ppsCallback = nullptr;
 irq_callback sotdmaCallback = nullptr;
 irq_callback trxClockCallback = nullptr;
 irq_callback rxClockCallback = nullptr;
-
-#define EEPROM_ADDRESS  0x50 << 1
+irq_callback tickCallback = nullptr;
 
 typedef struct
 {
@@ -322,6 +321,37 @@ void HAL_MspInit(void)
   /* USER CODE END MspInit 1 */
 }
 
+void bsp_rx_led_on()
+{
+  HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_SET);
+}
+
+void bsp_rx_led_off()
+{
+  HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_RESET);
+}
+
+void bsp_tx_led_on()
+{
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_SET);
+}
+
+void bsp_tx_led_off()
+{
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
+}
+
+void bsp_gps_led_on()
+{
+  HAL_GPIO_WritePin(GNSS_STATE_PORT, GNSS_STATE_PIN, GPIO_PIN_SET);
+}
+
+void bsp_gps_led_off()
+{
+  HAL_GPIO_WritePin(GNSS_STATE_PORT, GNSS_STATE_PIN, GPIO_PIN_RESET);
+}
+
+
 void bsp_set_rx_mode()
 {
   HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_RESET);       // RF MOSFET bias voltage
@@ -431,6 +461,11 @@ void bsp_set_rx_clk_callback(irq_callback cb)
   rxClockCallback = cb;
 }
 
+void bsp_set_tick_callback(irq_callback cb)
+{
+  tickCallback = cb;
+}
+
 void bsp_set_gnss_sotdma_timer_callback(irq_callback cb)
 {
   sotdmaCallback = cb;
@@ -458,24 +493,9 @@ uint8_t bsp_tx_spi_byte(uint8_t data)
   return result;
 }
 
-bool bsp_erase_station_data()
-{
-  return false;
-}
-
-bool bsp_save_station_data(const StationData &data)
-{
-  return false;
-}
-
 void bsp_reboot()
 {
   NVIC_SystemReset();
-}
-
-bool bsp_read_station_data(StationData &data)
-{
-  return false;
 }
 
 bool bsp_is_tx_disabled()
@@ -494,21 +514,6 @@ void bsp_enter_dfu()
   *(uint32_t*)BOOTMODE_ADDRESS = DFU_FLAG_MAGIC;
 
   bsp_reboot();
-}
-
-void bsp_signal_rx_event()
-{
-  HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_SET);
-}
-
-void bsp_signal_tx_event()
-{
-  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_SET);
-}
-
-void bsp_signal_gps_status(bool tracking)
-{
-  HAL_GPIO_WritePin(GNSS_STATE_PORT, GNSS_STATE_PIN, tracking ? GPIO_PIN_SET: GPIO_PIN_RESET);
 }
 
 extern "C"
@@ -582,13 +587,8 @@ extern "C"
 
   void HAL_SYSTICK_Callback()
   {
-    static int count = 1;
-    if ( count++ % 20 == 0 )
-      {
-        count = 1;
-        HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
-      }
+    if ( tickCallback )
+      tickCallback();
   }
 
 }

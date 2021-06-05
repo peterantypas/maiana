@@ -41,6 +41,7 @@ irq_callback ppsCallback = nullptr;
 irq_callback sotdmaCallback = nullptr;
 irq_callback trxClockCallback = nullptr;
 irq_callback rxClockCallback = nullptr;
+irq_callback tickCallback = nullptr;
 
 #define EEPROM_ADDRESS  0x50 << 1
 
@@ -332,6 +333,38 @@ void bsp_set_rx_mode()
   HAL_GPIO_Init(TRX_IC_DATA_PORT, &gpio);
 }
 
+void bsp_rx_led_on()
+{
+  HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_SET);
+}
+
+void bsp_rx_led_off()
+{
+  HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_RESET);
+}
+
+void bsp_tx_led_on()
+{
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_SET);
+}
+
+void bsp_tx_led_off()
+{
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
+}
+
+void bsp_gps_led_on()
+{
+  HAL_GPIO_WritePin(GNSS_STATE_PORT, GNSS_STATE_PIN, GPIO_PIN_SET);
+}
+
+void bsp_gps_led_off()
+{
+  HAL_GPIO_WritePin(GNSS_STATE_PORT, GNSS_STATE_PIN, GPIO_PIN_RESET);
+}
+
+
+
 void bsp_set_tx_mode()
 {
   GPIO_InitTypeDef gpio;
@@ -400,6 +433,11 @@ void bsp_set_gnss_input_callback(char_input_cb cb)
 void bsp_set_terminal_input_callback(char_input_cb cb)
 {
   terminalInputCallback = cb;
+}
+
+void bsp_set_tick_callback(irq_callback cb)
+{
+  tickCallback = cb;
 }
 
 void bsp_start_sotdma_timer()

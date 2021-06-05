@@ -86,7 +86,7 @@ void Transceiver::configure()
     break;
   case 0x4467:
     pwr.pa_mode = 0x48;
-    pwr.pa_level = 0x18;
+    pwr.pa_level = 0x1C;
     pwr.pa_bias_clkduty = 0x00;
     break;
   default:
@@ -132,20 +132,6 @@ void Transceiver::transmitCW(VHFChannel channel)
   options.repeats = 0;
 
   sendCmd (START_TX, &options, sizeof options, NULL, 0);
-
-#if 0
-  CHIP_STATUS_REPLY chip_status;
-  sendCmd (GET_CHIP_STATUS, NULL, 0, &chip_status, sizeof chip_status);
-  if (chip_status.Current & 0x08)
-    {
-      //printf2 ("Error starting TX:\r\n");
-      //printf2 ("%.8x %.8x %.8x\r\n", chip_status.Pending, chip_status.Current, chip_status.Error);
-    }
-  else
-    {
-      //printf2 ("Radio transmitting carrier on channel %d (%.3fMHz)\r\n", AIS_CHANNELS[channel].itu, AIS_CHANNELS[channel].frequency);
-    }
-#endif
 }
 
 void Transceiver::setTXPower(const pa_params &pwr)
@@ -314,18 +300,6 @@ void Transceiver::startTransmitting()
   // Ensure all data changes in the function have completed, otherwise gRadioState may not actually be modified
   __DSB();
 
-#if 0
-  /*
-   * Check if something went wrong
-   */
-  CHIP_STATUS_REPLY chip_status;
-  sendCmd(GET_CHIP_STATUS, NULL, 0, &chip_status, sizeof chip_status);
-  if ( chip_status.Current & 0x08 ) {
-      printf2("Error starting TX: %.8x %.8x %.8x\r\n", chip_status.Pending, chip_status.Current, chip_status.Error);
-      gRadioState = RADIO_RECEIVING;
-      startReceiving(mChannel);
-  }
-#endif
 }
 
 void Transceiver::startReceiving(VHFChannel channel, bool reconfigGPIOs)
@@ -357,5 +331,5 @@ void Transceiver::reportTXEvent()
   snprintf(e->nmeaBuffer.sentence, sizeof e->nmeaBuffer.sentence, "$PAITX,%c,%s*", AIS_CHANNELS[mTXPacket->channel()].designation, mTXPacket->messageType());
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
-  bsp_signal_tx_event();
+  bsp_tx_led_on();
 }

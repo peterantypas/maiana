@@ -98,7 +98,7 @@ void GPS::enable()
 void GPS::disable()
 {
   bsp_gnss_off();
-  bsp_signal_gps_status(false);
+  bsp_gps_led_off();
 }
 
 void GPS::onRX(char c)
@@ -234,7 +234,7 @@ void GPS::parseSentence(const char *buff)
       if (fields[1].length () < 6 || fields[9].length () < 6)
         {
           // TODO: A loss of fix while the SOTDMA timer is active, MUST stop the timer
-          bsp_signal_gps_status(false);
+          bsp_gps_led_off();
           return;
         }
 
@@ -253,7 +253,7 @@ void GPS::parseSentence(const char *buff)
       // Do we have a fix?
       if (mUTC && sentence.fields()[3].length() > 0 && sentence.fields()[5].length() > 0)
         {
-          bsp_signal_gps_status(true);
+          bsp_gps_led_on();
           mLat = Utils::latitudeFromNMEA (sentence.fields()[3], sentence.fields()[4]);
           mLng = Utils::longitudeFromNMEA (sentence.fields()[5], sentence.fields()[6]);
           mSpeed = atof(sentence.fields()[7].c_str());

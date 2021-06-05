@@ -59,7 +59,7 @@ void RXPacketProcessor::processEvent(const Event &e)
       if (e.rxPacket->isBad() || !e.rxPacket->checkCRC ())
         return;
 
-      bsp_signal_rx_event();
+      bsp_rx_led_on();
 
       if ( e.rxPacket->messageType() == 15 )
         {

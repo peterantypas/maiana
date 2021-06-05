@@ -48,9 +48,14 @@ void bsp_enter_dfu();
 void bsp_gnss_on();
 void bsp_gnss_off();
 bool bsp_is_tx_disabled();
-void bsp_signal_rx_event();
-void bsp_signal_tx_event();
-void bsp_signal_gps_status(bool tracking);
+
+void bsp_rx_led_on();
+void bsp_rx_led_off();
+void bsp_tx_led_on();
+void bsp_tx_led_off();
+void bsp_gps_led_on();
+void bsp_gps_led_off();
+
 
 // Callback for processing UART input (interrupt)
 typedef void(*char_input_cb)(char c);
@@ -67,6 +72,7 @@ void bsp_set_gnss_1pps_callback(irq_callback cb);
 void bsp_set_gnss_sotdma_timer_callback(irq_callback cb);
 void bsp_set_trx_clk_callback(irq_callback cb);
 void bsp_set_rx_clk_callback(irq_callback cb);
+void bsp_set_tick_callback(irq_callback cb);
 
 // Abstraction of the SOTDMA hardware timer
 void bsp_start_sotdma_timer();

@@ -40,9 +40,9 @@ public:
 
   bool writeStationData(const StationData &data);
   bool readStationData(StationData &data);
+  bool isStationDataProvisioned();
   void resetToDefaults();
   void reportStationData();
-
   void reportOTPData();
   const OTPData *readOTP();
   bool writeOTP(const OTPData &data);

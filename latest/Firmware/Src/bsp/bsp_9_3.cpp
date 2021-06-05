@@ -42,6 +42,7 @@ irq_callback ppsCallback = nullptr;
 irq_callback sotdmaCallback = nullptr;
 irq_callback trxClockCallback = nullptr;
 irq_callback rxClockCallback = nullptr;
+irq_callback tickCallback = nullptr;
 
 
 typedef struct
@@ -375,6 +376,36 @@ void bsp_set_tx_mode()
   HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_SET);       // RF MOSFET bias voltage
 }
 
+void bsp_rx_led_on()
+{
+  HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_SET);
+}
+
+void bsp_rx_led_off()
+{
+  HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_RESET);
+}
+
+void bsp_tx_led_on()
+{
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_SET);
+}
+
+void bsp_tx_led_off()
+{
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
+}
+
+void bsp_gps_led_on()
+{
+  HAL_GPIO_WritePin(GNSS_STATE_PORT, GNSS_STATE_PIN, GPIO_PIN_SET);
+}
+
+void bsp_gps_led_off()
+{
+  HAL_GPIO_WritePin(GNSS_STATE_PORT, GNSS_STATE_PIN, GPIO_PIN_RESET);
+}
+
 void bsp_gnss_on()
 {
   HAL_GPIO_WritePin(GNSS_EN_PORT, GNSS_EN_PIN, GPIO_PIN_SET);
@@ -461,6 +492,11 @@ void bsp_set_rx_clk_callback(irq_callback cb)
 void bsp_set_gnss_sotdma_timer_callback(irq_callback cb)
 {
   sotdmaCallback = cb;
+}
+
+void bsp_set_tick_callback(irq_callback cb)
+{
+  tickCallback = cb;
 }
 
 uint32_t bsp_get_sotdma_timer_value()
