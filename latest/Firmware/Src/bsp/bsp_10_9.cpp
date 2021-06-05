@@ -25,9 +25,9 @@
 #include <string.h>
 
 
-#if BOARD_REV==107
+#if BOARD_REV==109
 
-//I2C_HandleTypeDef hi2c1;
+
 SPI_HandleTypeDef hspi1;
 IWDG_HandleTypeDef hiwdg;
 UART_HandleTypeDef huart2;

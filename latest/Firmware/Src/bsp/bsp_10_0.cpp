@@ -27,7 +27,6 @@
 
 #if BOARD_REV==100
 
-//I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
 IWDG_HandleTypeDef hiwdg;
 UART_HandleTypeDef huart2;
@@ -73,11 +72,7 @@ static const GPIO __gpios[] = {
     {SDN2_PORT, {SDN2_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
     {RX_IC_CLK_PORT, {RX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {RX_IC_DATA_PORT, {RX_IC_DATA_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
-    {TX_CTRL_PORT, {TX_CTRL_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
-#if 0
-    {I2C_SCL_PORT, {I2C_SCL_PIN, GPIO_MODE_AF_OD, GPIO_PULLUP, GPIO_SPEED_HIGH, GPIO_AF4_I2C1}, GPIO_PIN_SET},
-    {I2C_SDA_PORT, {I2C_SDA_PIN, GPIO_MODE_AF_OD, GPIO_PULLUP, GPIO_SPEED_HIGH, GPIO_AF4_I2C1}, GPIO_PIN_SET},
-#endif
+    {PA_BIAS_PORT, {PA_BIAS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
 };
 
 extern "C"
@@ -185,35 +180,6 @@ void bsp_hw_init()
   htim2.Init.RepetitionCounter = 0;
 
   HAL_TIM_Base_Init(&htim2);
-
-#if 0
-  // I2C
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x00702991;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-    {
-      Error_Handler(0);
-    }
-  /** Configure Analogue filter
-   */
-  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
-    {
-      Error_Handler(0);
-    }
-  /** Configure Digital filter
-   */
-  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
-    {
-      Error_Handler(0);
-    }
-#endif
 
   // 1PPS signal
   HAL_NVIC_SetPriority(EXTI2_IRQn, 6, 0);
@@ -356,7 +322,7 @@ void HAL_MspInit(void)
 
 void bsp_set_rx_mode()
 {
-  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_RESET);       // Kill the RF MOSFET bias voltage
+  HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_RESET);       // Kill the RF MOSFET bias voltage
 
   GPIO_InitTypeDef gpio;
   gpio.Pin = TRX_IC_DATA_PIN;
@@ -375,7 +341,7 @@ void bsp_set_tx_mode()
   gpio.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(TRX_IC_DATA_PORT, &gpio);
 
-  HAL_GPIO_WritePin(TX_CTRL_PORT, TX_CTRL_PIN, GPIO_PIN_SET);       // RF MOSFET bias voltage
+  HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_SET);       // RF MOSFET bias voltage
 }
 
 void bsp_gnss_on()
@@ -490,33 +456,11 @@ uint8_t bsp_tx_spi_byte(uint8_t data)
 
 bool bsp_erase_station_data()
 {
-#if 0
-  uint8_t b = 0xff;
-  HAL_Delay(1);
-
-  for ( unsigned i = 0; i < sizeof(StationData); ++i )
-    {
-      HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i, 1, &b, 1, 100);
-      HAL_Delay(6);
-    }
-#endif
-
   return false;
 }
 
 bool bsp_save_station_data(const StationData &data)
 {
-#if 0
-  HAL_Delay(1);
-
-  uint8_t *b = (uint8_t*)&data;
-  for ( unsigned i = 0; i < sizeof(StationData); ++i, ++b )
-    {
-      HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i, 1, b, 1, 100);
-      HAL_Delay(6);
-    }
-#endif
-
   return false;
 }
 
@@ -527,13 +471,6 @@ void bsp_reboot()
 
 bool bsp_read_station_data(StationData &data)
 {
-#if 0
-  uint8_t *b = (uint8_t*)&data;
-  for ( unsigned i = 0; i < sizeof(StationData); ++i, ++b )
-    {
-      HAL_I2C_Mem_Read(&hi2c1, EEPROM_ADDRESS, i, 1, b, 1, 100);
-    }
-#endif
   return false;
 }
 

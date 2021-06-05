@@ -23,11 +23,12 @@
 #include "StationData.h"
 #include "config.h"
 
-// Latest board revision is 10.7.0
-// Either modify this header or define a different symbol in the preprocessor to build for a different board
+
+// See the bottom section for the proper BOARD_REV symbol format and either modify this header
+// or define a different symbol in the preprocessor to build for a different board
 
 #ifndef BOARD_REV
-#define BOARD_REV 105
+#define BOARD_REV 109
 #endif
 
 /**
@@ -76,25 +77,17 @@ void bsp_set_sotdma_timer_value(uint32_t v);
 // Encapsulates the SPI bus
 uint8_t bsp_tx_spi_byte(uint8_t b);
 
-// Station data persistence support -- this is absolutely board specific (e.g. flash vs EEPROM)
-bool bsp_erase_station_data();
-bool bsp_save_station_data(const StationData &data);
-bool bsp_read_station_data(StationData &data);
 
-// Board-specific headers go here
+// BSP headers go here
 
-#if BOARD_REV == 52
-#include "bsp_5_2.hpp"
-#elif BOARD_REV == 61
-#include <bsp_6_1.hpp>
-#elif BOARD_REV == 93
+#if BOARD_REV == 93
 #include <bsp_9_3.hpp>
 #elif BOARD_REV == 100
 #include <bsp_10_0.hpp>
 #elif BOARD_REV == 105
 #include <bsp_10_5.hpp>
-#elif BOARD_REV == 107
-#include <bsp_10_7.hpp>
+#elif BOARD_REV == 109
+#include <bsp_10_9.hpp>
 #endif
 
 
