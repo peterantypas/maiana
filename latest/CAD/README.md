@@ -5,8 +5,6 @@ This directory contains Eagle CAD files as well as schematic PDFs and Gerber exp
 The board stackup is good enough for either OSH Park 4-layer, or JLCPCB 4-layer with controlled impedance (JLC2313). 
 
 ### Latest Board
-Latest revision is 10.9.0. It may not be appropriate for DIY builds, as it contains a custom GreenPAK IC and is generally optimized for BOM count.
-
 Revision 10.5.0 is the first board to ship as part of the MAIANA kit.
 
 Revision 10.0.1. adds a few safety features such as ESD protection and isolation between the board's MCU pins and the outside world.
