@@ -39,7 +39,6 @@ void tickCB()
 
 void LEDManager::init()
 {
-  bsp_set_tick_callback(tickCB);
   if ( !Configuration::instance().isStationDataProvisioned() )
     {
       mForceTXLedOff = true;
@@ -47,6 +46,7 @@ void LEDManager::init()
       // This call actually has the opposite effect as it will cause the TX led to be pulled to GND
       bsp_tx_led_on();
     }
+  bsp_set_tick_callback(tickCB);
 }
 
 void LEDManager::onTick()
@@ -64,7 +64,6 @@ void LEDManager::onTick()
       count2 = 1;
       bsp_tx_led_off();
     }
-
 }
 
 

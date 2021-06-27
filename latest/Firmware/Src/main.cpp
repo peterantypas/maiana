@@ -17,7 +17,6 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>
  */
 
-#include "stm32l4xx_hal.h"
 #include "config.h"
 #include "RadioManager.hpp"
 #include "RXPacketProcessor.hpp"
@@ -25,10 +24,8 @@
 #include "TXScheduler.hpp"
 #include "GPS.hpp"
 #include "LEDManager.hpp"
-#include "SystickTimer.hpp"
 #include "CommandProcessor.hpp"
 #include "bsp.hpp"
-#include "printf_serial.h"
 
 
 void jump_to_bootloader()

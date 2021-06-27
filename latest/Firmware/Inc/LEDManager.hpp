@@ -32,7 +32,7 @@ public:
 
 private:
   LEDManager();
-  bool mForceTXLedOff = false;
+  volatile bool mForceTXLedOff = false;
 };
 
 

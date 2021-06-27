@@ -501,7 +501,7 @@ uint8_t bsp_tx_spi_byte(uint8_t data)
   HAL_SPI_TransmitReceive(&hspi1, &data, &result, 1, 2);
   return result;
 }
-
+#if 0
 bool bsp_erase_station_data()
 {
   return false;
@@ -511,16 +511,20 @@ bool bsp_save_station_data(const StationData &data)
 {
   return false;
 }
+#endif
 
 void bsp_reboot()
 {
   NVIC_SystemReset();
 }
 
+#if 0
 bool bsp_read_station_data(StationData &data)
 {
   return false;
 }
+#endif
+
 
 bool bsp_is_tx_disabled()
 {
@@ -545,10 +549,12 @@ void bsp_signal_rx_event()
   HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_SET);
 }
 
+#if 0
 void bsp_signal_tx_event()
 {
   HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_SET);
 }
+#endif
 
 void bsp_signal_gps_status(bool tracking)
 {
@@ -626,13 +632,8 @@ extern "C"
 
   void HAL_SYSTICK_Callback()
   {
-    static int count = 1;
-    if ( count++ % 20 == 0 )
-      {
-        count = 1;
-        HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
-      }
+    if ( tickCallback )
+      tickCallback();
   }
 
 }
