@@ -23,7 +23,6 @@
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
-//#include <diag/Trace.h>
 #include "AISChannels.h"
 
 using namespace std;

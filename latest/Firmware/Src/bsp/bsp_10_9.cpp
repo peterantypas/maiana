@@ -44,7 +44,7 @@ irq_callback trxClockCallback = nullptr;
 irq_callback rxClockCallback = nullptr;
 irq_callback tickCallback = nullptr;
 
-#define EEPROM_ADDRESS  0x50 << 1
+
 
 typedef struct
 {
