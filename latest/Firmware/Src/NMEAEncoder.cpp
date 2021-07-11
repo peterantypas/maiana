@@ -104,7 +104,7 @@ void NMEAEncoder::encode(RXPacket &packet, vector<string> &sentences)
         }
       else
         {
-          sentence[k++] = '0';
+          sentence[k++] = '0' + fillBits;
         }
 
       sentence[k++] = '*';
