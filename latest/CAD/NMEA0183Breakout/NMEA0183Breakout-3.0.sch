@@ -3912,7 +3912,7 @@ Source: www.kingbright.com</description>
 <attributes>
 </attributes>
 <variantdefs>
-<variantdef name="NMEA0183" current="yes"/>
+<variantdef name="NMEA0183"/>
 </variantdefs>
 <classes>
 <class number="0" name="default" width="0" drill="0">
@@ -3998,11 +3998,12 @@ Source: www.kingbright.com</description>
 </part>
 <part name="SUPPLY22" library="SparkFun-Aesthetics" deviceset="5V" device=""/>
 <part name="R9" library="MyPassives" deviceset="RESISTOR" device="0603" value="10k"/>
-<part name="SUPPLY30" library="supply2" deviceset="GND" device=""/>
 <part name="R10" library="MyPassives" deviceset="RESISTOR" device="0603" value="10k"/>
 <part name="SUPPLY31" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY26" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY27" library="supply2" deviceset="GND" device=""/>
+<part name="C6" library="MyPassives" deviceset="CAPACITOR" device="0603" value="1uF"/>
+<part name="SUPPLY30" library="supply2" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -4088,11 +4089,10 @@ Source: www.kingbright.com</description>
 <instance part="SUPPLY22" gate="G$1" x="180.34" y="50.8" smashed="yes">
 <attribute name="VALUE" x="179.324" y="54.356" size="1.778" layer="96"/>
 </instance>
-<instance part="R9" gate="G$1" x="157.48" y="40.64" smashed="yes" rot="R90">
-<attribute name="NAME" x="156.21" y="38.1" size="1.27" layer="95" rot="R90"/>
-<attribute name="VALUE" x="160.02" y="38.1" size="1.27" layer="96" rot="R90"/>
+<instance part="R9" gate="G$1" x="162.56" y="45.72" smashed="yes" rot="R180">
+<attribute name="NAME" x="165.1" y="49.53" size="1.27" layer="95" rot="R180"/>
+<attribute name="VALUE" x="165.1" y="43.18" size="1.27" layer="96" rot="R180"/>
 </instance>
-<instance part="SUPPLY30" gate="GND" x="157.48" y="33.02" smashed="yes"/>
 <instance part="R10" gate="G$1" x="157.48" y="83.82" smashed="yes" rot="R90">
 <attribute name="NAME" x="156.21" y="81.28" size="1.27" layer="95" rot="R90"/>
 <attribute name="VALUE" x="160.02" y="81.28" size="1.27" layer="96" rot="R90"/>
@@ -4100,6 +4100,11 @@ Source: www.kingbright.com</description>
 <instance part="SUPPLY31" gate="GND" x="157.48" y="76.2" smashed="yes"/>
 <instance part="SUPPLY26" gate="GND" x="152.4" y="48.26" smashed="yes"/>
 <instance part="SUPPLY27" gate="GND" x="152.4" y="91.44" smashed="yes"/>
+<instance part="C6" gate="G$1" x="170.18" y="43.18" smashed="yes">
+<attribute name="NAME" x="172.72" y="40.64" size="1.27" layer="95"/>
+<attribute name="VALUE" x="172.72" y="38.1" size="1.27" layer="96"/>
+</instance>
+<instance part="SUPPLY30" gate="GND" x="170.18" y="35.56" smashed="yes"/>
 </instances>
 <busses>
 </busses>
@@ -4162,10 +4167,6 @@ Source: www.kingbright.com</description>
 <pinref part="Q4" gate="G$1" pin="S"/>
 </segment>
 <segment>
-<pinref part="R9" gate="G$1" pin="P$1"/>
-<pinref part="SUPPLY30" gate="GND" pin="GND"/>
-</segment>
-<segment>
 <pinref part="R10" gate="G$1" pin="P$1"/>
 <pinref part="SUPPLY31" gate="GND" pin="GND"/>
 </segment>
@@ -4176,6 +4177,10 @@ Source: www.kingbright.com</description>
 <segment>
 <pinref part="S1" gate="G$1" pin="1"/>
 <pinref part="SUPPLY27" gate="GND" pin="GND"/>
+</segment>
+<segment>
+<pinref part="SUPPLY30" gate="GND" pin="GND"/>
+<pinref part="C6" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="12V" class="0">
@@ -4228,12 +4233,12 @@ Source: www.kingbright.com</description>
 <label x="152.4" y="147.32" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<wire x1="157.48" y1="45.72" x2="180.34" y2="45.72" width="0.1524" layer="91"/>
 <label x="198.12" y="45.72" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="R9" gate="G$1" pin="P$2"/>
-<pinref part="S2" gate="G$1" pin="2"/>
-<wire x1="157.48" y1="50.8" x2="157.48" y2="45.72" width="0.1524" layer="91"/>
-<junction x="157.48" y="45.72"/>
+<pinref part="R9" gate="G$1" pin="P$1"/>
+<wire x1="180.34" y1="45.72" x2="170.18" y2="45.72" width="0.1524" layer="91"/>
+<pinref part="C6" gate="G$1" pin="1"/>
+<wire x1="170.18" y1="45.72" x2="167.64" y2="45.72" width="0.1524" layer="91"/>
+<junction x="170.18" y="45.72"/>
 </segment>
 </net>
 <net name="TRANSPONDER_UART_RX" class="0">
@@ -4337,6 +4342,13 @@ Source: www.kingbright.com</description>
 <pinref part="F1" gate="G$1" pin="1"/>
 <wire x1="58.42" y1="63.5" x2="50.8" y2="63.5" width="0.1524" layer="91"/>
 <pinref part="Q3" gate="G$1" pin="D"/>
+</segment>
+</net>
+<net name="N$5" class="0">
+<segment>
+<pinref part="R9" gate="G$1" pin="P$2"/>
+<pinref part="S2" gate="G$1" pin="2"/>
+<wire x1="157.48" y1="50.8" x2="157.48" y2="45.72" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

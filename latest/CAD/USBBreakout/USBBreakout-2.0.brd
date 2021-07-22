@@ -5593,8 +5593,8 @@
 <wire x1="9.651" y1="12.5" x2="9.5621" y2="12.5" width="0.001" layer="49"/>
 <text x="7.5" y="40.8" size="2.54" layer="26" font="vector" rot="MR0">+</text>
 <text x="10.2" y="40.9" size="2.54" layer="26" font="vector" rot="MR0">-</text>
-<text x="34.8" y="16.8" size="0.8128" layer="25" font="vector" rot="R90">MAIANA Control Box
-Rev 1.3</text>
+<text x="34.8" y="16.8" size="0.8128" layer="25" font="vector" rot="R90">MAIANA USBControl Box
+Rev 2.0</text>
 </plain>
 <libraries>
 <library name="transistor-small-signal">
@@ -6419,10 +6419,15 @@ design rules under a new name.</description>
 <attribute name="PARTNO" value="" x="32.1" y="31.1" size="1.778" layer="27" font="vector" rot="R270" display="off"/>
 <attribute name="VALUE" x="31.8" y="31.9" size="0.6096" layer="27" font="vector" rot="R270"/>
 </element>
-<element name="R6" library="MyPassives" package="0603" value="10k" x="32.1" y="13" smashed="yes" rot="R270">
-<attribute name="NAME" x="32.8" y="14.4" size="0.6096" layer="25" font="vector" rot="R270"/>
-<attribute name="PARTNO" value="" x="32.1" y="13" size="1.778" layer="27" font="vector" rot="R270" display="off"/>
-<attribute name="VALUE" x="32" y="13.6" size="0.6096" layer="27" font="vector" rot="R270"/>
+<element name="R6" library="MyPassives" package="0603" value="10k" x="28.5" y="17.7" smashed="yes" rot="R90">
+<attribute name="NAME" x="28.6" y="19.4" size="0.6096" layer="25" font="vector" rot="R90"/>
+<attribute name="PARTNO" value="" x="28.5" y="17.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="VALUE" x="28.8" y="17.1" size="0.6096" layer="27" font="vector" rot="R90"/>
+</element>
+<element name="C3" library="MyPassives" package="0603" value="1uF" x="30.5" y="17.7" smashed="yes" rot="R270">
+<attribute name="NAME" x="30.8" y="19.4" size="0.6096" layer="25" font="vector" rot="R90"/>
+<attribute name="PARTNO" value="" x="30.5" y="17.7" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VALUE" x="30.2" y="18.3" size="0.6096" layer="27" font="vector" rot="R270"/>
 </element>
 </elements>
 <signals>
@@ -6454,7 +6459,6 @@ design rules under a new name.</description>
 <contactref element="R2" pad="P$2"/>
 <contactref element="ON_OFF" pad="1"/>
 <contactref element="R7" pad="P$2"/>
-<contactref element="R6" pad="P$2"/>
 <polygon width="0.1524" layer="1">
 <vertex x="-1" y="47"/>
 <vertex x="37" y="47"/>
@@ -6469,6 +6473,7 @@ design rules under a new name.</description>
 </polygon>
 <contactref element="J2" pad="5"/>
 <contactref element="SILENT" pad="3"/>
+<contactref element="C3" pad="P$2"/>
 </signal>
 <signal name="TRANSPONDER_UART_TX">
 <contactref element="U$1" pad="7"/>
@@ -6666,11 +6671,6 @@ design rules under a new name.</description>
 <wire x1="7.5714" y1="17.1446875" x2="7.5714" y2="15.5786" width="0.1524" layer="1"/>
 <wire x1="7.5714" y1="15.5786" x2="8.5" y2="14.65" width="0.1524" layer="1"/>
 <wire x1="18.4" y1="27" x2="12.1" y2="20.7" width="0.1524" layer="16"/>
-<contactref element="SILENT" pad="2"/>
-<contactref element="R6" pad="P$1"/>
-<wire x1="31.15" y1="14.75" x2="32.1" y2="13.8" width="0.1524" layer="1"/>
-<wire x1="26" y1="14.75" x2="26.1" y2="14.75" width="0.1524" layer="1"/>
-<wire x1="26.1" y1="14.75" x2="31.15" y2="14.75" width="0.1524" layer="1"/>
 <wire x1="24.75" y1="31.5" x2="25.5" y2="30.75" width="0.1524" layer="1"/>
 <wire x1="25.5" y1="30.75" x2="25.5" y2="30.5" width="0.1524" layer="1"/>
 <via x="25.5" y="30.5" extent="1-16" drill="0.3"/>
@@ -6678,8 +6678,11 @@ design rules under a new name.</description>
 <wire x1="25.5" y1="18.7" x2="26" y2="18.2" width="0.1524" layer="16"/>
 <wire x1="26" y1="18.2" x2="26" y2="16.8" width="0.1524" layer="16"/>
 <via x="26" y="16.8" extent="1-16" drill="0.3"/>
-<wire x1="26" y1="16.8" x2="26" y2="14.85" width="0.1524" layer="1"/>
-<wire x1="26" y1="14.85" x2="26.1" y2="14.75" width="0.1524" layer="1"/>
+<contactref element="R6" pad="P$2"/>
+<contactref element="C3" pad="P$1"/>
+<wire x1="28.5" y1="18.5" x2="30.5" y2="18.5" width="0.1524" layer="1"/>
+<wire x1="26" y1="16.8" x2="27.7" y2="18.5" width="0.1524" layer="1"/>
+<wire x1="27.7" y1="18.5" x2="28.5" y2="18.5" width="0.1524" layer="1"/>
 </signal>
 <signal name="GPS_STATUS">
 <contactref element="J3" pad="P$4"/>
@@ -6771,6 +6774,13 @@ design rules under a new name.</description>
 <wire x1="22.975775" y1="29.5928" x2="19.5928" y2="29.5928" width="0.1524" layer="1"/>
 <wire x1="27.05" y1="29.7" x2="23.082975" y2="29.7" width="0.1524" layer="1"/>
 <wire x1="18.8" y1="28.8" x2="17.6" y2="28.8" width="0.1524" layer="1"/>
+</signal>
+<signal name="N$5">
+<contactref element="SILENT" pad="2"/>
+<contactref element="R6" pad="P$1"/>
+<wire x1="28.5" y1="16.9" x2="28.5" y2="16" width="0.1524" layer="1"/>
+<wire x1="28.5" y1="16" x2="27.25" y2="14.75" width="0.1524" layer="1"/>
+<wire x1="27.25" y1="14.75" x2="26" y2="14.75" width="0.1524" layer="1"/>
 </signal>
 </signals>
 <mfgpreviewcolors>

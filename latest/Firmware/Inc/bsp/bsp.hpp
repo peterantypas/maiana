@@ -28,7 +28,7 @@
 // or define a different symbol in the preprocessor to build for a different board
 
 #ifndef BOARD_REV
-#define BOARD_REV 105
+#define BOARD_REV 109
 #endif
 
 /**

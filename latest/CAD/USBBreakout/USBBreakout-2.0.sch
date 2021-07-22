@@ -3279,9 +3279,10 @@ Source: www.kingbright.com</description>
 <part name="SUPPLY22" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="R7" library="MyPassives" deviceset="RESISTOR" device="0603" value="10k"/>
 <part name="SUPPLY26" library="supply2" deviceset="GND" device=""/>
-<part name="R6" library="MyPassives" deviceset="RESISTOR" device="0603" value="10k"/>
-<part name="SUPPLY27" library="supply2" deviceset="GND" device=""/>
 <part name="SUPPLY9" library="supply2" deviceset="GND" device=""/>
+<part name="R6" library="MyPassives" deviceset="RESISTOR" device="0603" value="10k"/>
+<part name="C3" library="MyPassives" deviceset="CAPACITOR" device="0603" value="1uF"/>
+<part name="SUPPLY14" library="supply2" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -3763,12 +3764,16 @@ current limiting resistors</text>
 <attribute name="VALUE" x="68.58" y="129.54" size="1.27" layer="96" rot="R180"/>
 </instance>
 <instance part="SUPPLY26" gate="GND" x="71.12" y="121.92" smashed="yes" rot="MR0"/>
-<instance part="R6" gate="G$1" x="73.66" y="106.68" smashed="yes" rot="R270">
-<attribute name="NAME" x="71.12" y="109.22" size="1.27" layer="95" rot="R180"/>
-<attribute name="VALUE" x="71.12" y="106.68" size="1.27" layer="96" rot="R180"/>
-</instance>
-<instance part="SUPPLY27" gate="GND" x="73.66" y="99.06" smashed="yes" rot="MR0"/>
 <instance part="SUPPLY9" gate="GND" x="60.96" y="99.06" smashed="yes" rot="MR0"/>
+<instance part="R6" gate="G$1" x="66.04" y="111.76" smashed="yes">
+<attribute name="NAME" x="63.5" y="114.3" size="1.27" layer="95"/>
+<attribute name="VALUE" x="63.5" y="109.22" size="1.27" layer="96"/>
+</instance>
+<instance part="C3" gate="G$1" x="73.66" y="109.22" smashed="yes">
+<attribute name="NAME" x="76.2" y="106.68" size="1.27" layer="95"/>
+<attribute name="VALUE" x="76.2" y="104.14" size="1.27" layer="96"/>
+</instance>
+<instance part="SUPPLY14" gate="GND" x="73.66" y="101.6" smashed="yes" rot="MR0"/>
 </instances>
 <busses>
 </busses>
@@ -3793,13 +3798,13 @@ current limiting resistors</text>
 <pinref part="SUPPLY26" gate="GND" pin="GND"/>
 </segment>
 <segment>
-<pinref part="R6" gate="G$1" pin="P$2"/>
-<pinref part="SUPPLY27" gate="GND" pin="GND"/>
-</segment>
-<segment>
 <pinref part="SILENT" gate="A" pin="3"/>
 <pinref part="SUPPLY9" gate="GND" pin="GND"/>
 <wire x1="59.69" y1="101.6" x2="60.96" y2="101.6" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="C3" gate="G$1" pin="2"/>
+<pinref part="SUPPLY14" gate="GND" pin="GND"/>
 </segment>
 </net>
 <net name="AIS_TX_EVENT" class="0">
@@ -3819,12 +3824,12 @@ current limiting resistors</text>
 <label x="48.26" y="43.18" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<pinref part="SILENT" gate="A" pin="2"/>
-<wire x1="50.8" y1="111.76" x2="73.66" y2="111.76" width="0.1524" layer="91"/>
-<pinref part="R6" gate="G$1" pin="P$1"/>
+<wire x1="71.12" y1="111.76" x2="73.66" y2="111.76" width="0.1524" layer="91"/>
+<label x="99.06" y="111.76" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="R6" gate="G$1" pin="P$2"/>
+<pinref part="C3" gate="G$1" pin="1"/>
 <wire x1="73.66" y1="111.76" x2="81.28" y2="111.76" width="0.1524" layer="91"/>
 <junction x="73.66" y="111.76"/>
-<label x="99.06" y="111.76" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
@@ -3906,6 +3911,13 @@ current limiting resistors</text>
 <label x="60.96" y="124.46" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
+<net name="N$5" class="0">
+<segment>
+<pinref part="SILENT" gate="A" pin="2"/>
+<wire x1="50.8" y1="111.76" x2="60.96" y2="111.76" width="0.1524" layer="91"/>
+<pinref part="R6" gate="G$1" pin="P$1"/>
+</segment>
+</net>
 </nets>
 </sheet>
 </sheets>
@@ -3914,7 +3926,7 @@ current limiting resistors</text>
 <approved hash="208,1,78.74,121.92,3.3V,sup,,,,"/>
 <approved hash="208,2,48.26,53.34,3.3V,sup,,,,"/>
 <approved hash="208,2,200.66,137.16,3.3V,sup,,,,"/>
-<approved hash="208,2,60.96,101.6,3.3V,sup,,,,"/>
+<approved hash="208,2,38.1,101.6,3.3V,sup,,,,"/>
 <approved hash="113,1,130.071,89.431,FRAME1,,,,,"/>
 <approved hash="113,2,130.071,89.431,FRAME2,,,,,"/>
 <approved hash="113,2,89.4334,39.37,TX,,,,,"/>
