@@ -19,7 +19,7 @@ The LED "status" signals are now current-limited open drain outputs via N-Channe
 with any voltage up to 16V without risk of damage to the MCU.
 
 ### Breakouts
-These directories contain Eagle and FreeCAD files for the NMEA0183 and USB breakout enclosures. Their front panels are PCBs so gerbers are
+These directories contain Eagle and FreeCAD files for the NMEA0183, NMEA 2000 and USB adapters. Their front panels are PCBs so gerbers are
 here as well.
 
 ### Older Boards
