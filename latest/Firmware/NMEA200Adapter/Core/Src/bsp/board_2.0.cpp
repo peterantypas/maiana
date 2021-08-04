@@ -16,9 +16,6 @@
 #define NMEA_IN_PORT              GPIOA
 #define NMEA_IN_PIN               GPIO_PIN_3
 
-//#define CAN_RST_PORT              GPIOA
-//#define CAN_RST_PIN               GPIO_PIN_4
-
 #define SCK_PORT                  GPIOA
 #define SCK_PIN                   GPIO_PIN_5
 
@@ -34,11 +31,8 @@
 #define UART_RX_PORT              GPIOA
 #define UART_RX_PIN               GPIO_PIN_10
 
-//#define CAN_IRQ_PORT              GPIOB
-//#define CAN_IRQ_PIN               GPIO_PIN_0
-
 #define GREENPAK_RESET_PORT       GPIOB
-#define GREENPAK_RESET_PIN        GPIO_PIN_4
+#define GREENPAK_RESET_PIN        GPIO_PIN_3
 
 #define CONFIG_ADDRESS            0x0801F800
 #define CONFIG_MAGIC              0x313DEEF6
@@ -74,8 +68,6 @@ static const GPIO __gpios[] = {
     {UART_TX_PORT, {UART_TX_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
     {UART_RX_PORT, {UART_RX_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
     {NMEA_IN_PORT, {NMEA_IN_PIN, GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_SPEED_LOW, GPIO_AF7_USART2}, GPIO_PIN_RESET},
-    //{CAN_RST_PORT, {CAN_RST_PIN, GPIO_MODE_OUTPUT_OD, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
-    //{CAN_IRQ_PORT, {CAN_IRQ_PIN, GPIO_MODE_IT_FALLING, GPIO_PULLUP, GPIO_SPEED_HIGH, 0}, GPIO_PIN_RESET},
     {GREENPAK_RESET_PORT, {GREENPAK_RESET_PIN, GPIO_MODE_OUTPUT_OD, GPIO_SPEED_MEDIUM, 0}, GPIO_PIN_SET},
 };
 
@@ -377,19 +369,6 @@ extern "C" {
   {
     HAL_IncTick();
   }
-
-#if 0
-  void EXTI0_IRQHandler(void)
-  {
-    if ( __HAL_GPIO_EXTI_GET_IT(CAN_RST_PIN) != RESET )
-      {
-        __HAL_GPIO_EXTI_CLEAR_IT(CAN_RST_PIN);
-        if ( can_irq )
-          can_irq();
-      }
-
-  }
-#endif
 
 }
 
