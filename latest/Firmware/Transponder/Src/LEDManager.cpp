@@ -37,6 +37,8 @@ void tickCB()
   LEDManager::instance().onTick();
 }
 
+static bool mForceTXLedOff = false;
+
 void LEDManager::init()
 {
   if ( !Configuration::instance().isStationDataProvisioned() )
@@ -58,6 +60,7 @@ void LEDManager::onTick()
       count1 = 1;
       bsp_rx_led_off();
     }
+
 
   if ( !mForceTXLedOff && count2++ == 250 )
     {

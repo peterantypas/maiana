@@ -20,15 +20,14 @@
 #ifndef INC_BSP_HPP_
 #define INC_BSP_HPP_
 
-#include "StationData.h"
-#include "config.h"
+#include <stdint.h>
 
 
 // See the bottom section for the proper BOARD_REV symbol format and either modify this header
 // or define a different symbol in the preprocessor to build for a different board
 
 #ifndef BOARD_REV
-#define BOARD_REV 109
+#define BOARD_REV 110
 #endif
 
 /**
@@ -94,6 +93,8 @@ uint8_t bsp_tx_spi_byte(uint8_t b);
 #include <bsp_10_5.hpp>
 #elif BOARD_REV == 109
 #include <bsp_10_9.hpp>
+#elif BOARD_REV == 110
+#include <bsp_11_0.hpp>
 #endif
 
 

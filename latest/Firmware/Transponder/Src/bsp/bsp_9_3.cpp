@@ -630,13 +630,8 @@ extern "C"
 
   void HAL_SYSTICK_Callback()
   {
-    static int count = 1;
-    if ( count++ % 20 == 0 )
-      {
-        count = 1;
-        HAL_GPIO_WritePin(RX_EVT_PORT, RX_EVT_PIN, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
-      }
+    if ( tickCallback )
+      tickCallback();
   }
 
 }
