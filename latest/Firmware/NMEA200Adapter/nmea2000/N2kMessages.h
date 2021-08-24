@@ -1233,12 +1233,12 @@ void SetN2kPGN129794(tN2kMsg &N2kMsg, uint8_t MessageID, tN2kAISRepeat Repeat, u
                      uint32_t IMOnumber, const char *Callsign, const char *Name, uint8_t VesselType, double Length,
                      double Beam, double PosRefStbd, double PosRefBow, uint16_t ETAdate, double ETAtime,
                      double Draught, const char *Destination, tN2kAISVersion AISversion, tN2kGNSStype GNSStype,
-                     tN2kAISDTE DTE, tN2kAISTranceiverInfo AISinfo);
+                     tN2kAISDTE DTE, tN2kAISTranceiverInfo AISinfo = N2kaisti_Reserved);
 inline void SetN2kAISClassAStatic(tN2kMsg &N2kMsg, uint8_t MessageID, tN2kAISRepeat Repeat, uint32_t UserID,
                                   uint32_t IMOnumber, const char *Callsign, const char *Name, uint8_t VesselType, double Length,
                                   double Beam, double PosRefStbd, double PosRefBow, uint16_t ETAdate, double ETAtime,
                                   double Draught, const char *Destination, tN2kAISVersion AISversion, tN2kGNSStype GNSStype,
-                                  tN2kAISDTE DTE, tN2kAISTranceiverInfo AISinfo) {
+                                  tN2kAISDTE DTE, tN2kAISTranceiverInfo AISinfo = N2kaisti_Reserved) {
   SetN2kPGN129794(N2kMsg, MessageID, Repeat, UserID, IMOnumber, Callsign, Name, VesselType, Length,
                   Beam, PosRefStbd, PosRefBow, ETAdate, ETAtime, Draught, Destination, AISversion, GNSStype, DTE, AISinfo);
 }
@@ -1580,7 +1580,7 @@ void SetN2kPGN129041(tN2kMsg &N2kMsg, uint8_t MessageID, tN2kAISRepeat Repeat, u
                      tN2kAtoNType type, const char *Name,
                      double Length, double Beam, double PosRefStbd, double PosRefBow,
                      bool OffPos, bool Virtual, bool AssignedMode, tN2kGNSStype GNSSType,
-                     tN2kAISTranceiverInfo AISinfo);
+                     tN2kAISTranceiverInfo AISinfo = N2kaisti_Reserved);
 
 bool ParseN2kPGN129041(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat &Repeat, uint32_t &UserID,
                        double &Latitude, double &Longitude, bool &Accuracy, bool &RAIM,

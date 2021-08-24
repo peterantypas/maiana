@@ -74,6 +74,8 @@ static const GPIO __gpios[] = {
     {RX_IC_CLK_PORT, {RX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {RX_IC_DATA_PORT, {RX_IC_DATA_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {PA_BIAS_PORT, {PA_BIAS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    {LNA_PWR_PORT, {LNA_PWR_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    {RFSW_CTRL_PORT, {RFSW_CTRL_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
 };
 
 extern "C"
@@ -197,8 +199,6 @@ void bsp_hw_init()
   HAL_NVIC_SetPriority(EXTI3_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
-  // This is our HAL tick timer now
-  HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 0, 0);
 }
 
 
@@ -273,12 +273,11 @@ void gpio_pin_init()
   for ( unsigned i = 0; i < sizeof __gpios / sizeof(GPIO); ++i )
     {
       const GPIO* io = &__gpios[i];
-      HAL_GPIO_Init(io->port, (GPIO_InitTypeDef*)&io->gpio);
       if ( io->gpio.Mode == GPIO_MODE_OUTPUT_PP || io->gpio.Mode == GPIO_MODE_OUTPUT_OD )
         {
           HAL_GPIO_WritePin(io->port, io->gpio.Pin, io->init);
         }
-
+      HAL_GPIO_Init(io->port, (GPIO_InitTypeDef*)&io->gpio);
     }
 }
 
@@ -321,13 +320,15 @@ void HAL_MspInit(void)
 void bsp_set_rx_mode()
 {
   HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_RESET);       // Kill the RF MOSFET bias voltage
-
   GPIO_InitTypeDef gpio;
   gpio.Pin = TRX_IC_DATA_PIN;
   gpio.Mode = GPIO_MODE_INPUT;
   gpio.Speed = GPIO_SPEED_FREQ_LOW;
   gpio.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(TRX_IC_DATA_PORT, &gpio);
+
+  HAL_GPIO_WritePin(LNA_PWR_PORT, LNA_PWR_PIN, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(RFSW_CTRL_PORT, RFSW_CTRL_PIN, GPIO_PIN_RESET);
 }
 
 void bsp_rx_led_on()
@@ -363,6 +364,9 @@ void bsp_gps_led_off()
 
 void bsp_set_tx_mode()
 {
+  HAL_GPIO_WritePin(LNA_PWR_PORT, LNA_PWR_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(RFSW_CTRL_PORT, RFSW_CTRL_PIN, GPIO_PIN_SET);
+
   GPIO_InitTypeDef gpio;
   gpio.Pin = TRX_IC_DATA_PIN;
   gpio.Mode = GPIO_MODE_OUTPUT_PP;

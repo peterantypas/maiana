@@ -1428,8 +1428,6 @@ void SetN2kPGN129810(tN2kMsg &N2kMsg, uint8_t MessageID, tN2kAISRepeat Repeat, u
     N2kMsg.Add2ByteUDouble(PosRefBow, 0.1);
     N2kMsg.Add4ByteUInt(MothershipID);
     N2kMsg.AddByte(0xff);  // Reserved
-
-    // TODO: Add AIS Transceiver Info here!!!
     N2kMsg.AddByte(AISInfo);
 }
 
@@ -1758,7 +1756,7 @@ bool ParseN2kPGN129041(const tN2kMsg &N2kMsg, uint8_t &MessageID, tN2kAISRepeat 
                        bool &OffPos, bool &Virtual, bool &AssignedMode, tN2kGNSStype &GNSSType,
                        tN2kAISTranceiverInfo &AISinfo)
 {
-  if (N2kMsg.PGN != 129049L) return false;
+  if (N2kMsg.PGN != 129041L) return false;
 
   uint8_t vb;
   int Index = 0;
