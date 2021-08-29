@@ -378,13 +378,10 @@ void NMEA0183Consumer::processAISBody(tN2kAISTranceiverInfo aisInfo, const strin
         if ( mN2K->SendMsg(n2kmsg) )
           {
             printf("Sent PGN129794:\r\n");
-#if 0
-            for ( int i = 0; i < n2kmsg.DataLen; ++i )
-              {
-                printf("%.2x ", n2kmsg.Data[i]);
-              }
-            printf("\r\n\r\n");
-#endif
+          }
+        else
+          {
+            printf("Failed to send PGN 129794\r\n");
           }
       }
       break;
@@ -418,6 +415,10 @@ void NMEA0183Consumer::processAISBody(tN2kAISTranceiverInfo aisInfo, const strin
           {
             printf("Sent PGN129039\r\n");
           }
+        else
+          {
+            printf("Failed to send PGN 129039\r\n");
+          }
       }
       break;
     case 21:
@@ -449,7 +450,11 @@ void NMEA0183Consumer::processAISBody(tN2kAISTranceiverInfo aisInfo, const strin
 
         if ( mN2K->SendMsg(n2kmsg) )
           {
-            printf("Sent PGN 129041\r\n");
+            printf("Sent PGN129041\r\n");
+          }
+        else
+          {
+            printf("Failed to send PGN 129041\r\n");
           }
       }
       break;
@@ -492,10 +497,13 @@ void NMEA0183Consumer::processAISBody(tN2kAISTranceiverInfo aisInfo, const strin
             if ( m->part_num == 0 )
               {
                 printf("Sent PGN129809\r\n");
-                printf("Bits: %d, Padding: %d, Name: %s\r\n", m->numBits(), bitPadding, m->name.c_str());
               }
             else
               printf("Sent PGN129810\r\n");
+          }
+        else
+          {
+            printf("Failed to send PGN129809/810\r\n");
           }
       }
       break;

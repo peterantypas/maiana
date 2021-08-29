@@ -76,6 +76,7 @@ SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 TIM_HandleTypeDef htim6;
+IWDG_HandleTypeDef hiwdg;
 
 void gpio_pin_init();
 void SystemClock_Config(void);
@@ -88,6 +89,25 @@ void bsp_set_uart_irq_cb(uart_irq_callback cb)
 {
   usart_irq = cb;
 }
+
+void bsp_start_wdt()
+{
+  IWDG_InitTypeDef iwdg;
+  iwdg.Prescaler = IWDG_PRESCALER_8;
+  iwdg.Reload = 0x0fff;
+  iwdg.Window = 0x0fff;
+
+  hiwdg.Instance = IWDG;
+  hiwdg.Init = iwdg;
+
+  HAL_IWDG_Init(&hiwdg);
+}
+
+void bsp_refresh_wdt()
+{
+  HAL_IWDG_Refresh(&hiwdg);
+}
+
 
 void bsp_set_can_irq_cb(can_irq_callback cb)
 {
@@ -391,8 +411,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
    * in the RCC_OscInitTypeDef structure.
    */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;

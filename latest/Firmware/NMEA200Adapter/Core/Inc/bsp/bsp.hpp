@@ -26,6 +26,9 @@ void delay(uint32_t ms);
 
 void bsp_delay_us(uint32_t us);
 
+void bsp_start_wdt();
+void bsp_refresh_wdt();
+
 // IRQ setup
 bool bsp_is_isr();
 typedef void(*can_irq_callback)();
@@ -36,6 +39,7 @@ void bsp_set_uart_irq_cb(uart_irq_callback cb);
 // Persistence
 uint8_t bsp_last_can_address();
 void bsp_save_can_address(uint8_t);
+
 
 
 #endif /* INC_BSP_BSP_HPP_ */

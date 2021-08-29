@@ -35,6 +35,25 @@
 #define CAN_IRQ_PIN               GPIO_PIN_0
 
 
+#define CONFIG_ADDRESS            0x0801F800
+#define CONFIG_MAGIC              0x313DEEF6
+
+typedef struct
+{
+  uint32_t magic;
+  uint32_t address;
+} CANConfig;
+
+
+typedef union
+{
+  CANConfig can;
+  uint64_t dw[128];
+} ConfigPage;
+
+static ConfigPage __page;
+
+
 typedef struct
 {
   GPIO_TypeDef *port;
@@ -57,6 +76,7 @@ static const GPIO __gpios[] = {
 SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
 TIM_HandleTypeDef htim6;
+IWDG_HandleTypeDef hiwdg;
 
 void gpio_pin_init();
 void SystemClock_Config(void);
@@ -176,6 +196,25 @@ void gpio_pin_init()
     }
 }
 
+void bsp_start_wdt()
+{
+  IWDG_InitTypeDef iwdg;
+  iwdg.Prescaler = IWDG_PRESCALER_8;
+  iwdg.Reload = 0x0fff;
+  iwdg.Window = 0x0fff;
+
+  hiwdg.Instance = IWDG;
+  hiwdg.Init = iwdg;
+
+  HAL_IWDG_Init(&hiwdg);
+}
+
+void bsp_refresh_wdt()
+{
+  HAL_IWDG_Refresh(&hiwdg);
+}
+
+
 bool bsp_is_isr()
 {
   return __get_IPSR();
@@ -206,6 +245,59 @@ void bsp_delay_us(uint32_t us)
     ;
   HAL_TIM_Base_Stop(&htim6);
 }
+
+uint8_t bsp_last_can_address()
+{
+  ConfigPage *cfg = (ConfigPage*)CONFIG_ADDRESS;
+  if ( cfg->can.magic == CONFIG_MAGIC )
+    return cfg->can.address & 0xff;
+
+  return 15;
+}
+
+bool bsp_erase_config_page()
+{
+  uint32_t page = (CONFIG_ADDRESS - FLASH_BASE) / FLASH_PAGE_SIZE;
+
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+  HAL_FLASH_Unlock();
+
+  FLASH_EraseInitTypeDef erase;
+  erase.TypeErase = FLASH_TYPEERASE_PAGES;
+  erase.Banks     = FLASH_BANK_1;
+  erase.Page      = page;
+  erase.NbPages   = 1;
+
+  uint32_t errPage;
+  HAL_StatusTypeDef status = HAL_FLASHEx_Erase(&erase, &errPage);
+  if ( status != HAL_OK )
+    {
+      HAL_FLASH_Lock();
+      return false;
+    }
+
+  HAL_FLASH_Lock();
+  return true;
+}
+
+void bsp_save_can_address(uint8_t address)
+{
+  __page.can.magic = CONFIG_MAGIC;
+  __page.can.address = address;
+
+  uint32_t pageAddress = CONFIG_ADDRESS;
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+  HAL_FLASH_Unlock();
+  HAL_StatusTypeDef status = HAL_OK;
+  for ( uint32_t dw = 0; dw < sizeof __page/8; ++dw )
+    {
+      status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, pageAddress + dw*8, __page.dw[dw]);
+      if ( status != HAL_OK )
+        break;
+    }
+  HAL_FLASH_Lock();
+}
+
 
 extern "C" {
 
@@ -280,8 +372,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
    * in the RCC_OscInitTypeDef structure.
    */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
