@@ -6,6 +6,9 @@ The board stackup is good enough for either OSH Park 4-layer, or JLCPCB 4-layer 
 
 
 ### Latest Board
+
+Revision 11.0.0 does away with the GreenPAK entirely. When firmware needs to turn the GNSS off, it simply cuts off its main power while maintaining power to its RTC. This is not meant to be used under normal operation, but the feature is necessary to support firmware updates to the main unit.
+
 Revision 10.9.0 is a BOM-count optimized design that introduces a custom GreenPAK IC for buffering the GNSS signals, as well as a new
 antenna switch which is even smaller than the previous one.
 
