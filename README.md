@@ -2,21 +2,23 @@
 
 I started this project around 2015 with the intention of experimenting and eventually building something for my own boat.
 I was not impressed with commercial AIS class B transponders. They seemed bloated, expensive and some of them
-were particularly power-hungry. So I set out to create a lean and mean design.
+were particularly power-hungry. Also, they required at least two external RF cables, one for VHF and one for GPS. So I set out to create a lean and mean design. I must say that I'm quite pleased with the results. Here are some examples of MAIANA&trade; installations:
 
-In 2018 I installed this system on my boat. It is still working fine after 2 years.
+<img src="images/InstallOnSolarPanels.jpg" height="320"/><img src="images/InstallOnRadarDome.jpg" height="320"/><img src="images/InstallOnSternRail.jpg" height="320"/>
 
-![Image](images/UnitExterior.jpg?raw=True "Exterior View")
+The main difference between MAIANA&trade; and every commercial transponder is that it's a standalone unit. It contains all of its
+radios and antennas and thus only needs a power and data connection to the cabin. This requires an RJ45 (Ethernet) cable which runs from the outside unit to one of these breakout boxes down below:
 
-I have refined the design quite a bit, and it now has an official name, "Maiana", borrowed from an atoll in the Kiribati islands. I do intend to trademark this, in the same way that "Arduino" is a trademark that identifies the original rather than the many clones which inevitably emerged.
 
-## Overall description
 
-### Hardware
 
-The main difference between this design and nearly every commercial transponder is that it's a standalone unit. It contains all of its
-radios and antennas and thus only needs a power and data cable to connect to the cabin. The PCBA is only 1" wide so it fits inside
-1" schedule 40 PVC pipe, which I used as the antenna base. The GPS receiver and antenna are on the board:
+## Hardware Design
+The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is simply the most inexpensive UV resistant material available, and it looks great to boot.
+
+The VHF antenna whip is built using an epoxy would filament tube coated with a high grade, US-made irradiated polyolefin ("heat shrink") tubing. The company that makes this tubing (and helped me with a design challenge) also built the landing gear for NASA's Ingenuity helicopter, currently flying on Mars. The bottomline is that unlike typical fiberglass antenna masts you might see around (or have on your boat), this antenna is not going to degrade and "blossom" under continuous sun exposure.
+
+
+The transponder circuit is inside this case, built on a 24mm wide PCBA. The GPS receiver and antenna are on the board:
 
 ![Image](images/transponder-9.3.jpg?raw=True "PCBA version 9.3")
 
