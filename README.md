@@ -51,8 +51,9 @@ The main board draws about 30mA from 12V in RX mode, and spikes up to 600mA duri
 
 ### Software
 
-The firmware is an Eclipse CDT project that you should be able to import and build. The code is C++ with a BSP abstraction layer so you need to tweak bsp/bsp.hpp or define one of
-the required symbols in the preprocessor to build for different board revisions. It contains snippets of STM32Cube generated code, but is does not follow ST's spaghetti structure.
+The transponder firmware is an [Eclipse CDT project](latest/Firmware/Transponder) that you could clone and build. The code is C++ with a BSP abstraction layer so you need to tweak bsp/bsp.hpp or define one of the required symbols in the preprocessor to build for different board revisions. It contains snippets of STM32Cube generated code, but is does not follow ST's spaghetti structure.
+
+The NMEA2000 adapter also has its own separate [firmware project](latest/Firmware/NMEA2000Adapter).
 
 ### CAD
 
