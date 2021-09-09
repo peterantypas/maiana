@@ -25,12 +25,3 @@ with any voltage up to 16V without risk of damage to the MCU.
 These directories contain Eagle and FreeCAD files for the NMEA0183, NMEA 2000 and USB adapters. Their front panels are PCBs so gerbers are
 here as well.
 
-### Older Boards
-Revision 9.3.0 is not bad. I built it at JLCPCB with the exact gerber files I posted here. It is fully functional and performed as expected,
-with some caveats (no ESD protection, no reverse polarity protection)
-
-The 9.3 board adds 3 "status" signals that can drive LEDs (with appropriate current limiting resistors!). These are optional.
-
-All boards prior to 9.3 have been removed from the repository.
-
-
