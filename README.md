@@ -6,44 +6,42 @@ were particularly power-hungry. Also, they required at least two external RF cab
 
 <img src="images/InstallOnSolarPanels.jpg" height="320"/><img src="images/InstallOnRadarDome.jpg" height="320"/><img src="images/InstallOnSternRail.jpg" height="320"/>
 
-The main difference between MAIANA&trade; and every commercial transponder is that it's a standalone unit. It contains all of its
-radios and antennas and thus only needs a power and data connection to the cabin. This requires an RJ45 (Ethernet) cable which runs from the outside unit to one of these breakout boxes down below:
+The main difference between MAIANA&trade; and every commercial transponder is that it's a self-contained unit, and thus its performance is 100% repeatable. With this design, we don't have to worry about a worn out coax going to the masthead via an antenna switch of unknown attenuation, connected to a whip antenna of unknown pedigree. The MAIANA&trade; *system* delivers a consistent performance, with an SWR of 1.24:1 or better:
+
+
+
+
+
+e cabin. This requires an RJ45 (Ethernet) cable which runs from the outside unit to one of these breakout boxes down below:
 
 <img src="images/usbadapter.jpg" height="420"/><img src="images/nmea0183adapter.jpg" height="420"/><img src="images/nmea2000adapter.jpg" height="420"/>
 
 
 ## Hardware Design
-The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is simply the most inexpensive UV resistant material available, and it looks great to boot.
 
-The VHF antenna whip is built using an epoxy would filament tube coated with a high grade, US-made irradiated polyolefin ("heat shrink") tubing. The company that makes this tubing (and helped me with a design challenge) also built the landing gear for NASA's Ingenuity helicopter, currently flying on Mars. The bottomline is that unlike typical fiberglass antenna masts you might see around (or have on your boat), this antenna is not going to degrade and "blossom" under continuous sun exposure.
+### Mechanical
+The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is simply the most inexpensive UV resistant material available, and it looks great top!
+
+The VHF antenna whip is built using an epoxy would filament tube coated with high grade US-made irradiated polyolefin ("heat shrink") tubing. The company that makes this tubing (and helped me with this design challenge) also built the landing gear for NASA's Ingenuity helicopter, currently flying on Mars. They definitely understand how to deal with harsh environments. The bottomline is that unlike typical fiberglass antenna masts you might see around (or have on your boat already), this antenna is not going to degrade and "blossom" under continuous sun exposure.
+
+The entire outdoor assembly is held together by the same high grade heat shrink tubing. The main water seal is formed by heat shrinking the tube around a specially designed 3D printed cap made of PLA. This part naturally softens when heated, and because it is compressed by the heat shrink tubing, it forms a permanent, tight colar around the antenna tube. A layer of clear heat shrink in the interior forms a secondary water seal encompassing the lower part of the antenna and the PCB.
+
+The unit can be opened and serviced by (carefully) cutting through the heat shrink tubing with a knife, then resealing with the same material and method as before.
 
 
-The transponder circuit is inside this case, built on a 24mm wide PCBA. The GPS receiver and antenna are on the board:
+### Electrical
+The transponder circuit is inside the antenna case. It's a 24mm x 84mm 4-layer PCB:
 
-![Image](images/transponder-9.3.jpg?raw=True "PCBA version 9.3")
+![Image](images/board-11.jpg?raw=True)
 
-In its final form, the main unit looks like this:
+The core design is based on two Silicon Labs "EZRadio Pro" series ICs. The first IC is a transceiver and the second one is a full-time receiver. Currently, due to the global chip shortage, these ICs are impossible to source. I have secured a small quantity because I placed a direct order with their main US distributor last year, when their lead time was about 16 weeks. It is now 40+ weeks.
 
-![Image](images/Maiana-FinalAssembly.jpg?raw=True "Complete unit")
-
-As you can see, the complete design is intended for mounting on 1" railing, similar to these antennas here:
-
-![Image](images/Antenna-Example1.jpg?raw=True "Example 1")
-![Image](images/Antenna-Example2.jpg?raw=True "Example 2")
-![Image](images/Antenna-Example3.jpg?raw=True "Example 3")
-
-In one of those examples, MAIANA&trade; would take the place of the GPS antenna and add AIS functionality.
-
-The core design is based on two Silicon Labs "EZRadio Pro" series ICs. The first IC is a transceiver and the second one is a full-time receiver. For the transceiver, I originally used the Si4463. For the receiver, either the 4463 or the 4362 work. I'm in the process of evaluating alternatives to the Si4463 to see if I can get enough power output with chips that are currently available, namely the 4460 and 4467. See [this discussion](https://github.com/peterantypas/ais_transponder/discussions/24) for more details on that effort.
-
-The MCU is a STM32L4x2 series microcontroller (412 and 432 supported). I chose this series because the 80MHz clock speed allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is crucial, as a transponder is a hard real-time application that relies on interrupts for precise timing of the transmit function, so SPI latency must be minimized.
+The microcontroller on this board is a STM32L4 series (412, 422, 431 and 432 supported). I chose these because the 80MHz clock allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is crucial, as a transponder is a hard real-time application that relies on interrupts for precise timing of the transmit function, so SPI latency must be minimized.
 
 The GNSS is a Quectel L76 module and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start.
 The transmitter output is 2 Watts (+33dBm) and it has a verified range of over 10 nautical miles.
 
-The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. On my boat, it is wired to a box that converts the UART to USB and feeds it to a RPi Zero W, which acts as a WiFi access point / NMEA distributor:
-
-![Image](images/MAIANA-ControlBox.jpg?raw=True "Control Box")
+The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. The breakout boxes pictured above deliver this stream via USB, NME0183 (RS422) or NMEA 2000 (CAN). All 3 breakouts feature **galvanic isolation** of their USB connection to avoid causing unintended problems with laptops and other devices whose power supplies are meant to "float".
 
 Of course, there are many different solutions available and every boater has different preferences. This interface box is a separate project and it will eventually support NMEA0183 (RS422) as well as NMEA2000 interfaces.
 
