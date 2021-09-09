@@ -69,11 +69,11 @@ For this reason, I have developed a kit. Take a look [at the installation instru
 
 ### License
 
-CAD and firmware are licensed under GPLV3. I chose the most "copyleft" license possible to discourage commercial entities from ripping this off and then "close-sourcing" it. 
-So don't try anything fishy, because I *will* find out and then ... well, let's just say you'll be buying me another boat and I have a particular one in mind ;)
+CAD and transponder firmware are licensed under GPLV3. I chose the most "copyleft" license possible to discourage commercial entities from ripping this off and then "close-sourcing" it. 
 
-If you're a tinkerer and want to further this design while adhering to the GPL, more power to you! Build it, sell it, give it away, do whatever you want to get it out there. 
-You cannot, however, use the MAIANA&trade; name in a forked design, as it will be trademarked. Just call it something else.
+The NMEA2000 adapter is under MIT license to be consistent with the libraries it depends on.
+
+MAIANA&trade; will become a registered trademark soon, so if you plan to fork the design while adhering to the GPL then simply use a different name.
 
 
 
