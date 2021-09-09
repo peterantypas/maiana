@@ -60,9 +60,9 @@ Everything is [here](latest/CAD).
 
 ### Building the unit
 
-This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. Unless you're skilled with stencils and reflow, you will find it challenging. 
+This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. The antenna switch is smaller than 1mmx1mm and requires a microscope. Unless you're skilled with stencils and reflow, you will find it challenging. 
 
-For this reason, I'm working on a kit and I expect the first 10 or so to be available by end of June / beginning July of this year. This has been a struggle, given the state of the supply chain, so I had to make many last-minute design changes and secure enough BOM. If you're interested in the kit, sign up for my mailing list here: https://eepurl.com/hxHP-5
+For this reason, I have developed a kit. Take a look [at the installation instructions here](latest/Manuals) to get a better understanding of what's involved. There is a limited number of these that I can produce (mainly due to the chip shortage), so if you're insterested, send an email to *maiana.kits@gmail.com*. 
 
 
 
