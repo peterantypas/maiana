@@ -9,7 +9,7 @@ were particularly power-hungry. Also, they required at least two external RF cab
 The main difference between MAIANA&trade; and every commercial transponder is that it's a standalone unit. It contains all of its
 radios and antennas and thus only needs a power and data connection to the cabin. This requires an RJ45 (Ethernet) cable which runs from the outside unit to one of these breakout boxes down below:
 
-
+<img src="images/usbadapter.jpg" height="420"/><img src="images/nmea0183adapter.jpg" height="420"/><img src="images/nmea2000adapter.jpg" height="420"/>
 
 
 ## Hardware Design
