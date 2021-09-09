@@ -35,7 +35,7 @@ The transponder circuit is inside the antenna case. It's a 24mm x 84mm 4-layer P
 
 The core design is based on two Silicon Labs "EZRadio Pro" series ICs. The first IC is a transceiver and the second one is a full-time receiver. Currently, due to the global chip shortage, these ICs are impossible to source. I have secured a small quantity because I placed a direct order with their main US distributor last year, when their lead time was about 16 weeks. It is now 40+ weeks.
 
-The microcontroller on this board is a STM32L4 series (412, 422, 431 and 432 supported). I chose these because the 80MHz clock allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is crucial, as a transponder is a hard real-time application that relies on interrupts for precise timing of the transmit function, so SPI latency must be minimized.
+The microcontroller on this board is a STM32L4 series (412, 422, 431 and 432 supported). I chose these because the 80MHz clock allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is crucial, as a transponder is a *hard real time* application so SPI latency must be minimized.
 
 The GNSS is a Quectel L76 module and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start.
 The transmitter output is 2 Watts (+33dBm) and it has a verified range of over 10 nautical miles.
@@ -46,7 +46,7 @@ For the circuit to transmit, it must be configured with persistent station data 
 
 The unit implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GNSS and the UTC clock, but being a class B, it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for class B devices. 
 
-The system draws about 30mA from 12V in RX mode, and spikes up to 600mA during transmission (for about 30 milliseconds).
+The main board draws about 30mA from 12V in RX mode, and spikes up to 600mA during transmission (for about 30 milliseconds). The adapter breakouts add additional current draw, ranging from 2mA for the USB version to 30mA for the NMEA2000 version.
 
 
 ### Software
