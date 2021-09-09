@@ -6,13 +6,12 @@ were particularly power-hungry. Also, they required at least two external RF cab
 
 <img src="images/InstallOnSolarPanels.jpg" height="320"/><img src="images/InstallOnRadarDome.jpg" height="320"/><img src="images/InstallOnSternRail.jpg" height="320"/>
 
-The main difference between MAIANA&trade; and every commercial transponder is that it's a self-contained unit, and thus its performance is 100% repeatable. With this design, we don't have to worry about a worn out coax going to the masthead via an antenna switch of unknown attenuation, connected to a whip antenna of unknown pedigree. The MAIANA&trade; *system* delivers a consistent performance, with an SWR of 1.24:1 or better:
+The main difference between MAIANA&trade; and every commercial transponder is that it's a self-contained unit, and thus its performance is 100% repeatable. With this design, we don't have to worry about a worn out coax going to the masthead via an antenna switch of unknown attenuation, connected to a whip antenna of unknown pedigree. MAIANA&trade; as a *system* is tuned for nothing but AIS and thus delivers a consistent RF performance, with an SWR of 1.2:1 or better:
+
+<img src="images/maiana-tuning.png"/>
 
 
-
-
-
-e cabin. This requires an RJ45 (Ethernet) cable which runs from the outside unit to one of these breakout boxes down below:
+So with all the RF kept outside and under tight control, the system only needs power and data connections. Hmmm, what's the most common cable that can carry a few signals 30-50 feet away? If you guessed "Ethernet", you guessed right. Twisted pair Cat5 cable will deliver a serial signal with minimal distortion at least 100 feet away no problem! So that's exactly what connects the outside unit to the cabin, where one of these 3 breakouts offers USB, NMEA0183 or NMEA2000 adapters to connect to the rest of the boat's systems:
 
 <img src="images/usbadapter.jpg" height="420"/><img src="images/nmea0183adapter.jpg" height="420"/><img src="images/nmea2000adapter.jpg" height="420"/>
 
@@ -20,7 +19,7 @@ e cabin. This requires an RJ45 (Ethernet) cable which runs from the outside unit
 ## Hardware Design
 
 ### Mechanical
-The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is simply the most inexpensive UV resistant material available, and it looks great top!
+The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is simply the most inexpensive UV resistant material available, and it looks great too!
 
 The VHF antenna whip is built using an epoxy would filament tube coated with high grade US-made irradiated polyolefin ("heat shrink") tubing. The company that makes this tubing (and helped me with this design challenge) also built the landing gear for NASA's Ingenuity helicopter, currently flying on Mars. They definitely understand how to deal with harsh environments. The bottomline is that unlike typical fiberglass antenna masts you might see around (or have on your boat already), this antenna is not going to degrade and "blossom" under continuous sun exposure.
 
@@ -43,21 +42,21 @@ The transmitter output is 2 Watts (+33dBm) and it has a verified range of over 1
 
 The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. The breakout boxes pictured above deliver this stream via USB, NME0183 (RS422) or NMEA 2000 (CAN). All 3 breakouts feature **galvanic isolation** of their USB connection to avoid causing unintended problems with laptops and other devices whose power supplies are meant to "float".
 
-Of course, there are many different solutions available and every boater has different preferences. This interface box is a separate project and it will eventually support NMEA0183 (RS422) as well as NMEA2000 interfaces.
+For the circuit to transmit, it must be configured with persistent station data (MMSI, call sign, name, dimensions, etc). This is stored in MCU flash and is provisioned over a USB/serial connection via a command line interface. If station data is not provisioned, the device will simply run as a 2 channel receiver.
 
-For the circuit to transmit, it must be configured with persistent station data (MMSI, call sign, name, dimensions, etc). This is stored in MCU flash and is provisioned via a command line interface. If station data is not provisioned, the device will simply run as a receiver.
-
-The unit implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GPS and the UTC clock, but being a class B, it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for class B devices. 
+The unit implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GNSS and the UTC clock, but being a class B, it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for class B devices. 
 
 The system draws about 30mA from 12V in RX mode, and spikes up to 600mA during transmission (for about 30 milliseconds).
-
-The latest design (9.3 pictured above) relies on plain Cat5 cable for power, data, as well as control signals such as "TX OFF" and status LED drivers (RX/TX/GPS). 
 
 
 ### Software
 
 The firmware is an Eclipse CDT project that you should be able to import and build. The code is C++ with a BSP abstraction layer so you need to tweak bsp/bsp.hpp or define one of
 the required symbols in the preprocessor to build for different board revisions. It contains snippets of STM32Cube generated code, but is does not follow ST's spaghetti structure.
+
+### CAD
+
+Everything is [here](latest/CAD). 
 
 ### Building the unit
 
