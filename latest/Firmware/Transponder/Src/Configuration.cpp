@@ -23,6 +23,8 @@
 #include "config.h"
 #include "EventQueue.hpp"
 #include <stdio.h>
+#include <bsp/bsp.hpp>
+
 
 // These are not defined in ANY CMSIS or HAL header, WTF ST???
 #define OTP_ADDRESS   0x1FFF7000
@@ -60,9 +62,22 @@ void Configuration::init()
   bool cliBootMode = *(uint32_t*)BOOTMODE_ADDRESS == CLI_FLAG_MAGIC;
   if ( !cliBootMode )
     {
-      reportOTPData();
+      //reportOTPData();
+      reportSystemData();
       reportStationData();
     }
+}
+
+void Configuration::reportSystemData()
+{
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s,%s*", BSP_HW_REV, FW_REV, "");
+
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
 }
 
 void Configuration::reportStationData()
@@ -72,6 +87,9 @@ void Configuration::reportStationData()
     memset(&d, 0, sizeof d);
 
   Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
   sprintf(e->nmeaBuffer.sentence,
       "$PAISTN,%lu,%s,%s,%d,%d,%d,%d,%d*",
       d.mmsi,
@@ -93,23 +111,23 @@ bool Configuration::isStationDataProvisioned()
   return readStationData(d);
 }
 
+#if OTP_DATA
 void Configuration::reportOTPData()
 {
   const OTPData *data = readOTP();
   Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
 
-  if ( data == nullptr )
+  if ( data )
     {
-      strcpy(e->nmeaBuffer.sentence, "$PAISYS,,*");
-    }
-  else
-    {
-      sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s*", data->serialnum, data->hwrev);
+      sprintf(e->nmeaBuffer.sentence, "$PAIOTP,%s,%s*", data->serialnum, data->hwrev);
     }
 
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
 }
+#endif
 
 bool Configuration::erasePage()
 {
@@ -184,6 +202,7 @@ bool Configuration::readStationData(StationData &data)
   return data.magic == STATION_DATA_MAGIC;
 }
 
+#if OTP_DATA
 const OTPData *Configuration::readOTP()
 {
   uint32_t address = nextAvailableOTPSlot();
@@ -231,6 +250,7 @@ uint32_t Configuration::nextAvailableOTPSlot()
 
   return OTP_ADDRESS+OTP_SIZE;
 }
+#endif
 
 
 

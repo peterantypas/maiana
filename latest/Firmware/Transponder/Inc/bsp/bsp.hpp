@@ -83,6 +83,9 @@ void bsp_set_sotdma_timer_value(uint32_t v);
 uint8_t bsp_tx_spi_byte(uint8_t b);
 
 
+
+extern const char *BSP_HW_REV;
+
 // BSP headers go here
 
 #if BOARD_REV == 93

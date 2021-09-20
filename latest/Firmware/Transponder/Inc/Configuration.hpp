@@ -22,6 +22,7 @@
 
 #include "StationData.h"
 #include "OTPData.h"
+#include "config.h"
 
 // This should be plenty big (no need to be a whole flash page though)
 typedef union
@@ -46,6 +47,7 @@ public:
   void reportOTPData();
   const OTPData *readOTP();
   bool writeOTP(const OTPData &data);
+  void reportSystemData();
 private:
   Configuration();
   bool erasePage();

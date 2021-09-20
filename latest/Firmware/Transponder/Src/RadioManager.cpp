@@ -21,7 +21,7 @@
 #include "RadioManager.hpp"
 #include "NoiseFloorDetector.hpp"
 #include "bsp.hpp"
-
+#include "TXErrors.h"
 
 void rxClockCB();
 void trxClockCB();
@@ -39,7 +39,6 @@ RadioManager::RadioManager()
   mTransceiverIC = NULL;
   mReceiverIC = NULL;
   mInitializing = true;
-  //mTXQueue = new CircularQueue<TXPacket*>(4);
   mUTC = 0;
   EventQueue::instance().addObserver(this, CLOCK_EVENT);
 }
@@ -52,24 +51,19 @@ bool RadioManager::initialized()
 void RadioManager::init()
 {
   NoiseFloorDetector::instance();
-  //DBG("Initializing RF IC 1\r\n");
   mTransceiverIC = new Transceiver(SDN1_PORT, SDN1_PIN,
       CS1_PORT, CS1_PIN,
       TRX_IC_DATA_PORT, TRX_IC_DATA_PIN,
       TRX_IC_CLK_PORT, TRX_IC_CLK_PIN, 0);
   mTransceiverIC->init();
 
-#ifndef TX_TEST_MODE
-  //DBG("Initializing RF IC 2\r\n");
   mReceiverIC = new Receiver(SDN2_PORT, SDN2_PIN,
       CS2_PORT, CS2_PIN,
       RX_IC_DATA_PORT, RX_IC_DATA_PIN,
       RX_IC_CLK_PORT, RX_IC_CLK_PIN, 1);
   mReceiverIC->init();
-#endif
 
   mInitializing = false;
-  //DBG("Radio ICs initialized\r\n");
 }
 
 void RadioManager::transmitCW(VHFChannel channel)
@@ -79,7 +73,6 @@ void RadioManager::transmitCW(VHFChannel channel)
 
 void RadioManager::start()
 {
-  //DBG("Radio Manager starting\r\n");
   configureInterrupts();
   if ( mTransceiverIC )
     mTransceiverIC->startReceiving(CH_87, true);
@@ -88,7 +81,6 @@ void RadioManager::start()
     mReceiverIC->startReceiving(CH_88, true);
 
   GPS::instance().setDelegate(this);
-  //DBG("Radio Manager started\r\n");
 }
 
 void RadioManager::stop()
@@ -124,13 +116,10 @@ void RadioManager::processEvent(const Event &e)
       // Do we need to swap channels?
       if ( txChannel != mTransceiverIC->channel() )
         {
-          //DBG("RadioManager swapping channels for ICs\r\n");
           // The receiver needs to be explicitly told to switch channels
           if ( mReceiverIC )
             mReceiverIC->switchToChannel(alternateChannel(txChannel));
         }
-
-      //DBG("RadioManager assigned TX packet\r\n");
 
       // The transceiver will switch channel if the packet channel is different
       mTransceiverIC->assignTXPacket(packet);
@@ -170,22 +159,31 @@ void RadioManager::timeSlotStarted(uint32_t slotNumber)
   if ( mInitializing )
     return;
 
-#ifndef TX_TEST_MODE
   mTransceiverIC->timeSlotStarted(slotNumber);
   mReceiverIC->timeSlotStarted(slotNumber);
-#endif
 }
 
 void RadioManager::scheduleTransmission(TXPacket *packet)
 {
-  if ( mTXQueue.push(packet) )
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !mTXQueue.push(packet) )
     {
-      //DBG("RadioManager queued TX packet for channel %d\r\n", ORDINAL_TO_ITU(packet->channel()));
+      if ( e )
+        {
+          sprintf(e->nmeaBuffer.sentence, "$PAISCHTX,%s,%d*", packet->messageType(), TX_QUEUE_FULL);
+          Utils::completeNMEA(e->nmeaBuffer.sentence);
+          EventQueue::instance().push(e);
+        }
+      TXPacketPool::instance().deleteTXPacket(packet);
     }
   else
     {
-      //DBG("RadioManager rejected TX packet for channel %d\r\n", ORDINAL_TO_ITU(packet->channel()));
-      TXPacketPool::instance().deleteTXPacket(packet);
+      if ( e )
+        {
+          sprintf(e->nmeaBuffer.sentence, "$PAISCHTX,%s,%d*", packet->messageType(), TX_NO_ERROR);
+          Utils::completeNMEA(e->nmeaBuffer.sentence);
+          EventQueue::instance().push(e);
+        }
     }
 }
 

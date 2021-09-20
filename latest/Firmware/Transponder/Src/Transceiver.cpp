@@ -25,6 +25,7 @@
 #include "EZRadioPRO.h"
 #include "AISChannels.h"
 #include "bsp.hpp"
+#include "TXErrors.h"
 #include <stdio.h>
 
 Transceiver::Transceiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort,
@@ -214,11 +215,20 @@ void Transceiver::onBitClock()
       else if ( mUTC && mUTC - mTXPacket->timestamp() >= MIN_MSG_18_TX_INTERVAL )
         {
           // The packet is way too old. Discard it.
+          Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+          if ( e )
+            {
+              sprintf(e->nmeaBuffer.sentence, "$PAISCHTX,%s,%d*", mTXPacket->messageType(), TX_PACKET_TOO_OLD);
+              Utils::completeNMEA(e->nmeaBuffer.sentence);
+              EventQueue::instance().push(e);
+            }
+
           TXPacketPool::instance().deleteTXPacket(mTXPacket);
           mTXPacket = NULL;
         }
       else if ( mUTC - mLastTXTime < MIN_TX_INTERVAL )
         {
+          // It's not time to transmit yet
           return;
         }
       else if ( mUTC && mSlotBitNumber == CCA_SLOT_BIT && mTXPacket->channel() == mChannel )

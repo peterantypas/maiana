@@ -30,6 +30,7 @@ private:
   TXScheduler ();
   virtual ~TXScheduler ();
   time_t positionReportTimeInterval();
+  void sendNMEASentence(const char *sentence);
 private:
   VHFChannel mPositionReportChannel;
   VHFChannel mStaticDataChannel;

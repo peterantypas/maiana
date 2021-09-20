@@ -157,6 +157,7 @@ void CommandProcessor::processCommand(const char *buff)
     {
       TXScheduler::instance().queueMessage24(CH_87);
     }
+#if OTP_DATA
   else if ( s.find("otp?") == 0 )
     {
       dumpOTPData();
@@ -165,6 +166,7 @@ void CommandProcessor::processCommand(const char *buff)
     {
       writeOTPData(s);
     }
+#endif
 }
 
 void CommandProcessor::enterCLIMode()
@@ -178,6 +180,7 @@ void CommandProcessor::jumpToBootloader()
   bsp_enter_dfu();
 }
 
+#if OTP_DATA
 void CommandProcessor::dumpOTPData()
 {
   Configuration::instance().reportOTPData();
@@ -204,5 +207,5 @@ void CommandProcessor::writeOTPData(const std::string &s)
   if ( result )
     dumpOTPData();
 }
-
+#endif
 

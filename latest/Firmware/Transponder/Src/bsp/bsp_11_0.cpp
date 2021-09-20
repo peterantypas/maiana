@@ -27,6 +27,8 @@
 
 #if BOARD_REV==110
 
+const char *BSP_HW_REV = "11.x";
+
 SPI_HandleTypeDef hspi1;
 IWDG_HandleTypeDef hiwdg;
 UART_HandleTypeDef huart2;

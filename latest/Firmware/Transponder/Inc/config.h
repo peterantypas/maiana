@@ -87,7 +87,8 @@
 #define CLI_FLAG_MAGIC                0x209a388d
 
 #define CONFIGURATION_ADDRESS         0x0800F800
+#define OTP_DATA                      0
 
-
+#define FW_REV                        "3.1.0"
 
 #endif /* CONFIG_H_ */

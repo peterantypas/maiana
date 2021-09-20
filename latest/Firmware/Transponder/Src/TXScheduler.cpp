@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include "TXScheduler.hpp"
@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include "RadioManager.hpp"
 #include "ChannelManager.hpp"
+#include "TXErrors.h"
 #include "printf_serial.h"
 #include "bsp.hpp"
 
@@ -144,17 +145,32 @@ void TXScheduler::processEvent(const Event &e)
 
 }
 
+void TXScheduler::sendNMEASentence(const char *sentence)
+{
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  strlcpy(e->nmeaBuffer.sentence, sentence, sizeof e->nmeaBuffer.sentence);
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
+}
+
 void TXScheduler::queueMessage18(VHFChannel channel)
 {
+  char sentence[48];
+
   // If we don't have valid station data we don't do anything
   if ( mStationData.magic != STATION_DATA_MAGIC )
     return;
 
   TXPacket *p1 = TXPacketPool::instance().newTXPacket(channel);
-  if ( !p1 ) {
-      //DBG("Unable to allocate TX packet for message 18, will try again later\r\n");
+  if ( !p1 )
+    {
+      sprintf(sentence, "$PAISCHTX,18,%d*", TX_ALLOC_ERROR);
+      sendNMEASentence(sentence);
       return;
-  }
+    }
 
   AISMessage18 msg;
   msg.latitude    = mLastGPSFix.lat;
@@ -169,15 +185,19 @@ void TXScheduler::queueMessage18(VHFChannel channel)
 
 void TXScheduler::queueMessage24(VHFChannel channel)
 {
+  char sentence[48];
+
   // If we don't have valid station data we don't do anything
   if ( mStationData.magic != STATION_DATA_MAGIC )
     return;
 
   TXPacket *p2 = TXPacketPool::instance().newTXPacket(channel);
-  if ( !p2 ) {
-      //DBG("Unable to allocate TX packet for 24A\r\n");
+  if ( !p2 )
+    {
+      sprintf(sentence, "$PAISCHTX,24A,%d*", TX_ALLOC_ERROR);
+      sendNMEASentence(sentence);
       return;
-  }
+    }
 
   AISMessage24A msg2;
   msg2.encode(mStationData, *p2);
@@ -187,7 +207,8 @@ void TXScheduler::queueMessage24(VHFChannel channel)
   TXPacket *p3 = TXPacketPool::instance().newTXPacket(channel);
   if ( !p3 )
     {
-      //DBG("Unable to allocate TX packet for 24B\r\n");
+      sprintf(sentence, "$PAISCHTX,24B,%d*", TX_ALLOC_ERROR);
+      sendNMEASentence(sentence);
       return;
     }
 

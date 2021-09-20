@@ -21,6 +21,16 @@
 #include "bsp.hpp"
 #include "Configuration.hpp"
 
+
+/**
+ * TODO: Update this to manage the status of the TX LED without any external hardware logic.
+ * It must take all inputs into consideration:
+ *
+ * - Presence of station data
+ * - Status of TX_DISABLE signal
+ * - Status of "tx off" software setting
+ */
+
 LEDManager::LEDManager()
 {
   // Do nothing
