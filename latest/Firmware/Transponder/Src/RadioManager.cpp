@@ -165,17 +165,22 @@ void RadioManager::timeSlotStarted(uint32_t slotNumber)
 
 void RadioManager::scheduleTransmission(TXPacket *packet)
 {
+#if REPORT_TX_SCHEDULING
   Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+#endif
   if ( !mTXQueue.push(packet) )
     {
+#if REPORT_TX_SCHEDULING
       if ( e )
         {
           sprintf(e->nmeaBuffer.sentence, "$PAISCHTX,%s,%d*", packet->messageType(), TX_QUEUE_FULL);
           Utils::completeNMEA(e->nmeaBuffer.sentence);
           EventQueue::instance().push(e);
         }
+#endif
       TXPacketPool::instance().deleteTXPacket(packet);
     }
+#if REPORT_TX_SCHEDULING
   else
     {
       if ( e )
@@ -185,6 +190,7 @@ void RadioManager::scheduleTransmission(TXPacket *packet)
           EventQueue::instance().push(e);
         }
     }
+#endif
 }
 
 void RadioManager::sendTestPacketNow(TXPacket *packet)

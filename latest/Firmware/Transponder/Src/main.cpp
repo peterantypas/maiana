@@ -56,13 +56,12 @@ void mainLoop()
   Configuration::instance().init();
   DataTerminal::instance().init();
   CommandProcessor::instance().init();
-  LEDManager::instance().init();
-
   RXPacketProcessor packetProcessor;
   GPS::instance().init();
   TXPacketPool::instance().init();
   TXScheduler::instance().init();
   RadioManager::instance().init();
+  LEDManager::instance().init();
 
   if ( !cliBootMode )
     {

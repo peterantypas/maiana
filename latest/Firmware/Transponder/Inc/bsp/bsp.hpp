@@ -47,7 +47,7 @@ void bsp_enter_dfu();
 void bsp_gnss_on();
 void bsp_gnss_off();
 bool bsp_is_tx_disabled();
-
+bool bsp_is_tx_present();
 void bsp_rx_led_on();
 void bsp_rx_led_off();
 void bsp_tx_led_on();

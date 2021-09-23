@@ -27,13 +27,13 @@ public:
   void queueMessage24(VHFChannel channel);
 
   void reportTXStatus();
+  bool isTXAllowed();
 
 private:
   TXScheduler ();
   virtual ~TXScheduler ();
   time_t positionReportTimeInterval();
   void sendNMEASentence(const char *sentence);
-  bool isTXAllowed();
 private:
   VHFChannel mPositionReportChannel;
   VHFChannel mStaticDataChannel;

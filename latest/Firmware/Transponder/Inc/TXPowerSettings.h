@@ -31,12 +31,5 @@ typedef struct {
 }
 pa_params;
 
-#if 0
-static const pa_params POWER_TABLE[] = {
-    {0x4467, 0x48, 0x20, 0x00},
-    {0x4460, 0x48, 0x20, 0x00},
-    {0x4463, 0x48, 0x12, 0x00}
-};
-#endif
 
 #endif /* TXPOWERSETTINGS_H_ */

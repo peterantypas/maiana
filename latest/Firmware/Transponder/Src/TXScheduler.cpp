@@ -62,7 +62,9 @@ TXScheduler::TXScheduler ()
 
 void TXScheduler::init()
 {
-  reportTXStatus();
+  bool cliBootMode = *(uint32_t*)BOOTMODE_ADDRESS == CLI_FLAG_MAGIC;
+  if ( !cliBootMode )
+    reportTXStatus();
 }
 
 TXScheduler::~TXScheduler ()
@@ -81,7 +83,7 @@ void TXScheduler::reportTXStatus()
   if ( !e )
     return;
 
-  sprintf(e->nmeaBuffer.sentence, "$PAITXCFG,%d,%d,%d,%d*", !hwSwitchOff, softSwitch, hasStation, status);
+  sprintf(e->nmeaBuffer.sentence, "$PAITXCFG,%d,%d,%d,%d,%d*", bsp_is_tx_present(), !hwSwitchOff, softSwitch, hasStation, status);
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
 }
@@ -89,10 +91,13 @@ void TXScheduler::reportTXStatus()
 bool TXScheduler::isTXAllowed()
 {
   bool hwSwitchOff = bsp_is_tx_disabled();
+  if ( hwSwitchOff )
+    return false;
+
   bool softSwitch = Configuration::instance().isTXEnabled();
   bool hasStation = Configuration::instance().isStationDataProvisioned();
 
-  return hwSwitchOff ? false : (softSwitch && hasStation);
+  return softSwitch && hasStation;
 }
 
 void TXScheduler::processEvent(const Event &e)
@@ -112,13 +117,8 @@ void TXScheduler::processEvent(const Event &e)
       if ( !RadioManager::instance().initialized() || mUTC == 0 )
         return;
 
-#if TX_TEST_MODE
-      return;
-#endif
-
       if ( !isTXAllowed() )
         return;
-
 
       // Using a moving average of SOG to determine transmission rate
       static float alpha = 0.2;
@@ -154,10 +154,6 @@ void TXScheduler::processEvent(const Event &e)
 
       mUTC = e.clock.utc;
 
-      // Every minute on the minute ...
-      if ( mUTC % 60 == 0 )
-        reportTXStatus();
-
       break;
     }
 
@@ -188,7 +184,9 @@ void TXScheduler::sendNMEASentence(const char *sentence)
 
 void TXScheduler::queueMessage18(VHFChannel channel)
 {
+#if REPORT_TX_SCHEDULING
   char sentence[48];
+#endif
 
   // If we don't have valid station data we don't do anything
   if ( mStationData.magic != STATION_DATA_MAGIC )
@@ -197,8 +195,10 @@ void TXScheduler::queueMessage18(VHFChannel channel)
   TXPacket *p1 = TXPacketPool::instance().newTXPacket(channel);
   if ( !p1 )
     {
+#if REPORT_TX_SCHEDULING
       sprintf(sentence, "$PAISCHTX,18,%d*", TX_ALLOC_ERROR);
       sendNMEASentence(sentence);
+#endif
       return;
     }
 
@@ -215,7 +215,9 @@ void TXScheduler::queueMessage18(VHFChannel channel)
 
 void TXScheduler::queueMessage24(VHFChannel channel)
 {
+#if REPORT_TX_SCHEDULING
   char sentence[48];
+#endif
 
   // If we don't have valid station data we don't do anything
   if ( mStationData.magic != STATION_DATA_MAGIC )
@@ -224,8 +226,10 @@ void TXScheduler::queueMessage24(VHFChannel channel)
   TXPacket *p2 = TXPacketPool::instance().newTXPacket(channel);
   if ( !p2 )
     {
+#if REPORT_TX_SCHEDULING
       sprintf(sentence, "$PAISCHTX,24A,%d*", TX_ALLOC_ERROR);
       sendNMEASentence(sentence);
+#endif
       return;
     }
 
@@ -237,8 +241,10 @@ void TXScheduler::queueMessage24(VHFChannel channel)
   TXPacket *p3 = TXPacketPool::instance().newTXPacket(channel);
   if ( !p3 )
     {
+#if REPORT_TX_SCHEDULING
       sprintf(sentence, "$PAISCHTX,24B,%d*", TX_ALLOC_ERROR);
       sendNMEASentence(sentence);
+#endif
       return;
     }
 

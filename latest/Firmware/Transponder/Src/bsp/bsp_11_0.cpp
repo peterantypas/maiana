@@ -319,6 +319,11 @@ void HAL_MspInit(void)
   /* USER CODE END MspInit 1 */
 }
 
+bool bsp_is_tx_present()
+{
+  return true;
+}
+
 void bsp_set_rx_mode()
 {
   HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_RESET);       // Kill the RF MOSFET bias voltage

@@ -25,8 +25,8 @@
 #include "TXPowerSettings.h"
 
 
-// Set to non-zero to enable transmission support
-#define ENABLE_TX                       1
+#define FW_REV                        "3.2.0"
+
 
 /*
  * Defining this symbol forces all output (NMEA + debug) to a high-speed USART for tunneling to an application that demuxes it.
@@ -54,6 +54,8 @@
 // Maximum allowed backlog in TX queue
 #define MAX_TX_PACKETS_IN_QUEUE        4
 
+// Set to true to emit proprietary NMEA sentences for debugging TX scheduling. Not useful in production.
+#define REPORT_TX_SCHEDULING           0
 
 // Set to true to force RSSI sampling at every SOTDMA timer slot on both channels
 #define FULL_RSSI_SAMPLING             1
@@ -88,7 +90,5 @@
 
 #define CONFIGURATION_ADDRESS         0x0800F800
 #define OTP_DATA                      1
-
-#define FW_REV                        "3.1.0"
 
 #endif /* CONFIG_H_ */

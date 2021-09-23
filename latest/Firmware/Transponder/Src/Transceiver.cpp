@@ -215,6 +215,7 @@ void Transceiver::onBitClock()
       else if ( mUTC && mUTC - mTXPacket->timestamp() >= MIN_MSG_18_TX_INTERVAL )
         {
           // The packet is way too old. Discard it.
+#if REPORT_TX_SCHEDULING
           Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
           if ( e )
             {
@@ -222,7 +223,7 @@ void Transceiver::onBitClock()
               Utils::completeNMEA(e->nmeaBuffer.sentence);
               EventQueue::instance().push(e);
             }
-
+#endif
           TXPacketPool::instance().deleteTXPacket(mTXPacket);
           mTXPacket = NULL;
         }
