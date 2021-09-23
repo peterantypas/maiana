@@ -68,13 +68,31 @@ void Configuration::init()
     }
 }
 
+const char *Configuration::hwRev()
+{
+  const OTPData *otp = readOTP();
+  if ( otp )
+    return otp->hwrev;
+  else
+    return BSP_HW_REV;
+}
+
+const char *Configuration::serNum()
+{
+  const OTPData *otp = readOTP();
+  if ( otp )
+    return otp->serialnum;
+  else
+    return "";
+}
+
 void Configuration::reportSystemData()
 {
   Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
   if ( !e )
     return;
 
-  sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s,%s*", BSP_HW_REV, FW_REV, "");
+  sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s,%s*", hwRev(), FW_REV, serNum());
 
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
@@ -123,9 +141,13 @@ void Configuration::reportOTPData()
     {
       sprintf(e->nmeaBuffer.sentence, "$PAIOTP,%s,%s*", data->serialnum, data->hwrev);
     }
-
+  else
+    {
+      strcpy(e->nmeaBuffer.sentence, "$PAIOTP,,*");
+    }
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
+
 }
 #endif
 

@@ -53,6 +53,8 @@ private:
   bool erasePage();
   bool writePage();
   uint32_t nextAvailableOTPSlot();
+  const char *hwRev();
+  const char *serNum();
 };
 
 #endif /* CONFIGURATION_HPP_ */
