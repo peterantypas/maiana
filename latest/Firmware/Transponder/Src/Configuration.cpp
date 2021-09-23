@@ -62,10 +62,24 @@ void Configuration::init()
   bool cliBootMode = *(uint32_t*)BOOTMODE_ADDRESS == CLI_FLAG_MAGIC;
   if ( !cliBootMode )
     {
-      //reportOTPData();
       reportSystemData();
       reportStationData();
     }
+}
+
+void Configuration::enableTX()
+{
+  // TODO
+}
+
+void Configuration::disableTX()
+{
+  // TODO
+}
+
+bool Configuration::isTXEnabled()
+{
+  return true;
 }
 
 const char *Configuration::hwRev()

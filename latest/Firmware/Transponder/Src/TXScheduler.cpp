@@ -62,10 +62,37 @@ TXScheduler::TXScheduler ()
 
 void TXScheduler::init()
 {
+  reportTXStatus();
 }
 
 TXScheduler::~TXScheduler ()
 {
+}
+
+void TXScheduler::reportTXStatus()
+{
+  bool hwSwitchOff = bsp_is_tx_disabled();
+  bool softSwitch = Configuration::instance().isTXEnabled();
+  bool hasStation = Configuration::instance().isStationDataProvisioned();
+
+  bool status = hwSwitchOff ? false : (softSwitch && hasStation);
+
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  sprintf(e->nmeaBuffer.sentence, "$PAITXCFG,%d,%d,%d,%d*", !hwSwitchOff, softSwitch, hasStation, status);
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
+}
+
+bool TXScheduler::isTXAllowed()
+{
+  bool hwSwitchOff = bsp_is_tx_disabled();
+  bool softSwitch = Configuration::instance().isTXEnabled();
+  bool hasStation = Configuration::instance().isStationDataProvisioned();
+
+  return hwSwitchOff ? false : (softSwitch && hasStation);
 }
 
 void TXScheduler::processEvent(const Event &e)
@@ -89,7 +116,7 @@ void TXScheduler::processEvent(const Event &e)
       return;
 #endif
 
-      if ( bsp_is_tx_disabled() )
+      if ( !isTXAllowed() )
         return;
 
 
@@ -127,7 +154,10 @@ void TXScheduler::processEvent(const Event &e)
 
       mUTC = e.clock.utc;
 
-      //DBG("Clock Event\r\n");
+      // Every minute on the minute ...
+      if ( mUTC % 60 == 0 )
+        reportTXStatus();
+
       break;
     }
 

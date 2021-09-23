@@ -48,6 +48,9 @@ public:
   const OTPData *readOTP();
   bool writeOTP(const OTPData &data);
   void reportSystemData();
+  void enableTX();
+  void disableTX();
+  bool isTXEnabled();
 private:
   Configuration();
   bool erasePage();

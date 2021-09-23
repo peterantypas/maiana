@@ -151,7 +151,7 @@ void CommandProcessor::processCommand(const char *buff)
     }
   else if ( s.find("tx?") == 0 )
     {
-      // TODO
+      TXScheduler::instance().reportTXStatus();
     }
   else if (s.find("reboot") == 0 )
     {
