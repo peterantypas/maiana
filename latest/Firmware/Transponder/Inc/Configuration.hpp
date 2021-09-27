@@ -29,8 +29,21 @@ typedef union
 {
   StationData station;
   uint64_t dw[128];
-} ConfigPage;
+} StationDataPage;
 
+
+typedef struct
+{
+  uint32_t magic;
+  uint32_t reserved;
+  uint32_t flags[5];
+} ConfigFlags;
+
+typedef union
+{
+  ConfigFlags config;
+  uint64_t dw[4];
+} ConfigPage;
 
 class Configuration
 {
@@ -51,10 +64,18 @@ public:
   void enableTX();
   void disableTX();
   bool isTXEnabled();
+
 private:
+
   Configuration();
-  bool erasePage();
-  bool writePage();
+  bool eraseStationDataPage();
+  bool writeStationDataPage();
+  bool eraseConfigFlags();
+
+  const ConfigFlags *readConfigFlags();
+  bool writeConfigFlags(const ConfigFlags *flags);
+  bool erasePage(uint32_t address);
+
   uint32_t nextAvailableOTPSlot();
   const char *hwRev();
   const char *serNum();

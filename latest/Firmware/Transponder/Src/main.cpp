@@ -75,11 +75,15 @@ void mainLoop()
 
   *(uint32_t*)BOOTMODE_ADDRESS = 0;
 
+#if ENABLE_WDT
   bsp_start_wdt();
+#endif
   while (1)
     {
       EventQueue::instance().dispatch();
+#if ENABLE_WDT
       bsp_refresh_wdt();
+#endif
       __WFI();
     }
 }

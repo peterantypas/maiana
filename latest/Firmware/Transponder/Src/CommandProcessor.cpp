@@ -143,11 +143,13 @@ void CommandProcessor::processCommand(const char *buff)
     }
   else if ( s.find("tx on") == 0 )
     {
-      // TODO
+      Configuration::instance().enableTX();
+      TXScheduler::instance().reportTXStatus();
     }
   else if ( s.find("tx off") == 0 )
     {
-      // TODO
+      Configuration::instance().disableTX();
+      TXScheduler::instance().reportTXStatus();
     }
   else if ( s.find("tx?") == 0 )
     {

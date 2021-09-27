@@ -27,6 +27,7 @@
 #include "bsp.hpp"
 #include "TXErrors.h"
 #include <stdio.h>
+#include "TXScheduler.hpp"
 
 Transceiver::Transceiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort,
     uint32_t csPin, GPIO_TypeDef *dataPort, uint32_t dataPin,
@@ -342,5 +343,5 @@ void Transceiver::reportTXEvent()
   snprintf(e->nmeaBuffer.sentence, sizeof e->nmeaBuffer.sentence, "$PAITX,%c,%s*", AIS_CHANNELS[mTXPacket->channel()].designation, mTXPacket->messageType());
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
-  bsp_tx_led_on();
+  bsp_tx_led_off();
 }

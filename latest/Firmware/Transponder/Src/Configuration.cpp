@@ -30,6 +30,8 @@
 #define OTP_ADDRESS   0x1FFF7000
 #define OTP_SIZE      0x00000400
 
+#define CONFIG_FLAGS_MAGIC    0x2092ED2C
+
 #if 0
 static StationData __THIS_STATION__ = {
     STATION_DATA_MAGIC,
@@ -44,7 +46,7 @@ static StationData __THIS_STATION__ = {
 };
 #endif
 
-static ConfigPage __page;
+static StationDataPage __page;
 
 Configuration &Configuration::instance()
 {
@@ -69,17 +71,27 @@ void Configuration::init()
 
 void Configuration::enableTX()
 {
-  // TODO
+  // For now, the only flag in use is a TX switch bit which is set to 0
+  ConfigFlags flags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  writeConfigFlags(&flags);
 }
 
 void Configuration::disableTX()
 {
-  // TODO
+  // For now, the only flag in use is a TX switch bit which is set to 0
+  ConfigFlags flags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  flags.flags[0] = 0x01;
+  writeConfigFlags(&flags);
 }
 
 bool Configuration::isTXEnabled()
 {
-  return true;
+  const ConfigFlags *cfg = readConfigFlags();
+  if ( cfg == nullptr )
+    return true;
+
+  // Bit 0 in word 0 inhibits transmission
+  return (cfg->flags[0] & 0x01) == 0;
 }
 
 const char *Configuration::hwRev()
@@ -165,12 +177,19 @@ void Configuration::reportOTPData()
 }
 #endif
 
-bool Configuration::erasePage()
+bool Configuration::eraseStationDataPage()
 {
-  uint32_t page = (CONFIGURATION_ADDRESS - FLASH_BASE) / FLASH_PAGE_SIZE;
+  return erasePage(STATION_DATA_ADDRESS);
+}
+
+//__attribute__ ((long_call, section (".code_in_ram")))
+bool Configuration::erasePage(uint32_t address)
+{
+  uint32_t page = (address - FLASH_BASE) / FLASH_PAGE_SIZE;
 
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
-  HAL_FLASH_Unlock();
+  if ( HAL_FLASH_Unlock() != HAL_OK )
+    return false;
 
   FLASH_EraseInitTypeDef erase;
   erase.TypeErase = FLASH_TYPEERASE_PAGES;
@@ -180,31 +199,27 @@ bool Configuration::erasePage()
 
   uint32_t errPage;
   HAL_StatusTypeDef status = HAL_FLASHEx_Erase(&erase, &errPage);
-  if ( status != HAL_OK )
-    {
-      HAL_FLASH_Lock();
-      return false;
-    }
-
   HAL_FLASH_Lock();
-  return true;
+  return status == HAL_OK;
 }
 
 void Configuration::resetToDefaults()
 {
-  if ( erasePage() )
+  if ( eraseStationDataPage() )
     reportStationData();
+
+  erasePage(CONFIGURATION_FLAG_ADDRESS);
 }
 
 bool Configuration::writeStationData(const StationData &data)
 {
-  if ( !erasePage() )
+  if ( !eraseStationDataPage() )
     return false;
 
   memcpy(&__page.station, &data, sizeof data);
-  if ( erasePage() )
+  if ( eraseStationDataPage() )
     {
-      bool success = writePage();
+      bool success = writeStationDataPage();
       reportStationData();
       return success;
     }
@@ -214,9 +229,9 @@ bool Configuration::writeStationData(const StationData &data)
     }
 }
 
-bool Configuration::writePage()
+bool Configuration::writeStationDataPage()
 {
-  uint32_t pageAddress = CONFIGURATION_ADDRESS;
+  uint32_t pageAddress = STATION_DATA_ADDRESS;
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
   HAL_FLASH_Unlock();
   HAL_StatusTypeDef status = HAL_OK;
@@ -233,9 +248,45 @@ bool Configuration::writePage()
 
 bool Configuration::readStationData(StationData &data)
 {
-  memcpy(&__page, (const void*)CONFIGURATION_ADDRESS, sizeof __page);
+  memcpy(&__page, (const void*)STATION_DATA_ADDRESS, sizeof __page);
   memcpy(&data, &__page.station, sizeof data);
   return data.magic == STATION_DATA_MAGIC;
+}
+
+const ConfigFlags* Configuration::readConfigFlags()
+{
+  const ConfigPage *res = (const ConfigPage*)CONFIGURATION_FLAG_ADDRESS;
+  if ( res->config.magic != CONFIG_FLAGS_MAGIC )
+    return nullptr;
+
+  return &res->config;
+}
+
+//__attribute__ ((long_call, section (".code_in_ram")))
+bool Configuration::writeConfigFlags(const ConfigFlags *flags)
+{
+  if ( !erasePage(CONFIGURATION_FLAG_ADDRESS) )
+    return false;
+
+  ConfigPage page;
+  memcpy(&page, flags, sizeof page);
+
+
+  uint32_t pageAddress = CONFIGURATION_FLAG_ADDRESS;
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+  if ( HAL_FLASH_Unlock() != HAL_OK )
+    return false;
+
+  HAL_StatusTypeDef status = HAL_OK;
+  for ( uint32_t dw = 0; dw < sizeof page/8; ++dw )
+    {
+      status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, pageAddress + dw*8, page.dw[dw]);
+      if ( status != HAL_OK )
+        break;
+    }
+  HAL_FLASH_Lock();
+
+  return status == HAL_OK;
 }
 
 #if OTP_DATA

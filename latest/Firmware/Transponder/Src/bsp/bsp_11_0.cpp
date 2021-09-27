@@ -350,12 +350,12 @@ void bsp_rx_led_off()
 
 void bsp_tx_led_on()
 {
-  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
 }
 
 void bsp_tx_led_off()
 {
-  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_SET);
 }
 
 void bsp_gps_led_on()
@@ -417,7 +417,7 @@ void bsp_write_string(const char *s)
 void bsp_start_wdt()
 {
   IWDG_InitTypeDef iwdg;
-  iwdg.Prescaler = IWDG_PRESCALER_64;
+  iwdg.Prescaler = IWDG_PRESCALER_16;
   iwdg.Reload = 0x0fff;
   iwdg.Window = 0x0fff;
 

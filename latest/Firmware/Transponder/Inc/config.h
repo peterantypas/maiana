@@ -88,7 +88,10 @@
 #define DFU_FLAG_MAGIC                0xa191feed
 #define CLI_FLAG_MAGIC                0x209a388d
 
-#define CONFIGURATION_ADDRESS         0x0800F800
+#define CONFIGURATION_FLAG_ADDRESS    0x0800F000
+#define STATION_DATA_ADDRESS          0x0800F800
 #define OTP_DATA                      1
+
+#define ENABLE_WDT                    1
 
 #endif /* CONFIG_H_ */
