@@ -62,7 +62,7 @@ Everything is [here](latest/CAD).
 
 ### Building the unit
 
-This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. The antenna switch is about 0.8 x 1 mm and you'll need a microscope to align it. Unless you're very skilled with stencils and reflow, you will find it difficult to build. 
+This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. The antenna switch is about 0.8 x 1 mm and you'll need a microscope to align it. So unless you're very skilled and well equipped, you will find it difficult to build. 
 
 For this reason, I have developed a kit which includes pre-soldered (and programmed) boards. Take a look [at the installation instructions here](latest/Manuals) to get a better understanding of what's involved. There is a limited number of these that I can produce (mainly due to the chip shortage), so if you're insterested, send an email to *maiana.kits@_dontspam_gmail.com* (remove the spambot blocker of course). 
 
