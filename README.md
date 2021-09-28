@@ -47,7 +47,7 @@ For the circuit to transmit, it must be configured with persistent station data 
 
 The unit implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GNSS and the UTC clock. It does not synchronize itself to other stations because practical experience has shown that it's literally the "wild west" out there. There are many commercial class A systems in operation today with really crappy time slot management, so it's best not to rely on any of them. MAIANA&trade; behaves as a class B though, so it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for class B devices. 
 
-In terms of power consumption, the main board draws about 32mA from 12V in RX mode, and spikes up to ~650mA during transmission (for 27 milliseconds). The adapters add an extra 2mA - 25mA depending on choice. So MAIANA&trade;'s most power hungry configuration needs 0.7 Watts, which is a lot less than the typical LED cabin light.
+In terms of power consumption, the main board draws about 32mA from 12V in RX mode, and spikes up to ~650mA during transmission (for 27 milliseconds). The adapters add an extra 2mA - 25mA depending on choice. So MAIANA&trade;'s most power hungry configuration needs 0.7 Watts, which is a lot less than the typical LED cabin light!
 
 
 ### Software
