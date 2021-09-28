@@ -11,7 +11,7 @@ The main difference between MAIANA&trade; and every commercial transponder is th
 <img src="images/maiana-tuning.png"/>
 
 
-So with all the RF kept outside and under tight control, the system only needs power and data connections. Hmmm, what's the most common cable that can carry a few signals 30-50 feet away? If you guessed "Ethernet", you guessed right. Twisted pair Cat5 cable will deliver a serial signal with minimal distortion at least 100 feet away no problem! So that's exactly what connects the outside unit to the cabin, where one of these 3 breakouts offers USB, NMEA0183 or NMEA2000 adapters to connect to the rest of the boat's systems:
+So with all the RF kept outside and under tight control, the system only needs power and data connections. What's the most common cable that can carry a few signals 30-50 feet away? If you guessed "Ethernet", you guessed right. Commonplace Cat5 cable delivers a serial signal with minimal distortion at least 50 feet away. So that's what connects the outside unit to the cabin, where one of these 3 breakouts offers USB, NMEA0183 or NMEA2000 adapters to connect to the rest of the boat's systems:
 
 <img src="images/usbadapter.jpg" height="420"/><img src="images/nmea0183adapter.jpg" height="420"/><img src="images/nmea2000adapter.jpg" height="420"/>
 
@@ -37,16 +37,17 @@ The core design is based on two Silicon Labs "EZRadio Pro" series ICs. The first
 
 The microcontroller on this board is a STM32L4 series (412, 422, 431 and 432 supported). I chose these because the 80MHz clock allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is crucial, as a transponder is a *hard real time* application so SPI latency must be minimized.
 
-The GNSS is a Quectel L76 module and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start.
-The transmitter output is 2 Watts (+33dBm) and it has a verified range of over 10 nautical miles.
+The GNSS is now a Quectel L76L-M33 and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start. With the latest design, it offers near-navigation grade accuracy (typical HDOP < 1 meter).
+
+The transmitter is based on a power MOSFET found in handheld VHF radios and outputs just over 2 Watts (+33dBm). It has a verified range of 10 nautical miles.
 
 The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. The breakout boxes pictured above deliver this stream via USB, NME0183 (RS422) or NMEA 2000 (CAN). All 3 breakouts feature **galvanic isolation** of their USB connection to avoid causing unintended problems with laptops and other devices whose power supplies are meant to "float".
 
 For the circuit to transmit, it must be configured with persistent station data (MMSI, call sign, name, dimensions, etc). This is stored in MCU flash and is provisioned over a USB/serial connection via a command line interface. If station data is not provisioned, the device will simply run as a 2 channel receiver.
 
-The unit implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GNSS and the UTC clock, but being a class B, it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for class B devices. 
+The unit implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GNSS and the UTC clock. It does not synchronize itself to other stations because practical experience has shown that it's literally the "wild west" out there. There are many commercial class A systems in operation today with really crappy time slot management, so it's best not to rely on any of them. MAIANA&trade; behaves as a class B though, so it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for class B devices. 
 
-The main board draws about 30mA from 12V in RX mode, and spikes up to 600mA during transmission (for about 30 milliseconds). The adapter breakouts add additional current draw, ranging from 2mA for the USB version to 30mA for the NMEA2000 version.
+In terms of power consumption, the main board draws about 32mA from 12V in RX mode, and spikes up to ~650mA during transmission (for 27 milliseconds). The adapters add an extra 2mA - 25mA depending on choice. So MAIANA&trade;'s most power hungry configuration needs 0.7 Watts, which is a lot less than the typical LED cabin light.
 
 
 ### Software
