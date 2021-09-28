@@ -151,8 +151,7 @@ void Configuration::reportStationData()
 
 bool Configuration::isStationDataProvisioned()
 {
-  StationData d;
-  return readStationData(d);
+  return __page.station.magic == STATION_DATA_MAGIC;
 }
 
 #if OTP_DATA

@@ -319,8 +319,9 @@ void HAL_MspInit(void)
   /* USER CODE END MspInit 1 */
 }
 
-bool bsp_is_tx_present()
+bool bsp_is_tx_hardwired()
 {
+  // Always true for this board. It will get more involved later
   return true;
 }
 
@@ -394,6 +395,10 @@ void bsp_gnss_off()
   HAL_GPIO_WritePin(GNSS_EN_PORT, GNSS_EN_PIN, GPIO_PIN_SET);
 }
 
+bool bsp_is_gnss_on()
+{
+  return HAL_GPIO_ReadPin(GNSS_EN_PORT, GNSS_EN_PIN) == GPIO_PIN_SET;
+}
 
 void USART_putc(USART_TypeDef* USARTx, char c)
 {

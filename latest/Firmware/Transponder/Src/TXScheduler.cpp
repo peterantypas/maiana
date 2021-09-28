@@ -83,7 +83,7 @@ void TXScheduler::reportTXStatus()
   if ( !e )
     return;
 
-  sprintf(e->nmeaBuffer.sentence, "$PAITXCFG,%d,%d,%d,%d,%d*", bsp_is_tx_present(), !hwSwitchOff, softSwitch, hasStation, status);
+  sprintf(e->nmeaBuffer.sentence, "$PAITXCFG,%d,%d,%d,%d,%d*", bsp_is_tx_hardwired(), !hwSwitchOff, softSwitch, hasStation, status);
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
 }

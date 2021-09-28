@@ -101,6 +101,11 @@ void GPS::disable()
   bsp_gps_led_off();
 }
 
+bool GPS::isEnabled()
+{
+  return bsp_is_gnss_on();
+}
+
 void GPS::onRX(char c)
 {
   // This code is called in interrupt mode, do as little as possible!
