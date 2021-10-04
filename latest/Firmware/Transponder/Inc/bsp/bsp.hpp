@@ -21,6 +21,7 @@
 #define INC_BSP_HPP_
 
 #include <stdint.h>
+#include "config.h"
 
 
 // See the bottom section for the proper BOARD_REV symbol format and either modify this header

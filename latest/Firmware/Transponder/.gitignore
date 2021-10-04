@@ -19,4 +19,5 @@ Debug
 /STM32L422-Debug/
 /STM32L431-Release/
 /STM32L431-Debug/
-
+/L422-LegacyBreakouts/
+/L422-NewBreakouts/

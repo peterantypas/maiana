@@ -90,4 +90,15 @@
 
 
 
+/**
+ * This is a bit of a pain, but in the legacy breakout boards the TX LED
+ * was manipulated by both a hardware switch and the GPIO, so the MCU logic is reversed.
+ *
+ * The only way to support those legacy boards is to build a separate binary
+ * with this switch predefined as 1. There is no automated way to detect which kind of breakout MAIANA has.
+ */
+#ifndef LEGACY_BREAKOUTS
+#define LEGACY_BREAKOUTS              1
+#endif
+
 #endif /* CONFIG_H_ */
