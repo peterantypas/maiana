@@ -20,6 +20,8 @@
 #include "LEDManager.hpp"
 #include "bsp.hpp"
 #include "Configuration.hpp"
+#include "TXScheduler.hpp"
+
 
 LEDManager::LEDManager()
 {
@@ -37,17 +39,8 @@ void tickCB()
   LEDManager::instance().onTick();
 }
 
-static bool mForceTXLedOff = false;
-
 void LEDManager::init()
 {
-  if ( !Configuration::instance().isStationDataProvisioned() )
-    {
-      mForceTXLedOff = true;
-
-      // This call actually has the opposite effect as it will cause the TX led to be pulled to GND
-      bsp_tx_led_on();
-    }
   bsp_set_tick_callback(tickCB);
 }
 
@@ -61,11 +54,13 @@ void LEDManager::onTick()
       bsp_rx_led_off();
     }
 
-
-  if ( !mForceTXLedOff && count2++ == 250 )
+  if ( count2++ == 250 )
     {
       count2 = 1;
-      bsp_tx_led_off();
+      if ( !TXScheduler::instance().isTXAllowed() )
+        bsp_tx_led_off();
+      else
+        bsp_tx_led_on();
     }
 }
 

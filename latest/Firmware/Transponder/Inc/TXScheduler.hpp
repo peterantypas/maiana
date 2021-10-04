@@ -25,7 +25,7 @@ public:
   void startTXTesting();
   void queueMessage18(VHFChannel channel);
   void queueMessage24(VHFChannel channel);
-
+  bool isTXAllowed();
 private:
   TXScheduler ();
   virtual ~TXScheduler ();

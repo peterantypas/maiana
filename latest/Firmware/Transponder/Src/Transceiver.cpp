@@ -26,6 +26,8 @@
 #include "AISChannels.h"
 #include "bsp.hpp"
 #include <stdio.h>
+#include "TXScheduler.hpp"
+
 
 Transceiver::Transceiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort,
     uint32_t csPin, GPIO_TypeDef *dataPort, uint32_t dataPin,
@@ -190,16 +192,11 @@ void Transceiver::onBitClock()
       /*
           We start transmitting a packet if:
             - We have a TX packet assigned
+            - Transmission is enabled
             - We are at bit CCA_SLOT_BIT+1 (after obtaining an RSSI level)
             - The TX packet's transmission channel is our current listening channel
             - The RSSI is within 6dB of the noise floor for this channel
             - It's been at least MIN_TX_INTERVAL seconds since our last transmission
-
-            With PCB revision 2.0 to 4.x:
-            - No TX packets are queued if the supercapacitor is not charged, so no need to check here.
-
-            With PCB revision >= 5.x:
-            - There is no supercapacitor anymore
        */
 
       if ( !mTXPacket )
@@ -211,6 +208,12 @@ void Transceiver::onBitClock()
           // Test packets are sent immediately. Presumably, we're firing into a dummy load ;)
           startTransmitting();
         }
+      else if ( !TXScheduler::instance().isTXAllowed() )
+        {
+          // Transmission has been disabled since scheduling, so don't transmit!
+          TXPacketPool::instance().deleteTXPacket(mTXPacket);
+          mTXPacket = NULL;
+        }
       else if ( mUTC && mUTC - mTXPacket->timestamp() >= MIN_MSG_18_TX_INTERVAL )
         {
           // The packet is way too old. Discard it.
@@ -219,6 +222,7 @@ void Transceiver::onBitClock()
         }
       else if ( mUTC - mLastTXTime < MIN_TX_INTERVAL )
         {
+          // Got to wait a bit ...
           return;
         }
       else if ( mUTC && mSlotBitNumber == CCA_SLOT_BIT && mTXPacket->channel() == mChannel )
@@ -331,5 +335,7 @@ void Transceiver::reportTXEvent()
   snprintf(e->nmeaBuffer.sentence, sizeof e->nmeaBuffer.sentence, "$PAITX,%c,%s*", AIS_CHANNELS[mTXPacket->channel()].designation, mTXPacket->messageType());
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
-  bsp_tx_led_on();
+
+  // We turn off the led and the LEDManager will turn it back on in 100ms or so
+  bsp_tx_led_off();
 }

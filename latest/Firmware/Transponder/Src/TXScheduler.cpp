@@ -144,6 +144,16 @@ void TXScheduler::processEvent(const Event &e)
 
 }
 
+/**
+ * This method may be called in EITHER thread OR interrupt context,
+ * so we keep it very lean ...
+ */
+
+bool TXScheduler::isTXAllowed()
+{
+  return (mStationData.magic == STATION_DATA_MAGIC) && !bsp_is_tx_disabled();
+}
+
 void TXScheduler::queueMessage18(VHFChannel channel)
 {
   // If we don't have valid station data we don't do anything
