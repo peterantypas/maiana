@@ -351,12 +351,20 @@ void bsp_rx_led_off()
 
 void bsp_tx_led_on()
 {
+#if LEGACY_BREAKOUTS
   HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
+#else
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_SET);
+#endif
 }
 
 void bsp_tx_led_off()
 {
+#if LEGACY_BREAKOUTS
   HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_SET);
+#else
+  HAL_GPIO_WritePin(TX_EVT_PORT, TX_EVT_PIN, GPIO_PIN_RESET);
+#endif
 }
 
 void bsp_gps_led_on()
@@ -368,7 +376,6 @@ void bsp_gps_led_off()
 {
   HAL_GPIO_WritePin(GNSS_STATE_PORT, GNSS_STATE_PIN, GPIO_PIN_RESET);
 }
-
 
 void bsp_set_tx_mode()
 {
