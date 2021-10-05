@@ -49,6 +49,10 @@ TXScheduler::TXScheduler ()
   mAvgSpeed = 0.0;
   mLast18Time = 0;
   mLast24Time = 0;
+}
+
+void TXScheduler::init()
+{
   if ( Configuration::instance().readStationData(mStationData) )
     {
       DBG("Successfully loaded Station Data \r\n");
@@ -57,10 +61,6 @@ TXScheduler::TXScheduler ()
     {
       DBG("Failed to read Station Data !!!\r\n");
     }
-}
-
-void TXScheduler::init()
-{
 }
 
 TXScheduler::~TXScheduler ()
@@ -83,10 +83,6 @@ void TXScheduler::processEvent(const Event &e)
       // A class B transponder only transmits when its internal GPS is working, so we tie these to GPS updates.
       if ( !RadioManager::instance().initialized() || mUTC == 0 )
         return;
-
-#if TX_TEST_MODE
-      return;
-#endif
 
       if ( bsp_is_tx_disabled() )
         return;

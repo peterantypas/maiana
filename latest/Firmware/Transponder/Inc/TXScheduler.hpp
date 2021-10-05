@@ -36,8 +36,8 @@ private:
   time_t mUTC;
   time_t mLast18Time;
   time_t mLast24Time;
-  float mAvgSpeed;
-  StationData mStationData;
+  float mAvgSpeed = 0.0f;
+  StationData mStationData = {0};
   GPSFix mLastGPSFix;
 };
 

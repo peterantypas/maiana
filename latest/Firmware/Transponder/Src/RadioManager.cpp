@@ -59,14 +59,12 @@ void RadioManager::init()
       TRX_IC_CLK_PORT, TRX_IC_CLK_PIN, 0);
   mTransceiverIC->init();
 
-#ifndef TX_TEST_MODE
   //DBG("Initializing RF IC 2\r\n");
   mReceiverIC = new Receiver(SDN2_PORT, SDN2_PIN,
       CS2_PORT, CS2_PIN,
       RX_IC_DATA_PORT, RX_IC_DATA_PIN,
       RX_IC_CLK_PORT, RX_IC_CLK_PIN, 1);
   mReceiverIC->init();
-#endif
 
   mInitializing = false;
   //DBG("Radio ICs initialized\r\n");
@@ -170,10 +168,8 @@ void RadioManager::timeSlotStarted(uint32_t slotNumber)
   if ( mInitializing )
     return;
 
-#ifndef TX_TEST_MODE
   mTransceiverIC->timeSlotStarted(slotNumber);
   mReceiverIC->timeSlotStarted(slotNumber);
-#endif
 }
 
 void RadioManager::scheduleTransmission(TXPacket *packet)
