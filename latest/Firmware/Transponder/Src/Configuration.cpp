@@ -27,8 +27,8 @@
 
 
 // These are not defined in ANY CMSIS or HAL header, WTF ST???
-#define OTP_ADDRESS   0x1FFF7000
-#define OTP_SIZE      0x00000400
+#define OTP_ADDRESS           0x1FFF7000
+#define OTP_SIZE              0x00000400
 
 #define CONFIG_FLAGS_MAGIC    0x2092ED2C
 
@@ -46,7 +46,7 @@ static StationData __THIS_STATION__ = {
 };
 #endif
 
-static StationDataPage __page;
+//static StationDataPage __page;
 
 Configuration &Configuration::instance()
 {
@@ -67,31 +67,32 @@ void Configuration::init()
       reportSystemData();
       reportStationData();
     }
+
+  bsp_read_config_flags(&mFlags);
 }
 
 void Configuration::enableTX()
 {
   // For now, the only flag in use is a TX switch bit which is set to 0
-  ConfigFlags flags = {CONFIG_FLAGS_MAGIC, 0, {0}};
-  writeConfigFlags(&flags);
+  mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  bsp_write_config_flags(mFlags);
 }
 
 void Configuration::disableTX()
 {
   // For now, the only flag in use is a TX switch bit which is set to 0
-  ConfigFlags flags = {CONFIG_FLAGS_MAGIC, 0, {0}};
-  flags.flags[0] = 0x01;
-  writeConfigFlags(&flags);
+  mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  mFlags.flags[0] = 0x01;
+  bsp_write_config_flags(mFlags);
 }
 
 bool Configuration::isTXEnabled()
 {
-  const ConfigFlags *cfg = readConfigFlags();
-  if ( cfg == nullptr )
+  if ( mFlags.magic != CONFIG_FLAGS_MAGIC )
     return true;
 
   // Bit 0 in word 0 inhibits transmission
-  return (cfg->flags[0] & 0x01) == 0;
+  return (mFlags.flags[0] & 0x01) == 0;
 }
 
 const char *Configuration::hwRev()
@@ -151,7 +152,7 @@ void Configuration::reportStationData()
 
 bool Configuration::isStationDataProvisioned()
 {
-  return __page.station.magic == STATION_DATA_MAGIC;
+  return bsp_is_station_data_provisioned();
 }
 
 #if OTP_DATA
@@ -176,117 +177,26 @@ void Configuration::reportOTPData()
 }
 #endif
 
-bool Configuration::eraseStationDataPage()
-{
-  return erasePage(STATION_DATA_ADDRESS);
-}
-
-//__attribute__ ((long_call, section (".code_in_ram")))
-bool Configuration::erasePage(uint32_t address)
-{
-  uint32_t page = (address - FLASH_BASE) / FLASH_PAGE_SIZE;
-
-  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
-  if ( HAL_FLASH_Unlock() != HAL_OK )
-    return false;
-
-  FLASH_EraseInitTypeDef erase;
-  erase.TypeErase = FLASH_TYPEERASE_PAGES;
-  erase.Banks     = FLASH_BANK_1;
-  erase.Page      = page;
-  erase.NbPages   = 1;
-
-  uint32_t errPage;
-  HAL_StatusTypeDef status = HAL_FLASHEx_Erase(&erase, &errPage);
-  HAL_FLASH_Lock();
-  return status == HAL_OK;
-}
-
 void Configuration::resetToDefaults()
 {
-  if ( eraseStationDataPage() )
-    reportStationData();
-
-  erasePage(CONFIGURATION_FLAG_ADDRESS);
+  bsp_erase_station_data();
+  reportStationData();
+  bsp_erase_config_flags();
 }
 
 bool Configuration::writeStationData(const StationData &data)
 {
-  if ( !eraseStationDataPage() )
-    return false;
-
-  memcpy(&__page.station, &data, sizeof data);
-  if ( eraseStationDataPage() )
-    {
-      bool success = writeStationDataPage();
-      reportStationData();
-      return success;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-bool Configuration::writeStationDataPage()
-{
-  uint32_t pageAddress = STATION_DATA_ADDRESS;
-  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
-  HAL_FLASH_Unlock();
-  HAL_StatusTypeDef status = HAL_OK;
-  for ( uint32_t dw = 0; dw < sizeof __page/8; ++dw )
-    {
-      status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, pageAddress + dw*8, __page.dw[dw]);
-      if ( status != HAL_OK )
-        break;
-    }
-  HAL_FLASH_Lock();
-
-  return status == HAL_OK;
+  bsp_write_station_data(data);
+  reportStationData();
+  return true;
 }
 
 bool Configuration::readStationData(StationData &data)
 {
-  memcpy(&__page, (const void*)STATION_DATA_ADDRESS, sizeof __page);
-  memcpy(&data, &__page.station, sizeof data);
+  bsp_read_station_data(&data);
   return data.magic == STATION_DATA_MAGIC;
 }
 
-const ConfigFlags* Configuration::readConfigFlags()
-{
-  const ConfigPage *res = (const ConfigPage*)CONFIGURATION_FLAG_ADDRESS;
-  if ( res->config.magic != CONFIG_FLAGS_MAGIC )
-    return nullptr;
-
-  return &res->config;
-}
-
-//__attribute__ ((long_call, section (".code_in_ram")))
-bool Configuration::writeConfigFlags(const ConfigFlags *flags)
-{
-  if ( !erasePage(CONFIGURATION_FLAG_ADDRESS) )
-    return false;
-
-  ConfigPage page;
-  memcpy(&page, flags, sizeof page);
-
-
-  uint32_t pageAddress = CONFIGURATION_FLAG_ADDRESS;
-  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
-  if ( HAL_FLASH_Unlock() != HAL_OK )
-    return false;
-
-  HAL_StatusTypeDef status = HAL_OK;
-  for ( uint32_t dw = 0; dw < sizeof page/8; ++dw )
-    {
-      status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, pageAddress + dw*8, page.dw[dw]);
-      if ( status != HAL_OK )
-        break;
-    }
-  HAL_FLASH_Lock();
-
-  return status == HAL_OK;
-}
 
 #if OTP_DATA
 const OTPData *Configuration::readOTP()

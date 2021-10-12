@@ -23,27 +23,9 @@
 #include "StationData.h"
 #include "OTPData.h"
 #include "config.h"
-
-// This should be plenty big (no need to be a whole flash page though)
-typedef union
-{
-  StationData station;
-  uint64_t dw[128];
-} StationDataPage;
+#include "ConfigFlags.h"
 
 
-typedef struct
-{
-  uint32_t magic;
-  uint32_t reserved;
-  uint32_t flags[5];
-} ConfigFlags;
-
-typedef union
-{
-  ConfigFlags config;
-  uint64_t dw[4];
-} ConfigPage;
 
 class Configuration
 {
@@ -68,17 +50,19 @@ public:
 private:
 
   Configuration();
-  bool eraseStationDataPage();
-  bool writeStationDataPage();
-  bool eraseConfigFlags();
+  //bool eraseStationDataPage();
+  //bool writeStationDataPage();
+  //bool eraseConfigFlags();
 
-  const ConfigFlags *readConfigFlags();
-  bool writeConfigFlags(const ConfigFlags *flags);
-  bool erasePage(uint32_t address);
+  //bool readConfigFlags();
+  //bool writeConfigFlags();
+  //bool erasePage(uint32_t address);
 
   uint32_t nextAvailableOTPSlot();
   const char *hwRev();
   const char *serNum();
+private:
+  ConfigFlags mFlags = {0};
 };
 
 #endif /* CONFIGURATION_HPP_ */

@@ -27,6 +27,9 @@
 
 #if BOARD_REV==110
 
+#define STATION_DATA_ADDRESS          0x0800F800
+
+
 const char *BSP_HW_REV = "11.x";
 
 SPI_HandleTypeDef hspi1;
@@ -45,7 +48,12 @@ irq_callback trxClockCallback = nullptr;
 irq_callback rxClockCallback = nullptr;
 irq_callback tickCallback = nullptr;
 
-#define EEPROM_ADDRESS  0x50 << 1
+// This should be plenty big (no need to be a whole flash page)
+typedef union
+{
+  StationData station;
+  uint64_t dw[32];
+} StationDataPage;
 
 typedef struct
 {
@@ -321,8 +329,74 @@ void HAL_MspInit(void)
 
 bool bsp_is_tx_hardwired()
 {
-  // Always true for this board. It will get more involved later
+  // Always true for this board. It will get more involved later. Or maybe never ...
   return true;
+}
+
+void bsp_read_station_data(StationData *data)
+{
+  memcpy(data, (const uint8_t*)STATION_DATA_ADDRESS, sizeof(StationData));
+}
+
+void bsp_write_station_data(const StationData &data)
+{
+  bsp_erase_station_data();
+  StationDataPage page;
+  page.station = data;
+  page.station.magic = STATION_DATA_MAGIC;
+
+  uint32_t pageAddress = STATION_DATA_ADDRESS;
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+  HAL_FLASH_Unlock();
+  HAL_StatusTypeDef status = HAL_OK;
+  for ( uint32_t dw = 0; dw < sizeof page/8; ++dw )
+    {
+      status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, pageAddress + dw*8, page.dw[dw]);
+      if ( status != HAL_OK )
+        break;
+    }
+  HAL_FLASH_Lock();
+}
+
+void bsp_erase_station_data()
+{
+  uint32_t page = (STATION_DATA_ADDRESS - FLASH_BASE) / FLASH_PAGE_SIZE;
+
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+  if ( HAL_FLASH_Unlock() != HAL_OK )
+    return;
+
+  FLASH_EraseInitTypeDef erase;
+  erase.TypeErase = FLASH_TYPEERASE_PAGES;
+  erase.Banks     = FLASH_BANK_1;
+  erase.Page      = page;
+  erase.NbPages   = 1;
+
+  uint32_t errPage;
+  HAL_FLASHEx_Erase(&erase, &errPage);
+  HAL_FLASH_Lock();
+}
+
+bool bsp_is_station_data_provisioned()
+{
+  const StationData *d = (const StationData *)STATION_DATA_ADDRESS;
+  return d->magic == STATION_DATA_MAGIC;
+}
+
+void bsp_read_config_flags(ConfigFlags *flags)
+{
+  // Not implemented
+}
+
+void bsp_write_config_flags(const ConfigFlags &flags)
+{
+  // Not implemented
+}
+
+
+void bsp_erase_config_flags()
+{
+  // Not implemented
 }
 
 void bsp_set_rx_mode()

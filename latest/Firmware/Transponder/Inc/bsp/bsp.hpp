@@ -22,7 +22,8 @@
 
 #include <stdint.h>
 #include "config.h"
-
+#include "StationData.h"
+#include "ConfigFlags.h"
 
 // See the bottom section for the proper BOARD_REV symbol format and either modify this header
 // or define a different symbol in the preprocessor to build for a different board
@@ -57,6 +58,20 @@ void bsp_tx_led_off();
 void bsp_gps_led_on();
 void bsp_gps_led_off();
 
+/**
+ * Station data persistence related
+ */
+void bsp_read_station_data(StationData *data);
+void bsp_write_station_data(const StationData &data);
+void bsp_erase_station_data();
+bool bsp_is_station_data_provisioned();
+
+/**
+ * Configuration flag persistence
+ */
+void bsp_read_config_flags(ConfigFlags *flags);
+void bsp_write_config_flags(const ConfigFlags &flags);
+void bsp_erase_config_flags();
 
 // Callback for processing UART input (interrupt)
 typedef void(*char_input_cb)(char c);

@@ -52,7 +52,7 @@ void NoiseFloorDetector::report(char channel, uint8_t rssi)
 #elif BOARD_REV == 109
     if ( rssi < 0x24 )
 #else
-  if ( rssi < 0x32 ) // Not realistic, likely a bug
+  if ( rssi < 0x12 ) // Not realistic, likely a bug
 #endif
     return;
 

@@ -74,7 +74,7 @@
 #define MIN_MSG_18_TX_INTERVAL        30
 #define MAX_MSG_18_TX_INTERVAL       180
 
-// Default interval for message 24 A&B (static data report)
+// Default interval for message 24 A&B (static data report) = 6 minutes
 #define MSG_24_TX_INTERVAL           360
 
 // The spec calls for Class B transmitters to listen for the first 20 bits of each frame before transmitting.
@@ -89,7 +89,6 @@
 #define CLI_FLAG_MAGIC                0x209a388d
 
 #define CONFIGURATION_FLAG_ADDRESS    0x0800F000
-#define STATION_DATA_ADDRESS          0x0800F800
 #define OTP_DATA                      1
 
 #define ENABLE_WDT                    1
