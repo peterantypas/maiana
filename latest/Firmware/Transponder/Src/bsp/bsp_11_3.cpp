@@ -31,6 +31,7 @@
 #define EEPROM_ADDRESS                  (0x50 << 1)
 #define EEPROM_STATION_ADDRESS          0x00
 #define EEPROM_CONFIG_ADDRESS           0x40
+#define STATION_DATA_FLASH_ADDRESS      0x0800F800
 
 const char *BSP_HW_REV = "11.x";
 
@@ -286,6 +287,7 @@ void SystemClock_Config()
 
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_HSI;
+  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
       Error_Handler(0);
@@ -367,8 +369,39 @@ bool bsp_is_tx_hardwired()
   return true;
 }
 
+void bsp_erase_flash_station_data()
+{
+  uint32_t page = (STATION_DATA_FLASH_ADDRESS - FLASH_BASE) / FLASH_PAGE_SIZE;
+
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+  if ( HAL_FLASH_Unlock() != HAL_OK )
+    return;
+
+  FLASH_EraseInitTypeDef erase;
+  erase.TypeErase = FLASH_TYPEERASE_PAGES;
+  erase.Banks     = FLASH_BANK_1;
+  erase.Page      = page;
+  erase.NbPages   = 1;
+
+  uint32_t errPage;
+  HAL_FLASHEx_Erase(&erase, &errPage);
+  HAL_FLASH_Lock();
+}
+
+
 void bsp_read_station_data(StationData *data)
 {
+  /**
+   * If there is legacy data in MCU flash, migrate it automatically to EEPROM!!!
+   */
+
+  StationData *__d = (StationData*)STATION_DATA_FLASH_ADDRESS;
+  if ( __d->magic == STATION_DATA_MAGIC )
+    {
+      bsp_write_station_data(*__d);
+      bsp_erase_flash_station_data();
+    }
+
   uint8_t *d = (uint8_t*)data;
   for ( uint8_t i = 0; i < sizeof (StationData); ++i, ++d )
     {
