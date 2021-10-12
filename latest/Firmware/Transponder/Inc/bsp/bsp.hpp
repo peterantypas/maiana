@@ -29,7 +29,7 @@
 // or define a different symbol in the preprocessor to build for a different board
 
 #ifndef BOARD_REV
-#define BOARD_REV 110
+#define BOARD_REV 113
 #endif
 
 /**
@@ -115,6 +115,8 @@ extern const char *BSP_HW_REV;
 #include <bsp_10_9.hpp>
 #elif BOARD_REV == 110
 #include <bsp_11_0.hpp>
+#elif BOARD_REV == 113
+#include <bsp_11_3.hpp>
 #endif
 
 
