@@ -242,6 +242,7 @@ void bsp_hw_init()
   HAL_NVIC_SetPriority(EXTI3_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
+  bsp_read_station_data(&__station);
 }
 
 
@@ -311,7 +312,6 @@ void SystemClock_Config()
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 
-  bsp_read_station_data(&__station);
 }
 
 void gpio_pin_init()

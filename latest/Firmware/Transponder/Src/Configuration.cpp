@@ -80,7 +80,7 @@ void Configuration::enableTX()
 
 void Configuration::disableTX()
 {
-  // For now, the only flag in use is a TX switch bit which is set to 0
+  // For now, the only flag in use is a TX switch bit which is set to 1
   mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
   mFlags.flags[0] = 0x01;
   bsp_write_config_flags(mFlags);
