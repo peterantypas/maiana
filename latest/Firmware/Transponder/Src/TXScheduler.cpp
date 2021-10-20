@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>
-*/
+ */
 
 
 #include "TXScheduler.hpp"
@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include "RadioManager.hpp"
 #include "ChannelManager.hpp"
+#include "TXErrors.h"
 #include "printf_serial.h"
 #include "bsp.hpp"
 
@@ -53,18 +54,42 @@ TXScheduler::TXScheduler ()
 
 void TXScheduler::init()
 {
-  if ( Configuration::instance().readStationData(mStationData) )
-    {
-      DBG("Successfully loaded Station Data \r\n");
-    }
-  else
-    {
-      DBG("Failed to read Station Data !!!\r\n");
-    }
+  bool cliBootMode = *(uint32_t*)BOOTMODE_ADDRESS == CLI_FLAG_MAGIC;
+  if ( !cliBootMode )
+    reportTXStatus();
 }
 
 TXScheduler::~TXScheduler ()
 {
+}
+
+void TXScheduler::reportTXStatus()
+{
+  bool hwSwitchOff = bsp_is_tx_disabled();
+  bool softSwitch = Configuration::instance().isTXEnabled();
+  bool hasStation = Configuration::instance().isStationDataProvisioned();
+
+  bool status = hwSwitchOff ? false : (softSwitch && hasStation);
+
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  sprintf(e->nmeaBuffer.sentence, "$PAITXCFG,%d,%d,%d,%d,%d*", bsp_is_tx_hardwired(), !hwSwitchOff, softSwitch, hasStation, status);
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
+}
+
+bool TXScheduler::isTXAllowed()
+{
+  bool hwSwitchOff = bsp_is_tx_disabled();
+  if ( hwSwitchOff )
+    return false;
+
+  bool softSwitch = Configuration::instance().isTXEnabled();
+  bool hasStation = Configuration::instance().isStationDataProvisioned();
+
+  return softSwitch && hasStation;
 }
 
 void TXScheduler::processEvent(const Event &e)
@@ -84,9 +109,8 @@ void TXScheduler::processEvent(const Event &e)
       if ( !RadioManager::instance().initialized() || mUTC == 0 )
         return;
 
-      if ( bsp_is_tx_disabled() )
+      if ( !isTXAllowed() )
         return;
-
 
       // Using a moving average of SOG to determine transmission rate
       static float alpha = 0.2;
@@ -122,7 +146,6 @@ void TXScheduler::processEvent(const Event &e)
 
       mUTC = e.clock.utc;
 
-      //DBG("Clock Event\r\n");
       break;
     }
 
@@ -140,27 +163,36 @@ void TXScheduler::processEvent(const Event &e)
 
 }
 
-/**
- * This method may be called in EITHER thread OR interrupt context,
- * so we keep it very lean ...
- */
-
-bool TXScheduler::isTXAllowed()
+void TXScheduler::sendNMEASentence(const char *sentence)
 {
-  return (mStationData.magic == STATION_DATA_MAGIC) && !bsp_is_tx_disabled();
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  strlcpy(e->nmeaBuffer.sentence, sentence, sizeof e->nmeaBuffer.sentence);
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
 }
 
 void TXScheduler::queueMessage18(VHFChannel channel)
 {
+#if REPORT_TX_SCHEDULING
+  char sentence[48];
+#endif
+
   // If we don't have valid station data we don't do anything
   if ( mStationData.magic != STATION_DATA_MAGIC )
     return;
 
   TXPacket *p1 = TXPacketPool::instance().newTXPacket(channel);
-  if ( !p1 ) {
-      //DBG("Unable to allocate TX packet for message 18, will try again later\r\n");
+  if ( !p1 )
+    {
+#if REPORT_TX_SCHEDULING
+      sprintf(sentence, "$PAISCHTX,18,%d*", TX_ALLOC_ERROR);
+      sendNMEASentence(sentence);
+#endif
       return;
-  }
+    }
 
   AISMessage18 msg;
   msg.latitude    = mLastGPSFix.lat;
@@ -175,15 +207,23 @@ void TXScheduler::queueMessage18(VHFChannel channel)
 
 void TXScheduler::queueMessage24(VHFChannel channel)
 {
+#if REPORT_TX_SCHEDULING
+  char sentence[48];
+#endif
+
   // If we don't have valid station data we don't do anything
   if ( mStationData.magic != STATION_DATA_MAGIC )
     return;
 
   TXPacket *p2 = TXPacketPool::instance().newTXPacket(channel);
-  if ( !p2 ) {
-      //DBG("Unable to allocate TX packet for 24A\r\n");
+  if ( !p2 )
+    {
+#if REPORT_TX_SCHEDULING
+      sprintf(sentence, "$PAISCHTX,24A,%d*", TX_ALLOC_ERROR);
+      sendNMEASentence(sentence);
+#endif
       return;
-  }
+    }
 
   AISMessage24A msg2;
   msg2.encode(mStationData, *p2);
@@ -193,7 +233,10 @@ void TXScheduler::queueMessage24(VHFChannel channel)
   TXPacket *p3 = TXPacketPool::instance().newTXPacket(channel);
   if ( !p3 )
     {
-      //DBG("Unable to allocate TX packet for 24B\r\n");
+#if REPORT_TX_SCHEDULING
+      sprintf(sentence, "$PAISCHTX,24B,%d*", TX_ALLOC_ERROR);
+      sendNMEASentence(sentence);
+#endif
       return;
     }
 

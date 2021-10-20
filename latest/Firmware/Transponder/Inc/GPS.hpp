@@ -44,6 +44,7 @@ public:
 	void init();
 	void enable();
 	void disable();
+	bool isEnabled();
 	void onRX(char c);
 	void onPPS();
 	void startTimer();

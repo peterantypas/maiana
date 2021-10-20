@@ -25,8 +25,8 @@
 #include "TXPowerSettings.h"
 
 
-// Set to non-zero to enable transmission support
-#define ENABLE_TX                       1
+#define FW_REV                        "3.3.0"
+
 
 /*
  * Defining this symbol forces all output (NMEA + debug) to a high-speed USART for tunneling to an application that demuxes it.
@@ -54,6 +54,8 @@
 // Maximum allowed backlog in TX queue
 #define MAX_TX_PACKETS_IN_QUEUE        4
 
+// Set to true to emit proprietary NMEA sentences for debugging TX scheduling. Not useful in production.
+#define REPORT_TX_SCHEDULING           0
 
 // Set to true to force RSSI sampling at every SOTDMA timer slot on both channels
 #define FULL_RSSI_SAMPLING             1
@@ -72,7 +74,7 @@
 #define MIN_MSG_18_TX_INTERVAL        30
 #define MAX_MSG_18_TX_INTERVAL       180
 
-// Default interval for message 24 A&B (static data report)
+// Default interval for message 24 A&B (static data report) = 6 minutes
 #define MSG_24_TX_INTERVAL           360
 
 // The spec calls for Class B transmitters to listen for the first 20 bits of each frame before transmitting.
@@ -86,9 +88,21 @@
 #define DFU_FLAG_MAGIC                0xa191feed
 #define CLI_FLAG_MAGIC                0x209a388d
 
-#define CONFIGURATION_ADDRESS         0x0800F800
+#define CONFIGURATION_FLAG_ADDRESS    0x0800F000
+#define OTP_DATA                      1
 
+#define ENABLE_WDT                    1
 
+/**
+ * This is a bit of a pain, but in the legacy breakout boards the TX LED
+ * was manipulated by both a hardware switch and the GPIO, so the MCU logic is reversed.
+ *
+ * The only way to support those legacy boards is to build a separate binary
+ * with this switch predefined as 1. There is no automated way to detect which kind of breakout MAIANA has.
+ */
+#ifndef LEGACY_BREAKOUTS
+#define LEGACY_BREAKOUTS              1
+#endif
 
 /**
  * This is a bit of a pain, but in the legacy breakout boards the TX LED

@@ -41,6 +41,11 @@ void tickCB()
 
 void LEDManager::init()
 {
+  if ( TXScheduler::instance().isTXAllowed() )
+    bsp_tx_led_on();
+  else
+    bsp_tx_led_off();
+
   bsp_set_tick_callback(tickCB);
 }
 
@@ -54,13 +59,14 @@ void LEDManager::onTick()
       bsp_rx_led_off();
     }
 
-  if ( count2++ == 250 )
+
+  if ( count2++ == 200 )
     {
       count2 = 1;
-      if ( !TXScheduler::instance().isTXAllowed() )
-        bsp_tx_led_off();
-      else
+      if ( TXScheduler::instance().isTXAllowed() )
         bsp_tx_led_on();
+      else
+        bsp_tx_led_off();
     }
 }
 

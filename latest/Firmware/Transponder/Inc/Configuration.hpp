@@ -22,13 +22,9 @@
 
 #include "StationData.h"
 #include "OTPData.h"
+#include "config.h"
+#include "ConfigFlags.h"
 
-// This should be plenty big (no need to be a whole flash page though)
-typedef union
-{
-  StationData station;
-  uint64_t dw[128];
-} ConfigPage;
 
 
 class Configuration
@@ -46,11 +42,27 @@ public:
   void reportOTPData();
   const OTPData *readOTP();
   bool writeOTP(const OTPData &data);
+  void reportSystemData();
+  void enableTX();
+  void disableTX();
+  bool isTXEnabled();
+
 private:
+
   Configuration();
-  bool erasePage();
-  bool writePage();
+  //bool eraseStationDataPage();
+  //bool writeStationDataPage();
+  //bool eraseConfigFlags();
+
+  //bool readConfigFlags();
+  //bool writeConfigFlags();
+  //bool erasePage(uint32_t address);
+
   uint32_t nextAvailableOTPSlot();
+  const char *hwRev();
+  const char *serNum();
+private:
+  ConfigFlags mFlags = {0};
 };
 
 #endif /* CONFIGURATION_HPP_ */

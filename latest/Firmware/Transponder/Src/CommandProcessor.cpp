@@ -124,6 +124,10 @@ void CommandProcessor::processCommand(const char *buff)
     {
       Configuration::instance().reportStationData();
     }
+  else if ( s.find("sys?") == 0 )
+    {
+      Configuration::instance().reportSystemData();
+    }
   else if ( s.find("dfu") == 0 )
     {
       jumpToBootloader();
@@ -136,6 +140,20 @@ void CommandProcessor::processCommand(const char *buff)
   else if ( s.find("tx test") == 0 )
     {
       fireTestPacket();
+    }
+  else if ( s.find("tx on") == 0 )
+    {
+      Configuration::instance().enableTX();
+      TXScheduler::instance().reportTXStatus();
+    }
+  else if ( s.find("tx off") == 0 )
+    {
+      Configuration::instance().disableTX();
+      TXScheduler::instance().reportTXStatus();
+    }
+  else if ( s.find("tx?") == 0 )
+    {
+      TXScheduler::instance().reportTXStatus();
     }
   else if (s.find("reboot") == 0 )
     {
@@ -157,6 +175,7 @@ void CommandProcessor::processCommand(const char *buff)
     {
       TXScheduler::instance().queueMessage24(CH_87);
     }
+#if OTP_DATA
   else if ( s.find("otp?") == 0 )
     {
       dumpOTPData();
@@ -165,6 +184,7 @@ void CommandProcessor::processCommand(const char *buff)
     {
       writeOTPData(s);
     }
+#endif
 }
 
 void CommandProcessor::enterCLIMode()
@@ -178,6 +198,7 @@ void CommandProcessor::jumpToBootloader()
   bsp_enter_dfu();
 }
 
+#if OTP_DATA
 void CommandProcessor::dumpOTPData()
 {
   Configuration::instance().reportOTPData();
@@ -191,18 +212,21 @@ void CommandProcessor::writeOTPData(const std::string &s)
 
   vector<string> tokens;
   Utils::tokenize(params, ' ', tokens);
-  if ( tokens.size() < 2 )
+  if ( tokens.size() < 1 )
     return;
 
   OTPData data;
+  memset(&data, 0, sizeof data);
+
   data.magic  = OTP_MAGIC;
   data.rev    = OTP_REV;
-  strlcpy(data.serialnum, tokens[0].c_str(), sizeof data.serialnum);
-  strlcpy(data.hwrev, tokens[1].c_str(), sizeof data.hwrev);
+  strlcpy(data.hwrev, tokens[0].c_str(), sizeof data.hwrev);
+  if ( tokens.size() > 1 )
+    strlcpy(data.serialnum, tokens[1].c_str(), sizeof data.serialnum);
 
   bool result = Configuration::instance().writeOTP(data);
   if ( result )
     dumpOTPData();
 }
-
+#endif
 

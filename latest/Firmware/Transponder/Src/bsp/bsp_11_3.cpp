@@ -25,13 +25,17 @@
 #include <string.h>
 
 
-#if BOARD_REV==110
 
-#define STATION_DATA_ADDRESS          0x0800F800
+#if BOARD_REV==113
 
+#define EEPROM_ADDRESS                  (0x50 << 1)
+#define EEPROM_STATION_ADDRESS          0x00
+#define EEPROM_CONFIG_ADDRESS           0x40
+#define STATION_DATA_FLASH_ADDRESS      0x0800F800
 
 const char *BSP_HW_REV = "11.x";
 
+I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
 IWDG_HandleTypeDef hiwdg;
 UART_HandleTypeDef huart2;
@@ -54,6 +58,8 @@ typedef union
   StationData station;
   uint64_t dw[32];
 } StationDataPage;
+
+StationData __station = {0};
 
 typedef struct
 {
@@ -84,8 +90,8 @@ static const GPIO __gpios[] = {
     {RX_IC_CLK_PORT, {RX_IC_CLK_PIN, GPIO_MODE_IT_RISING, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {RX_IC_DATA_PORT, {RX_IC_DATA_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {PA_BIAS_PORT, {PA_BIAS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
-    {LNA_PWR_PORT, {LNA_PWR_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
-    {RFSW_CTRL_PORT, {RFSW_CTRL_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    {I2C_SCL_PORT, {I2C_SCL_PIN, GPIO_MODE_AF_OD, GPIO_PULLUP, GPIO_SPEED_HIGH, GPIO_AF4_I2C1}, GPIO_PIN_SET},
+    {I2C_SDA_PORT, {I2C_SDA_PIN, GPIO_MODE_AF_OD, GPIO_PULLUP, GPIO_SPEED_HIGH, GPIO_AF4_I2C1}, GPIO_PIN_SET},
 };
 
 extern "C"
@@ -164,6 +170,33 @@ void bsp_hw_init()
   __HAL_SPI_ENABLE(&hspi1);
 
 
+  // I2C
+  hi2c1.Instance                = I2C1;
+  hi2c1.Init.Timing             = 0x00702991;
+  hi2c1.Init.OwnAddress1        = 0;
+  hi2c1.Init.AddressingMode     = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode    = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2        = 0;
+  hi2c1.Init.OwnAddress2Masks   = I2C_OA2_NOMASK;
+  hi2c1.Init.GeneralCallMode    = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode      = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+    {
+      Error_Handler(0);
+    }
+  /** Configure Analogue filter
+   */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+    {
+      Error_Handler(0);
+    }
+  /** Configure Digital filter
+   */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
+    {
+      Error_Handler(0);
+    }
+
   // USART2 (GNSS, RX only)
   huart2.Instance                     = USART2;
   huart2.Init.BaudRate                = 9600;
@@ -209,6 +242,7 @@ void bsp_hw_init()
   HAL_NVIC_SetPriority(EXTI3_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
+  bsp_read_station_data(&__station);
 }
 
 
@@ -254,6 +288,7 @@ void SystemClock_Config()
 
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_HSI;
+  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
       Error_Handler(0);
@@ -276,6 +311,7 @@ void SystemClock_Config()
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+
 }
 
 void gpio_pin_init()
@@ -333,34 +369,9 @@ bool bsp_is_tx_hardwired()
   return true;
 }
 
-void bsp_read_station_data(StationData *data)
+void bsp_erase_flash_station_data()
 {
-  memcpy(data, (const uint8_t*)STATION_DATA_ADDRESS, sizeof(StationData));
-}
-
-void bsp_write_station_data(const StationData &data)
-{
-  bsp_erase_station_data();
-  StationDataPage page;
-  page.station = data;
-  page.station.magic = STATION_DATA_MAGIC;
-
-  uint32_t pageAddress = STATION_DATA_ADDRESS;
-  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
-  HAL_FLASH_Unlock();
-  HAL_StatusTypeDef status = HAL_OK;
-  for ( uint32_t dw = 0; dw < sizeof page/8; ++dw )
-    {
-      status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, pageAddress + dw*8, page.dw[dw]);
-      if ( status != HAL_OK )
-        break;
-    }
-  HAL_FLASH_Lock();
-}
-
-void bsp_erase_station_data()
-{
-  uint32_t page = (STATION_DATA_ADDRESS - FLASH_BASE) / FLASH_PAGE_SIZE;
+  uint32_t page = (STATION_DATA_FLASH_ADDRESS - FLASH_BASE) / FLASH_PAGE_SIZE;
 
   __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
   if ( HAL_FLASH_Unlock() != HAL_OK )
@@ -377,26 +388,72 @@ void bsp_erase_station_data()
   HAL_FLASH_Lock();
 }
 
+
+void bsp_read_station_data(StationData *data)
+{
+  /**
+   * If there is legacy data in MCU flash, migrate it automatically to EEPROM!!!
+   */
+
+  StationData *__d = (StationData*)STATION_DATA_FLASH_ADDRESS;
+  if ( __d->magic == STATION_DATA_MAGIC )
+    {
+      bsp_write_station_data(*__d);
+      bsp_erase_flash_station_data();
+    }
+
+  uint8_t *d = (uint8_t*)data;
+  for ( uint8_t i = 0; i < sizeof (StationData); ++i, ++d )
+    {
+      HAL_I2C_Mem_Read(&hi2c1, EEPROM_ADDRESS|1, i+EEPROM_STATION_ADDRESS, 1, d, 1, 5);
+    }
+}
+
+void bsp_write_station_data(const StationData &data)
+{
+  __station = data;
+  uint8_t *d = (uint8_t*)&__station;
+  for ( uint8_t i = 0; i < sizeof (StationData); ++i, ++d )
+    {
+      HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i+EEPROM_STATION_ADDRESS, 1, d, 1, 5);
+      HAL_Delay(5);
+    }
+}
+
+void bsp_erase_station_data()
+{
+  bsp_write_station_data({0});
+}
+
 bool bsp_is_station_data_provisioned()
 {
-  const StationData *d = (const StationData *)STATION_DATA_ADDRESS;
-  return d->magic == STATION_DATA_MAGIC;
+  return __station.magic == STATION_DATA_MAGIC;
 }
 
 void bsp_read_config_flags(ConfigFlags *flags)
 {
-  // Not implemented
+  uint8_t *d = (uint8_t*)flags;
+  for ( uint8_t i = 0; i < sizeof (ConfigFlags); ++i, ++d )
+    {
+      HAL_I2C_Mem_Read(&hi2c1, EEPROM_ADDRESS|1, i+EEPROM_CONFIG_ADDRESS, 1, d, 1, 5);
+    }
 }
 
 void bsp_write_config_flags(const ConfigFlags &flags)
 {
-  // Not implemented
+  ConfigFlags __f = flags;
+  uint8_t *d = (uint8_t*)&__f;
+  for ( uint8_t i = 0; i < sizeof (ConfigFlags); ++i, ++d )
+    {
+      HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i+EEPROM_CONFIG_ADDRESS, 1, d, 1, 5);
+      HAL_Delay(5);
+    }
 }
 
 
 void bsp_erase_config_flags()
 {
-  // Not implemented
+  bsp_write_config_flags({0});
 }
 
 void bsp_set_rx_mode()
@@ -408,9 +465,6 @@ void bsp_set_rx_mode()
   gpio.Speed = GPIO_SPEED_FREQ_LOW;
   gpio.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(TRX_IC_DATA_PORT, &gpio);
-
-  HAL_GPIO_WritePin(LNA_PWR_PORT, LNA_PWR_PIN, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(RFSW_CTRL_PORT, RFSW_CTRL_PIN, GPIO_PIN_RESET);
 }
 
 void bsp_rx_led_on()
@@ -453,9 +507,6 @@ void bsp_gps_led_off()
 
 void bsp_set_tx_mode()
 {
-  HAL_GPIO_WritePin(LNA_PWR_PORT, LNA_PWR_PIN, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(RFSW_CTRL_PORT, RFSW_CTRL_PIN, GPIO_PIN_SET);
-
   GPIO_InitTypeDef gpio;
   gpio.Pin = TRX_IC_DATA_PIN;
   gpio.Mode = GPIO_MODE_OUTPUT_PP;

@@ -23,10 +23,14 @@
 #include "config.h"
 #include "EventQueue.hpp"
 #include <stdio.h>
+#include <bsp/bsp.hpp>
+
 
 // These are not defined in ANY CMSIS or HAL header, WTF ST???
-#define OTP_ADDRESS   0x1FFF7000
-#define OTP_SIZE      0x00000400
+#define OTP_ADDRESS           0x1FFF7000
+#define OTP_SIZE              0x00000400
+
+#define CONFIG_FLAGS_MAGIC    0x2092ED2C
 
 #if 0
 static StationData __THIS_STATION__ = {
@@ -42,7 +46,7 @@ static StationData __THIS_STATION__ = {
 };
 #endif
 
-static ConfigPage __page;
+//static StationDataPage __page;
 
 Configuration &Configuration::instance()
 {
@@ -60,9 +64,65 @@ void Configuration::init()
   bool cliBootMode = *(uint32_t*)BOOTMODE_ADDRESS == CLI_FLAG_MAGIC;
   if ( !cliBootMode )
     {
-      reportOTPData();
+      reportSystemData();
       reportStationData();
     }
+
+  bsp_read_config_flags(&mFlags);
+}
+
+void Configuration::enableTX()
+{
+  // For now, the only flag in use is a TX switch bit which is set to 0
+  mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  bsp_write_config_flags(mFlags);
+}
+
+void Configuration::disableTX()
+{
+  // For now, the only flag in use is a TX switch bit which is set to 1
+  mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  mFlags.flags[0] = 0x01;
+  bsp_write_config_flags(mFlags);
+}
+
+bool Configuration::isTXEnabled()
+{
+  if ( mFlags.magic != CONFIG_FLAGS_MAGIC )
+    return true;
+
+  // Bit 0 in word 0 inhibits transmission
+  return (mFlags.flags[0] & 0x01) == 0;
+}
+
+const char *Configuration::hwRev()
+{
+  const OTPData *otp = readOTP();
+  if ( otp )
+    return otp->hwrev;
+  else
+    return BSP_HW_REV;
+}
+
+const char *Configuration::serNum()
+{
+  const OTPData *otp = readOTP();
+  if ( otp )
+    return otp->serialnum;
+  else
+    return "";
+}
+
+void Configuration::reportSystemData()
+{
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s,%s*", hwRev(), FW_REV, serNum());
+
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
 }
 
 void Configuration::reportStationData()
@@ -72,6 +132,9 @@ void Configuration::reportStationData()
     memset(&d, 0, sizeof d);
 
   Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
   sprintf(e->nmeaBuffer.sentence,
       "$PAISTN,%lu,%s,%s,%d,%d,%d,%d,%d*",
       d.mmsi,
@@ -89,101 +152,54 @@ void Configuration::reportStationData()
 
 bool Configuration::isStationDataProvisioned()
 {
-  StationData d;
-  return readStationData(d);
+  return bsp_is_station_data_provisioned();
 }
 
+#if OTP_DATA
 void Configuration::reportOTPData()
 {
   const OTPData *data = readOTP();
   Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
 
-  if ( data == nullptr )
+  if ( data )
     {
-      strcpy(e->nmeaBuffer.sentence, "$PAISYS,,*");
+      sprintf(e->nmeaBuffer.sentence, "$PAIOTP,%s,%s*", data->serialnum, data->hwrev);
     }
   else
     {
-      sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s*", data->serialnum, data->hwrev);
+      strcpy(e->nmeaBuffer.sentence, "$PAIOTP,,*");
     }
-
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
+
 }
-
-bool Configuration::erasePage()
-{
-  uint32_t page = (CONFIGURATION_ADDRESS - FLASH_BASE) / FLASH_PAGE_SIZE;
-
-  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
-  HAL_FLASH_Unlock();
-
-  FLASH_EraseInitTypeDef erase;
-  erase.TypeErase = FLASH_TYPEERASE_PAGES;
-  erase.Banks     = FLASH_BANK_1;
-  erase.Page      = page;
-  erase.NbPages   = 1;
-
-  uint32_t errPage;
-  HAL_StatusTypeDef status = HAL_FLASHEx_Erase(&erase, &errPage);
-  if ( status != HAL_OK )
-    {
-      HAL_FLASH_Lock();
-      return false;
-    }
-
-  HAL_FLASH_Lock();
-  return true;
-}
+#endif
 
 void Configuration::resetToDefaults()
 {
-  if ( erasePage() )
-    reportStationData();
+  bsp_erase_station_data();
+  reportStationData();
+  mFlags = {0};
+  bsp_erase_config_flags();
 }
 
 bool Configuration::writeStationData(const StationData &data)
 {
-  if ( !erasePage() )
-    return false;
-
-  memcpy(&__page.station, &data, sizeof data);
-  if ( erasePage() )
-    {
-      bool success = writePage();
-      reportStationData();
-      return success;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-bool Configuration::writePage()
-{
-  uint32_t pageAddress = CONFIGURATION_ADDRESS;
-  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
-  HAL_FLASH_Unlock();
-  HAL_StatusTypeDef status = HAL_OK;
-  for ( uint32_t dw = 0; dw < sizeof __page/8; ++dw )
-    {
-      status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, pageAddress + dw*8, __page.dw[dw]);
-      if ( status != HAL_OK )
-        break;
-    }
-  HAL_FLASH_Lock();
-
-  return status == HAL_OK;
+  bsp_write_station_data(data);
+  reportStationData();
+  return true;
 }
 
 bool Configuration::readStationData(StationData &data)
 {
-  memcpy(&__page, (const void*)CONFIGURATION_ADDRESS, sizeof __page);
-  memcpy(&data, &__page.station, sizeof data);
+  bsp_read_station_data(&data);
   return data.magic == STATION_DATA_MAGIC;
 }
 
+
+#if OTP_DATA
 const OTPData *Configuration::readOTP()
 {
   uint32_t address = nextAvailableOTPSlot();
@@ -231,6 +247,7 @@ uint32_t Configuration::nextAvailableOTPSlot()
 
   return OTP_ADDRESS+OTP_SIZE;
 }
+#endif
 
 
 

@@ -22,13 +22,14 @@
 
 #include <stdint.h>
 #include "config.h"
-
+#include "StationData.h"
+#include "ConfigFlags.h"
 
 // See the bottom section for the proper BOARD_REV symbol format and either modify this header
 // or define a different symbol in the preprocessor to build for a different board
 
 #ifndef BOARD_REV
-#define BOARD_REV 110
+#define BOARD_REV 113
 #endif
 
 /**
@@ -48,7 +49,8 @@ void bsp_enter_dfu();
 void bsp_gnss_on();
 void bsp_gnss_off();
 bool bsp_is_tx_disabled();
-
+bool bsp_is_tx_hardwired();
+bool bsp_is_gnss_on();
 void bsp_rx_led_on();
 void bsp_rx_led_off();
 void bsp_tx_led_on();
@@ -56,6 +58,20 @@ void bsp_tx_led_off();
 void bsp_gps_led_on();
 void bsp_gps_led_off();
 
+/**
+ * Station data persistence related
+ */
+void bsp_read_station_data(StationData *data);
+void bsp_write_station_data(const StationData &data);
+void bsp_erase_station_data();
+bool bsp_is_station_data_provisioned();
+
+/**
+ * Configuration flag persistence
+ */
+void bsp_read_config_flags(ConfigFlags *flags);
+void bsp_write_config_flags(const ConfigFlags &flags);
+void bsp_erase_config_flags();
 
 // Callback for processing UART input (interrupt)
 typedef void(*char_input_cb)(char c);
@@ -84,6 +100,9 @@ void bsp_set_sotdma_timer_value(uint32_t v);
 uint8_t bsp_tx_spi_byte(uint8_t b);
 
 
+
+extern const char *BSP_HW_REV;
+
 // BSP headers go here
 
 #if BOARD_REV == 93
@@ -96,6 +115,8 @@ uint8_t bsp_tx_spi_byte(uint8_t b);
 #include <bsp_10_9.hpp>
 #elif BOARD_REV == 110
 #include <bsp_11_0.hpp>
+#elif BOARD_REV == 113
+#include <bsp_11_3.hpp>
 #endif
 
 

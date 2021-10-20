@@ -131,7 +131,14 @@ def send_data(packet):
 
 
 def send_get():
-    if not send_command(GET):
+    success = False
+    for i in range(2):
+        if send_command(GET):
+            success = True
+            break
+        time.sleep(.2)
+
+    if not success:
         print "Failed to send command GET"
         return (False, [])
 
@@ -224,7 +231,7 @@ def boot(address):
 
     return True
     
-
+"""
 def enter_dfu(portname):
     p = serial.Serial(portname, 38400, timeout=2, parity=serial.PARITY_NONE, stopbits=1)
     if not p.is_open:
@@ -235,7 +242,8 @@ def enter_dfu(portname):
     s = p.readline()
     p.close()
     return len(s) == 0
-    
+"""
+
 if __name__ == '__main__':
     if len(sys.argv) < 4:
         print "Usage: {0} port image address".format(sys.argv[0])

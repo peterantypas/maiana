@@ -25,9 +25,9 @@
 #include "EZRadioPRO.h"
 #include "AISChannels.h"
 #include "bsp.hpp"
+#include "TXErrors.h"
 #include <stdio.h>
 #include "TXScheduler.hpp"
-
 
 Transceiver::Transceiver(GPIO_TypeDef *sdnPort, uint32_t sdnPin, GPIO_TypeDef *csPort,
     uint32_t csPin, GPIO_TypeDef *dataPort, uint32_t dataPin,
@@ -93,7 +93,7 @@ void Transceiver::configure()
     break;
   default:
     pwr.pa_mode = 0x48;
-    pwr.pa_level = 0x20;
+    pwr.pa_level = 0x1C;
     pwr.pa_bias_clkduty = 0x00;
     break;
   }
@@ -157,7 +157,7 @@ void Transceiver::configureGPIOsForTX()
   gpiocfg.GPIO0 = 0x00;       // No change
   gpiocfg.GPIO1 = 0x04;       // RX/TX bit data
   gpiocfg.GPIO2 = 0x1F;       // RX/TX bit clock
-  gpiocfg.GPIO3 = 0x21;       // RX_STATE; high in RX, low in TX
+  gpiocfg.GPIO3 = 0x20;       // RX_STATE; high in TX, low in RX
   gpiocfg.NIRQ  = 0x00;       // No change
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
@@ -217,12 +217,21 @@ void Transceiver::onBitClock()
       else if ( mUTC && mUTC - mTXPacket->timestamp() >= MIN_MSG_18_TX_INTERVAL )
         {
           // The packet is way too old. Discard it.
+#if REPORT_TX_SCHEDULING
+          Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+          if ( e )
+            {
+              sprintf(e->nmeaBuffer.sentence, "$PAISCHTX,%s,%d*", mTXPacket->messageType(), TX_PACKET_TOO_OLD);
+              Utils::completeNMEA(e->nmeaBuffer.sentence);
+              EventQueue::instance().push(e);
+            }
+#endif
           TXPacketPool::instance().deleteTXPacket(mTXPacket);
           mTXPacket = NULL;
         }
       else if ( mUTC - mLastTXTime < MIN_TX_INTERVAL )
         {
-          // Got to wait a bit ...
+          // It's not time to transmit yet
           return;
         }
       else if ( mUTC && mSlotBitNumber == CCA_SLOT_BIT && mTXPacket->channel() == mChannel )
@@ -319,7 +328,7 @@ void Transceiver::configureGPIOsForRX()
   gpiocfg.GPIO0 = 0x00;       // No change
   gpiocfg.GPIO1 = 0x14;       // RX data bits
   gpiocfg.GPIO2 = 0x1F;       // RX/TX data clock
-  gpiocfg.GPIO3 = 0x21;       // RX_STATE; high during RX and low during TX
+  gpiocfg.GPIO3 = 0x20;       // RX_STATE; high during TX and low during RX
   gpiocfg.NIRQ  = 0x00;       // No change
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
@@ -335,7 +344,5 @@ void Transceiver::reportTXEvent()
   snprintf(e->nmeaBuffer.sentence, sizeof e->nmeaBuffer.sentence, "$PAITX,%c,%s*", AIS_CHANNELS[mTXPacket->channel()].designation, mTXPacket->messageType());
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
-
-  // We turn off the led and the LEDManager will turn it back on in 100ms or so
   bsp_tx_led_off();
 }
