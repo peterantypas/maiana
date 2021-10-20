@@ -181,6 +181,7 @@ void Configuration::resetToDefaults()
 {
   bsp_erase_station_data();
   reportStationData();
+  mFlags = {0};
   bsp_erase_config_flags();
 }
 
