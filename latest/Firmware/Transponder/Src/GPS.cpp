@@ -275,6 +275,10 @@ void GPS::parseSentence(const char *buff)
               EventQueue::instance().push (e);
             }
         }
+      else
+        {
+          bsp_gps_led_off();
+        }
     }
 }
 
