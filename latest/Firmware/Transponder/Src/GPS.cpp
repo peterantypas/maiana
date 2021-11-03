@@ -137,14 +137,14 @@ void GPS::onPPS()
   if ( mUTC == 0 )
     return;
 
-  ++mUTC;     // PPS := advance clock by one second!
+  ++mUTC;     // PPS := advance clock by one second, the actual time is sent afterwards
   localtime_r (&mUTC, &mTime); // Now we know exactly what UTC second it is, with only microseconds of latency
-  if (!mStarted)
+
+  // To keep things simple, we only start the AIS slot timer if we're on an even second (it has a 37.5 Hz frequency)
+  if (!mStarted && (mTime.tm_sec & 1) == 0 )
     {
-      // To keep things simple, we only start the AIS slot timer if we're on an even second (it has a 37.5 Hz frequency)
-      mSlotNumber = (mTime.tm_sec % 60) * 2250; // We know what AIS slot number we're in
-      if (!(mTime.tm_sec & 0x00000001))
-        startTimer ();
+      mSlotNumber = (mTime.tm_sec % 60) * 37.5; // We know what AIS slot number we're in
+      startTimer ();
     }
   else
     {
@@ -153,24 +153,20 @@ void GPS::onPPS()
         {
           // On odd seconds, we expect the timer value to be half its period. Just correct it.
           uint32_t nominalTimerValue = mPeriod / 2 - 1;
-          //TIM2->CNT = nominalTimerValue;
           bsp_set_sotdma_timer_value(nominalTimerValue);
         }
       else
         {
           // On even seconds, things are a bit more tricky ...
-          //uint32_t currentTimerValue = TIM2->CNT;
           uint32_t currentTimerValue = bsp_get_sotdma_timer_value();
           if (currentTimerValue >= mPeriod / 2 - 1)
             {
               // The timer is a little behind, so kick it forward
-              //TIM2->CNT = mPeriod - 1;
               bsp_set_sotdma_timer_value(mPeriod - 1);
             }
           else
             {
               // The timer is a little ahead, so pull it back
-              //TIM2->CNT = 0;
               bsp_set_sotdma_timer_value(0);
             }
         }
@@ -188,7 +184,6 @@ void GPS::onPPS()
 void GPS::processEvent(const Event &event)
 {
   processLine(event.nmeaBuffer.sentence);
-  ASSERT(event.rxPacket == nullptr);
 }
 
 void GPS::processLine(const char* buff)
