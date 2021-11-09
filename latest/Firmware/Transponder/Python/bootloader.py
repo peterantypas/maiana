@@ -314,43 +314,41 @@ if __name__ == '__main__':
         print "Erased {0} flash pages".format(numpages)
 
     
-    """
-    if send_command(WRITE_UNPROT_CMD):
-        print "Write unprotect"
-    else:
-        print "Failed to unprotect flash"
-        sys.exit(1)
-   """
-
     addr = address
+    first_chunk = None
     with open(sys.argv[2], "rb") as f:
         while True:
             chunk = f.read(256)
             if len(chunk) == 0:
                 break
-            
-            rem = len(chunk) % 4
-            for i in range(rem):
-                chunk += 0xff
 
-            if not write_chunk(addr, chunk):
-                print "Write failed"
-                sys.exit(1)
+            if addr == address:
+                # Preserve the first chunk and write it last.
+                # This makes FW update as close to atomic as possible.
+                first_chunk = chunk                
+            else:
+                rem = len(chunk) % 4
+                for i in range(rem):
+                    chunk += 0xff
+
+                if not write_chunk(addr, chunk):
+                    print "Write failed"
+                    sys.exit(1)
                 
             addr += len(chunk)
 
             sys.stdout.write("Flashing: {0:3d}%\r".format(100*(addr-address)/st.st_size))
             sys.stdout.flush()
 
+    if write_chunk(address, first_chunk):
+        sys.stdout.write("\r\nFlashed boot sector at address 0x{:08x}\r\n".format(address))
+        sys.stdout.flush()
+    else:
+        print "Failed to write boot sector!!!"
+        sys.exit(1)
+    
     print
 
-    """
-    if send_command(WRITE_PROT_CMD):
-        print "Write protect"
-    else:
-        print "Failed to protect flash"
-        sys.exit(1)
-    """
 
     if not boot(address):
         print "Failed to send GO command"
