@@ -113,13 +113,31 @@ const char *Configuration::serNum()
     return "";
 }
 
+const char *Configuration::mcuType()
+{
+  const OTPData *otp = readOTP();
+  if ( otp )
+    return __mcuNames[otp->mcuType];
+  else
+    return "";
+}
+
+const char *Configuration::breakoutType()
+{
+#if LEGACY_BREAKOUTS == 0
+  return "New";
+#else
+  return "Legacy";
+#endif
+}
+
 void Configuration::reportSystemData()
 {
   Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
   if ( !e )
     return;
 
-  sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s,%s*", hwRev(), FW_REV, serNum());
+  sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s,%s,%s*", hwRev(), FW_REV, serNum(), mcuType());
 
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
@@ -165,11 +183,11 @@ void Configuration::reportOTPData()
 
   if ( data )
     {
-      sprintf(e->nmeaBuffer.sentence, "$PAIOTP,%s,%s*", data->serialnum, data->hwrev);
+      sprintf(e->nmeaBuffer.sentence, "$PAIOTP,%s,%s,%s*", data->serialnum, data->hwrev, __mcuNames[data->mcuType]);
     }
   else
     {
-      strcpy(e->nmeaBuffer.sentence, "$PAIOTP,,*");
+      strcpy(e->nmeaBuffer.sentence, "$PAIOTP,,,*");
     }
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);

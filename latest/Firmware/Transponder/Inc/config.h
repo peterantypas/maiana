@@ -25,7 +25,7 @@
 #include "TXPowerSettings.h"
 
 
-#define FW_REV                        "3.3.1"
+#define FW_REV                        "3.3.2"
 
 
 /*
@@ -88,7 +88,6 @@
 #define DFU_FLAG_MAGIC                0xa191feed
 #define CLI_FLAG_MAGIC                0x209a388d
 
-#define CONFIGURATION_FLAG_ADDRESS    0x0800F000
 #define OTP_DATA                      1
 
 #define ENABLE_WDT                    1
@@ -104,15 +103,6 @@
 #define LEGACY_BREAKOUTS              1
 #endif
 
-/**
- * This is a bit of a pain, but in the legacy breakout boards the TX LED
- * was manipulated by both a hardware switch and the GPIO, so the MCU logic is reversed.
- *
- * The only way to support those legacy boards is to build a separate binary
- * with this switch predefined as 1. There is no automated way to detect which kind of breakout MAIANA has.
- */
-#ifndef LEGACY_BREAKOUTS
-#define LEGACY_BREAKOUTS              1
-#endif
+
 
 #endif /* CONFIG_H_ */

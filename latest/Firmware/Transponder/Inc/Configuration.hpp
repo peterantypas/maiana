@@ -61,6 +61,8 @@ private:
   uint32_t nextAvailableOTPSlot();
   const char *hwRev();
   const char *serNum();
+  const char *mcuType();
+  const char *breakoutType();
 private:
   ConfigFlags mFlags = {0};
 };
