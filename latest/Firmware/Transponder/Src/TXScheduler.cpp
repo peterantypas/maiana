@@ -54,6 +54,15 @@ TXScheduler::TXScheduler ()
 
 void TXScheduler::init()
 {
+  if ( Configuration::instance().readStationData(mStationData) )
+    {
+      DBG("Successfully loaded Station Data \r\n");
+    }
+  else
+    {
+      DBG("Failed to read Station Data !!!\r\n");
+    }
+
   bool cliBootMode = *(uint32_t*)BOOTMODE_ADDRESS == CLI_FLAG_MAGIC;
   if ( !cliBootMode )
     reportTXStatus();
