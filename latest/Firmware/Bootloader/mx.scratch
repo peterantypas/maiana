@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+<ProjectName>/home/peter/ais_bootloader/\ais_bootloader</ProjectName>
+<CMSIS>../Drivers/CMSIS</CMSIS>
+<HAL_Driver>/home/peter/STM32Cube/Repository//STM32Cube_FW_L4_V1.10.0/Drivers/CMSIS</HAL_Driver>
+
+<Toolchain>SW4STM32</Toolchain>
+<Version>0</Version>
+
+<filestoremove>
+	<file>
+	</file>
+</filestoremove>
+
+<inctoremove>
+	<Aincludes>
+	   <include></include>
+    </Aincludes>
+	<Cincludes>
+    </Cincludes>
+</inctoremove>
+
+<configs>
+  <config>
+    <name>ais_bootloader</name>				
+    <device>STM32L432KCUx</device>		 
+    <heapSize>0x200</heapSize>
+    <stackSize>0x400</stackSize>
+    
+    	<board>custom</board>
+			
+    <usedDebug>true</usedDebug>
+    	<debugprobe>swd</debugprobe>
+    <optimization>6</optimization>
+    <icfloc>0</icfloc>
+    <Adefines>
+        <define></define>
+    </Adefines>   
+
+    <UsedFreeRTOS></UsedFreeRTOS>
+    <Aincludes>
+
+
+	    	<include></include>
+    </Aincludes>
+    <Cdefines>
+        <define>__weak=&quot;__attribute__((weak))&quot;</define>
+        <define>__packed=&quot;__attribute__((__packed__))&quot;</define>
+    </Cdefines>
+    <definestoremove>
+        <Adefines>
+            <define></define>
+        </Adefines>
+        <Cdefines>
+            <define>USE_FULL_LL_DRIVER</define>
+            <define>MBEDTLS_CONFIG_FILE=&quot;mbedtls_config.h&quot;</define>
+            <define>_TIMEVAL_DEFINED</define>
+            <define>_SYS_TIME_H_</define>
+        </Cdefines>         
+    </definestoremove>
+    
+	<Cincludes>
+	   <include>../Inc</include>
+	   <include>../Drivers/STM32L4xx_HAL_Driver/Inc</include>
+	   <include>../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy</include>
+	   <include>../Drivers/CMSIS/Device/ST/STM32L4xx/Include</include>
+	   <include>../Drivers/CMSIS/Include</include>
+
+    </Cincludes>
+      </config>
+    </configs> 
+
+    <underRoot>true</underRoot>
+    	<copyAsReference>false</copyAsReference>
+	  		<sourceEntries>
+		    	<sourceEntry>
+		    		<name>Inc</name>
+		    	</sourceEntry>
+		    	<sourceEntry>
+		    		<name>Src</name>
+		    	</sourceEntry>
+		    	<sourceEntry>
+		    		<name>Drivers</name>
+		    	</sourceEntry>
+		    </sourceEntries>
+
+</Project>

@@ -25,7 +25,7 @@
 #include "TXPowerSettings.h"
 
 
-#define FW_REV                        "3.3.3"
+#define FW_REV                        "4.0.0"
 
 
 /*

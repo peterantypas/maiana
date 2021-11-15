@@ -1,0 +1,14 @@
+*.o
+*.elf
+*.bin
+*.map
+*.hex
+*~
+*.d
+
+/Default
+/Release/
+/Debug/
+/L422-Release/
+/L422-Debug/
+/L432-Debug/
