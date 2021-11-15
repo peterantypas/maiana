@@ -212,8 +212,6 @@ void CommandProcessor::writeOTPData(const std::string &s)
 
   vector<string> tokens;
   Utils::tokenize(params, ' ', tokens);
-  if ( tokens.size() < 2 )
-    return;
 
   OTPData data;
   memset(&data, 0, sizeof data);
@@ -221,7 +219,6 @@ void CommandProcessor::writeOTPData(const std::string &s)
   data.magic  = OTP_MAGIC;
   data.rev    = OTP_REV;
   strlcpy(data.hwrev, tokens[0].c_str(), sizeof data.hwrev);
-  data.mcuType = atoi(tokens[1].c_str());
 
   if ( tokens.size() > 2 )
     strlcpy(data.serialnum, tokens[1].c_str(), sizeof data.serialnum);

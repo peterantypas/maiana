@@ -289,11 +289,6 @@ void USART1_IRQHandler(void)
     }
 }
 
-void HAL_SYSTICK_Callback(void)
-{
-  static uint32_t count = 0;
-  if ( count++ % 1000 == 0 )
-    dfu_tick();
-}
+
 
 

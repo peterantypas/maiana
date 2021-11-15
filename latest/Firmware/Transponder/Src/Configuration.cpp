@@ -179,11 +179,11 @@ void Configuration::reportOTPData()
 
   if ( data )
     {
-      sprintf(e->nmeaBuffer.sentence, "$PAIOTP,%s,%s,%s*", data->serialnum, data->hwrev, __mcuNames[data->mcuType]);
+      sprintf(e->nmeaBuffer.sentence, "$PAIOTP,%s,%s*", data->serialnum, data->hwrev);
     }
   else
     {
-      strcpy(e->nmeaBuffer.sentence, "$PAIOTP,,,*");
+      strcpy(e->nmeaBuffer.sentence, "$PAIOTP,,*");
     }
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);

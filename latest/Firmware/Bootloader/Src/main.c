@@ -75,9 +75,9 @@ static void MX_CRC_Init(void);
 
 /* USER CODE BEGIN 0 */
 typedef  void (*pFunction)(void);
+static bool inDFU = false;
 
-
-void jump()
+void jump_to_application()
 {
   HAL_UART_MspDeInit(&huart1);
   HAL_CRC_MspDeInit(&hcrc);
@@ -99,42 +99,101 @@ uint32_t imageCRC32(Metadata *fw)
   return crc32((void*)APPLICATION_ADDRESS, fw->size);
 }
 
+bool rescue_requested()
+{
+  uint32_t now = HAL_GetTick();
+  int toggleCount = 0;
+  int oldState = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
+  while ( HAL_GetTick() - now < 2500 )
+    {
+      int newState = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
+      if ( oldState != newState )
+        {
+          ++toggleCount;
+          oldState = newState;
+        }
+
+      if ( toggleCount > 1 )
+        return true;
+
+      __WFI();
+    }
+
+  return false;
+}
+
+void main_tick()
+{
+  // TODO: Anything?
+}
 
 /* USER CODE END 0 */
 
 int main(void)
 {
   firmwareUpdate.state = WAITING;
+  GPIO_InitTypeDef gpio;
 
   HAL_Init();
   SystemClock_Config();
   MX_GPIO_Init();
   MX_CRC_Init();
-
   bool hasValidFirmware = false;
+
+  if (__HAL_RCC_GET_FLAG(RCC_FLAG_BORRST) != RESET)
+    {
+      // This is a power-on (or brown-out) reset
+      // TX switch can be used for rescue mode immediately after POR
+      gpio.Pin = GPIO_PIN_12;
+      gpio.Mode = GPIO_MODE_INPUT;
+      gpio.Pull = GPIO_PULLUP;
+      HAL_GPIO_Init(GPIOA, &gpio);
+
+      __HAL_RCC_CLEAR_RESET_FLAGS();
+
+      if ( rescue_requested() )
+        goto enter_dfu;
+    }
+
+  // Since there is no "rescue" mode request, now we check for explicit DFU request via reserved RAM
   if ( *(uint32_t*)BOOTMODE_ADDRESS == DFU_FLAG_MAGIC )
     {
       *(uint32_t*)BOOTMODE_ADDRESS = 0;
-    }
-  else
-    {
-      Metadata *fw = (Metadata*)METADATA_ADDRESS;
-      if ( fw->magic == 0xabadbabe )
-        {
-          uint32_t crc = imageCRC32(fw);
-          hasValidFirmware = (crc == fw->crc32);
-        }
+      goto enter_dfu;
     }
 
-#if 1
-  // If there's firmware installed, jump to it -- do nothing else
+  Metadata *fw = (Metadata*)METADATA_ADDRESS;
+  if ( fw->magic == 0xabadbabe )
+    {
+      uint32_t crc = imageCRC32(fw);
+      hasValidFirmware = (crc == fw->crc32);
+    }
+
+  // If there's firmware installed, jump_to_application to it -- do nothing else
   if ( hasValidFirmware )
-    jump();
-#endif
+    jump_to_application();
+
   /*
    * If we get here, we're waiting for a firmware upload
    */
 
+enter_dfu:
+
+  // Turn on all LEDs to indicate this
+  gpio.Mode = GPIO_MODE_OUTPUT_PP;
+  gpio.Pull = GPIO_NOPULL;
+  gpio.Speed = GPIO_SPEED_LOW;
+  gpio.Alternate = 0;
+  gpio.Pin = GPIO_PIN_1|GPIO_PIN_11;
+
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_11, GPIO_PIN_SET);
+  HAL_GPIO_Init(GPIOA, &gpio);
+
+  gpio.Pin = GPIO_PIN_5;
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+  HAL_GPIO_Init(GPIOB, &gpio);
+
+  inDFU = true;
   MX_USART1_UART_Init();
   dfu_init();
 
@@ -264,20 +323,6 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  GPIO_InitTypeDef gpio;
-  gpio.Mode = GPIO_MODE_OUTPUT_PP;
-  gpio.Pull = GPIO_NOPULL;
-  gpio.Speed = GPIO_SPEED_LOW;
-  gpio.Alternate = 0;
-  gpio.Pin = GPIO_PIN_1|GPIO_PIN_11;
-
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_11, GPIO_PIN_SET);
-  HAL_GPIO_Init(GPIOA, &gpio);
-
-  gpio.Pin = GPIO_PIN_5;
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
-  HAL_GPIO_Init(GPIOB, &gpio);
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -301,6 +346,18 @@ void _Error_Handler(char * file, int line)
     {
     }
   /* USER CODE END Error_Handler_Debug */ 
+}
+
+void HAL_SYSTICK_Callback(void)
+{
+  static uint32_t count = 0;
+  if ( count++ % 1000 == 0 )
+    {
+      if ( inDFU )
+        dfu_tick();
+      else
+        main_tick();
+    }
 }
 
 #ifdef USE_FULL_ASSERT

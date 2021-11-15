@@ -20,14 +20,6 @@
 #define MCU_STM32L431     0x03
 #define MCU_STM32L432     0x04
 
-static const char *__mcuNames[] = {
-    "unknown",
-    "STM32L412",
-    "STM32L422",
-    "STM32L431",
-    "STM32L432"
-};
-
 
 // This structure must be double-word aligned
 
@@ -37,10 +29,7 @@ typedef struct
   uint32_t  rev;
   char      serialnum[32];
   char      hwrev[16];
-
-  uint8_t   mcuType;
-
-  uint8_t   reserved[7];
+  uint8_t   reserved[8];
 } OTPData;
 
 

@@ -41,5 +41,6 @@ typedef struct {
 static FirmwareUpdate firmwareUpdate;
 
 void dfu_init();
+void dfu_tick();
 
 #endif /* FW_UPDATE_H_ */
