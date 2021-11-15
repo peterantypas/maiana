@@ -36,13 +36,15 @@ void dfu_init()
   memset(&firmwareUpdate, 0, sizeof firmwareUpdate);
   firmwareUpdate.state = WAITING;
   printf2(GREETING);
+
+  // Turn on all LEDs
 }
 
 bool dfu_erase_flash();
 bool dfu_flush_page();
 uint32_t dfu_checksum_image();
 bool dfu_write_metadata();
-
+void dfu_tick();
 
 int count_spaces(char *s)
 {
@@ -88,86 +90,86 @@ void dfu_process_byte(uint8_t b)
 {
   switch(firmwareUpdate.state)
   {
-  case WAITING:
-    if  ( b == '\n' )
-      {
-        __buff[__p++] = 0;
+    case WAITING:
+      if  ( b == '\n' )
+        {
+          __buff[__p++] = 0;
 
-        // What command did we get?
-        if ( strstr(__buff, "load ") )
-          {
-            dfu_process_load_cmd();
-          }
-        else if ( strlen(__buff) == 0 )
-          {
-            printf2(GREETING);
-          }
-        __p = 0;
-      }
-    else if ( b == '\r' )
-      {
-        __buff[__p++] = 0;
-      }
-    else
-      {
-        __buff[__p++] = b;
-        if ( __p >= MAX_BUFF-1 )
+          // What command did we get?
+          if ( strstr(__buff, "load ") )
+            {
+              dfu_process_load_cmd();
+            }
+          else if ( strlen(__buff) == 0 )
+            {
+              printf2(GREETING);
+            }
           __p = 0;
-      }
-    break;
-  case TRANSFERRING:
-    {
-      __page[firmwareUpdate.pos++] = b;
-      ++firmwareUpdate.bytes;
-
-      if ( firmwareUpdate.bytes % FLASH_PAGE_SIZE == 0 )
-        {
-          firmwareUpdate.pos = 0;
-          ++firmwareUpdate.pages;
-
-          if ( dfu_flush_page() )
-            {
-              printf2("OK\r\n");
-            }
-          else
-            {
-              printf2("ERROR: Flash failure\r\n");
-            }
         }
-
-      if ( firmwareUpdate.bytes == firmwareUpdate.image.size )
+      else if ( b == '\r' )
         {
-          // Flash the remaining bytes (if any)
-          if ( firmwareUpdate.bytes % FLASH_PAGE_SIZE )
-            {
-              ++firmwareUpdate.pages;
-              if ( dfu_flush_page() )
-                {
-                  //printf2("OK Done\r\n");
-                }
-              else
-                {
-                  printf2("ERROR: Flash failure\r\n");
-                  dfu_init();
-                }
-            }
-
-          uint32_t crc = dfu_checksum_image();
-          if ( crc == firmwareUpdate.image.crc32 )
-            {
-              printf2("OK, booting\r\n");
-              HAL_Delay(100);
-              dfu_write_metadata();
-              NVIC_SystemReset();
-            }
-          else
-            {
-              printf2("ERROR: CRC mismatch\r\n");
-              dfu_init();
-            }
+          __buff[__p++] = 0;
+        }
+      else
+        {
+          __buff[__p++] = b;
+          if ( __p >= MAX_BUFF-1 )
+            __p = 0;
         }
       break;
-    }
+    case TRANSFERRING:
+      {
+        __page[firmwareUpdate.pos++] = b;
+        ++firmwareUpdate.bytes;
+
+        if ( firmwareUpdate.bytes % FLASH_PAGE_SIZE == 0 )
+          {
+            firmwareUpdate.pos = 0;
+            ++firmwareUpdate.pages;
+
+            if ( dfu_flush_page() )
+              {
+                printf2("OK\r\n");
+              }
+            else
+              {
+                printf2("ERROR: Flash failure\r\n");
+              }
+          }
+
+        if ( firmwareUpdate.bytes == firmwareUpdate.image.size )
+          {
+            // Flash the remaining bytes (if any)
+            if ( firmwareUpdate.bytes % FLASH_PAGE_SIZE )
+              {
+                ++firmwareUpdate.pages;
+                if ( dfu_flush_page() )
+                  {
+                    //printf2("OK Done\r\n");
+                  }
+                else
+                  {
+                    printf2("ERROR: Flash failure\r\n");
+                    dfu_init();
+                  }
+              }
+
+            uint32_t crc = dfu_checksum_image();
+            if ( crc == firmwareUpdate.image.crc32 )
+              {
+                printf2("OK, booting\r\n");
+                HAL_Delay(100);
+                dfu_write_metadata();
+                NVIC_SystemReset();
+              }
+            else
+              {
+                printf2("ERROR: CRC mismatch\r\n");
+                dfu_init();
+              }
+          }
+        break;
+      }
   }
 }
 
@@ -267,6 +269,15 @@ bool dfu_write_metadata()
   return true;
 }
 
+void dfu_tick()
+{
+  if ( firmwareUpdate.state == TRANSFERRING )
+    {
+      HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+    }
+}
+
 
 void USART1_IRQHandler(void)
 {
@@ -276,6 +287,13 @@ void USART1_IRQHandler(void)
       uint8_t c = USART1->RDR;
       dfu_process_byte(c);
     }
+}
+
+void HAL_SYSTICK_Callback(void)
+{
+  static uint32_t count = 0;
+  if ( count++ % 1000 == 0 )
+    dfu_tick();
 }
 
 
