@@ -63,6 +63,7 @@ private:
   const char *serNum();
   const char *mcuType();
   const char *breakoutType();
+  bool isBootloaderPresent();
 private:
   ConfigFlags mFlags = {0};
 };

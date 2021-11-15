@@ -26,25 +26,13 @@
 #include <bsp/bsp.hpp>
 
 
-// These are not defined in ANY CMSIS or HAL header, WTF ST???
+// These are not defined in ANY CMSIS or HAL header, WTF???
 #define OTP_ADDRESS           0x1FFF7000
 #define OTP_SIZE              0x00000400
 
+
 #define CONFIG_FLAGS_MAGIC    0x2092ED2C
 
-#if 0
-static StationData __THIS_STATION__ = {
-    STATION_DATA_MAGIC,
-    987654321,                // MMSI
-    "NAUT",                   // Name
-    "",                       // Call sign
-    0,                        // Length overall
-    0,                        // Beam
-    0,                        // Bow offset
-    0,                        // Port offset
-    VESSEL_TYPE_UNSPECIFIED
-};
-#endif
 
 //static StationDataPage __page;
 
@@ -115,20 +103,27 @@ const char *Configuration::serNum()
 
 const char *Configuration::mcuType()
 {
-  const OTPData *otp = readOTP();
-  if ( otp )
-    return __mcuNames[otp->mcuType];
-  else
+#ifdef STM32L422xx
+  return "STM32L422";
+#elif defined STM32L432xx
+  return "STM32L432";
+#else
     return "";
+#endif
 }
 
 const char *Configuration::breakoutType()
 {
 #if LEGACY_BREAKOUTS == 0
-  return "New";
+  return "1";
 #else
-  return "Legacy";
+  return "0";
 #endif
+}
+
+bool Configuration::isBootloaderPresent()
+{
+  return true;
 }
 
 void Configuration::reportSystemData()
@@ -137,7 +132,8 @@ void Configuration::reportSystemData()
   if ( !e )
     return;
 
-  sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s,%s,%s*", hwRev(), FW_REV, serNum(), mcuType());
+  sprintf(e->nmeaBuffer.sentence, "$PAISYS,%s,%s,%s,%s,%s,%d*", hwRev(), FW_REV, serNum(), mcuType(),
+      breakoutType(), isBootloaderPresent());
 
   Utils::completeNMEA(e->nmeaBuffer.sentence);
   EventQueue::instance().push(e);
