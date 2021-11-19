@@ -7,14 +7,9 @@ Fast forward to 2021, and several other sailors who are looking for the same fea
 
 <img src="images/InstallOnSolarPanels.jpg" height="320"/><img src="images/InstallOnRadarDome.jpg" height="320"/><img src="images/InstallOnSternRail.jpg" height="320"/>
 
-The main difference between MAIANA&trade; and every commercial transponder is that it's a self-contained unit, and thus its performance is 100% repeatable. With this design, we don't have to worry about a worn out coax going to the masthead via an antenna switch of unknown attenuation, connected to a whip antenna of unknown efficiency and poor AIS tuning.
+The main difference between MAIANA&trade; and every commercial transponder is that it's a self-contained unit, and thus its performance is 100% repeatable. The entire transponder circuit, GPS (actually GNSS) and antennas are all in the antenna housing. The design has been validated by fabricating _over 30 units_ and measuring their performance.
 
-MAIANA&trade; as a *system* is tuned for nothing but AIS and thus delivers a consistent performance, with an SWR of 1.15:1 or better. Your masthead VHF will not come anywhere near this:
-
-<img src="images/maiana-tuning.png"/>
-
-
-So with all the RF kept outside and under tight control, the system only needs power and data connections. Now, what's the most common cable that can carry a few signals 50 feet away? If you guessed "Ethernet", you guessed right. Commonplace twisted pair Cat5 cable delivers a serial signal with minimal distortion. So that's what connects the outside unit to the cabin, where one of these breakouts offers USB, NMEA0183 or NMEA2000 adapters to connect to the rest of the boat's systems:
+So with all the core functionality kept outside and under tight control, the only other thing we need is power and data connections. Now, what's the most common cable that can carry a few signals 50 feet away? If you guessed "Ethernet", you guessed right. Commonplace Cat5 cable can deliver power plus serial data signals anywhere on an average sized pleasure boat. So that's how the exterior unit connects to the cabin, where one of these breakouts offers USB, NMEA0183 or NMEA2000 adapters to connect to the rest of the boat's systems. 
 
 <img src="images/usbadapter.jpg" height="420"/><img src="images/nmea0183adapter.jpg" height="420"/><img src="images/nmea2000adapter.jpg" height="420"/>
 
@@ -24,17 +19,17 @@ So with all the RF kept outside and under tight control, the system only needs p
 ### Mechanical
 The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is simply the most inexpensive UV resistant material available, and it looks great too!
 
-The VHF antenna whip is built using an epoxy wound filament tube coated with high grade US-made irradiated polyolefin ("heat shrink") tubing. The company that makes this tubing (and helped me with this design challenge) also built the landing gear for NASA's Ingenuity helicopter on Mars, so they definitely understand how to deal with harsh environments. The bottomline is that unlike typical fiberglass antenna masts you might see around (or have on your boat already), this antenna is not going to degrade and "blossom" under continuous sun exposure.
+The VHF antenna whip is built using an epoxy wound filament tube coated with high grade US-made irradiated polyolefin ("heat shrink") tubing. The company that makes this tubing (and helped me with this design challenge) also built the landing gear for NASA's Ingenuity helicopter on Mars, so they definitely understand how to deal with harsh environments. The bottomline is that unlike typical fiberglass antenna masts you might see around (or have on your boat already), this antenna is not going to degrade and "blossom" under continuous sun exposure. 
 
-The entire outdoor assembly is held together by the same high grade heat shrink tubing, so put away that tube of 5200!!! The main water seal is formed by heat shrinking around a specially designed 3D printed cap made of PLA. Because this part naturally softens when heated and is "choked" by the heat shrink tubing, it forms a permanent, watertight colar around the antenna tube. This blocks rain water and salt spray from the top. A layer of clear heat shrink in the interior forms a secondary water seal encompassing the lower part of the antenna. Also, the PCB can be coated with either silicon or acrylic conformal coating for an added layer of protection.
+The entire outdoor assembly is held together by the same high grade heat shrink tubing, so there is no need for any adhesives! The main water seal is formed by heat shrinking around a specially designed 3D printed cap made of PLA. This part naturally softens when heated and is also compressed by the heat shrink tubin surrounding it, thus forming a permanent, watertight colar around the antenna tube. This blocks rain water and salt spray from the top. A layer of clear heat shrink in the interior forms a secondary water seal encompassing the lower part of the antenna. Finally, the PCB can be sprayed with conformal coating for an added layer of protection.
 
-The unit can be opened and serviced by (carefully) cutting through the heat shrink tubing with a knife, then resealing with the same material and method as before.
+With no adhesives getting in the way, the unit can actually be opened and serviced by (carefully) cutting through the heat shrink tubing with a knife, then resealing with the same material and method as before.
 
 
 ### Electrical
 As I mentioned already, the transponder circuit is inside the antenna case. It's a 24mm x 84mm 4-layer PCB:
 
-![Image](images/board-11.jpg?raw=True)
+![Image](images/board-11.3.0.jpg?raw=True)
 
 The core design is based on two Silicon Labs "EZRadio Pro" series ICs. The first IC is a transceiver and the second one is a full-time receiver. Currently, due to the global chip shortage, these ICs are impossible to source. I have secured a small quantity because I placed a direct order with their main US distributor last year, when their lead time was about 16 weeks. It is now 40+ weeks.
 
@@ -44,7 +39,7 @@ The GNSS is now a Quectel L76L-M33 and relies on a Johansson ceramic chip antenn
 
 The transmitter is based on a power MOSFET typically found in handheld VHF radios and outputs just over 2 Watts (+33dBm). It has a verified range of 10 nautical miles.
 
-The unit runs on 12V and exposes a 3.3V UART for connecting to the rest of the boat's system. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. The breakout boxes pictured above deliver this stream via USB, NME0183 (RS422) or NMEA 2000 (CAN). These 3 breakouts feature **galvanic isolation** of their USB connection to avoid causing unintended problems with laptops and other devices whose power supplies are meant to "float".
+The system is designed to run from a 12V battery and exposes a 3.3V-level UART for connecting to the rest of the boat. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. It also accepts certain commands for management. The breakout boxes pictured above deliver this stream via USB, NME0183 (RS422) or NMEA 2000 (CAN). All 3 breakouts feature _galvanic isolation_ of their USB connection to avoid causing unintended problems with laptops and other devices whose power supplies are meant to "float". This also means that you cannot use USB to power MAIANA&trade; - it must connect to a 12V battery.
 
 In addition, there is now a "bare bones" UART breakout:
 
@@ -52,13 +47,13 @@ In addition, there is now a "bare bones" UART breakout:
 
 This provides the simplest, lowest cost interface to a Raspberry Pi or any other similar system you may want to wire directly.
 
-For the circuit to transmit, it must be configured with persistent station data (MMSI, call sign, name, dimensions, etc). This is stored in an EEPROM and is provisioned over a USB/serial connection via a command line interface. If station data is not provisioned, the device will simply run as a 2 channel AIS + GNSS receiver (which is still useful, but less cool :).
+For the circuit to transmit, it must be configured with persistent station data (MMSI, call sign, name, dimensions, etc). This is stored in an EEPROM and is provisioned over a USB/serial connection via a command line interface. If station data is not provisioned, the device will simply run as a 2 channel AIS + GNSS receiver (is still useful, but less cool).
 
-In terms of power consumption, the main board draws about 32mA from 12V in RX mode, and spikes up to ~650mA during transmission (for 27 milliseconds). The adapters add an extra 0.5mA - 25mA depending on choice. So MAIANA&trade;'s most power hungry configuration needs 0.7 Watts, which is a lot less than the typical LED cabin light!
+Firmware implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GNSS and the UTC clock. It does not synchronize itself to other stations because practical experience revealed that it's literally the "Wild West" out there: There are *many* commercial class A systems in operation today with buggy time slot management, so the simplest solution is to not rely on any of them. That said, MAIANA&trade; behaves as a "class B" so it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for this class of device. 
 
-Lastly, the design implements SOTDMA synchronization based on the very acurate 1 PPS signal from the GNSS and the UTC clock. It simply locks an STM32 hardware timer onto that and keeps it in perfect sync perpetually. The hardware timer's interrupt defines the boundaries of time slots and keeps all the firmware logic simple. 
+All adapters (except the "bare bones") feature a "silent mode" switch to explicitly disable transmission. If you use the bare bones UART adapter, you can wire one yourself.
 
-The design does not synchronize itself to other stations because practical experience revealed that it's literally the "Wild West" out there: There are *many* commercial class A systems in operation today with buggy time slot management, so the simplest solution is not to rely on any of them. That said, MAIANA&trade; behaves as a "class B" so it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for this class of device. 
+In terms of power consumption, the main board draws about 37mA from 12V in receive mode, and spikes up to 650mA during transmission (for only 27 milliseconds). The adapters add an extra 0.5mA - 25mA depending on choice. So MAIANA&trade;'s most power hungry configuration needs about 0.8 Watts, which is a lot less than a typical LED-based cabin light.
 
 
 ### Software
