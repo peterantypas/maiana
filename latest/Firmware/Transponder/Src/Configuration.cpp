@@ -123,7 +123,11 @@ const char *Configuration::breakoutType()
 
 bool Configuration::isBootloaderPresent()
 {
+#ifndef VECT_TAB_OFFSET
+  return false;
+#else
   return true;
+#endif
 }
 
 void Configuration::reportSystemData()
