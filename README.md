@@ -19,7 +19,7 @@ So with all the core functionality kept outside and under tight control, the onl
 ### Mechanical
 The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is the highest grade of such material, with a solid white PVC core (not a coated houshold grade pipe). Still, it's the most inexpensive UV resistant material available, and it looks great too!
 
-The VHF antenna whip is built using an epoxy wound filament tube coated with high quality, UV resistant irradiated polyolefin ("heat shrink"). The company that makes this tubing (and helped me with this design challenge) also built the landing gear for NASA's Ingenuity helicopter on Mars, so they definitely understand how to deal with harsh environments. The bottomline is that unlike typical fiberglass antenna masts, this antenna is not going to degrade and "blossom" under continuous UV exposure. 
+The VHF antenna whip is built using an epoxy wound filament tube coated with high quality, UV resistant irradiated polyolefin ("heat shrink"). The company that makes this tubing (and helped me with this design challenge) also built the landing gear for NASA's Ingenuity helicopter on Mars, so they definitely understand how to deal with harsh environments. The bottomline is that unlike typical fiberglass antenna masts, this antenna is not going to degrade and "blossom" under continuous UV exposure. Starting with January of 2022, the antenna tube will be made of two telescopic pieces of the same material. This will greatly reduce the cost of shipping the kit to Europe and Australia.
 
 The entire outdoor assembly is held together by the same high grade heat shrink tubing, so there is no need for any adhesives! The main water seal is formed by heat shrinking around a specially designed 3D printed cap made of PLA. This part naturally softens when heated and as it's compressed by the heat shrink tubing surrounding it, it forms a permanent, watertight colar around the antenna tube. This blocks rain water and salt spray from the top. A layer of clear heat shrink in the interior forms a secondary water seal encompassing the lower part of the antenna. Finally, the PCB can be sprayed with conformal coating for an added layer of protection. Silicone spray works best and has no appreciable detuning effect on the GNSS.
 
@@ -31,25 +31,25 @@ As I mentioned already, the transponder circuit is inside the antenna case. It's
 
 ![Image](images/board-11.3.0.jpg?raw=True)
 
-The core design is based on two Silicon Labs "EZRadio Pro" series ICs. The first IC is a transceiver and the second one is a full-time receiver. Currently, due to the global chip shortage, these ICs are impossible to source. I have secured a small quantity because I placed a direct order with their main US distributor last year, when their lead time was about 16 weeks. It is now 40+ weeks.
+The core design is based on two Silicon Labs "EZRadio Pro" series ICs. All kits shipping today are based on the Si4467 as this is the only part I have been able to source from spot markets in China.
 
-The microcontroller on this board is a STM32L4 series (422, 431 and 432 supported). I chose these because the 80MHz clock allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is important, as a transponder is a *hard real time* application so SPI latency must be minimized.
+The microcontroller on this board is a STM32L4 series (422, 431 and 432 supported). I chose these because the 80MHz clock allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is important, as a transponder is a *hard real time* application so SPI latency must be minimized. All kits today are based on the STM32L432KBU6 as (again) it's the only part that I have been able to source from China.
 
-The GNSS is now a Quectel L76L-M33 and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start. With the latest antenna tuning, it offers near-navigation grade accuracy (typical HDOP < 1 meter).
+The GNSS is now a Quectel L76L-M33 and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start. With the latest antenna tuning, it offers near-navigation grade accuracy (typical HDOP at sea < 1 meter).
 
 The transmitter front end is based on a power MOSFET typically found in handheld VHF radios and outputs just over 2 Watts (+33dBm). It has a verified range of over 20 nautical miles on a masthead and 10+ miles on a pushpit.
 
-The system is designed to run from a 12V battery and exposes a 3.3V-level UART for connecting to the rest of the boat. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. It also accepts certain commands for management. The breakout boxes pictured above deliver this stream via USB, NME0183 (RS422) or NMEA 2000 (CAN). All 3 breakouts feature _galvanic isolation_ of their USB connection to avoid causing unintended problems with laptops and other devices whose power supplies are meant to "float". This also means that you cannot use USB to power MAIANA&trade; - it must connect to a 12V battery.
+The system is designed to run from a 12V battery and exposes a 3.3V-level UART for connecting to the rest of the boat. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. It also accepts certain commands for management. The breakout boxes pictured above deliver this stream via USB, NME0183 (RS422) or NMEA 2000 (CAN). The 3 "fancy" breakouts feature _galvanic isolation_ of their USB connection to avoid causing unintended problems with laptops and other devices whose power supplies are meant to _float_. This also means that you cannot use USB to power MAIANA&trade; - it must connect to a 12V battery.
 
 In addition, there is now a "bare bones" UART breakout:
 
 <img src="images/uart+usb-adapter.jpg" height="420"/>
 
-This provides the simplest, lowest cost interface to a Raspberry Pi, Arduino or any other similar system you may want to wire directly.
+This provides the simplest, lowest cost interface to a Raspberry Pi, Arduino or any other similar system you may want to wire directly. It is _not_ galvanically isolated to keep the cost really low. This adapter is now part of the base kit and ships with every configuration.
 
-For the circuit to transmit, it must be configured with persistent station data (MMSI, call sign, name, dimensions, etc). This is stored in an EEPROM and is provisioned over a USB/serial connection via a command line interface. If station data is not provisioned, the device will simply run as a 2 channel AIS + GNSS receiver (still useful, but not as cool).
+For the circuit to transmit, it must be configured with persistent station data (MMSI, call sign, name, dimensions, etc). This is stored in an EEPROM and is provisioned over a USB/serial connection via a command line interface. If station data is not provisioned, the device will simply run as a 2 channel AIS + GNSS receiver.
 
-SOTDMA synchronization is based on the very acurate 1 PPS signal from the GNSS and the UTC clock. MAIANA&trade; does not synchronize itself to other stations because practical experience revealed that it's literally the Wild West out there: There are *many* commercial class A systems in operation today with buggy time slot management, so the simplest solution is to not rely on any of them. That said, the design behaves as a "class B" so it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for this class of device. 
+SOTDMA synchronization is based on the very acurate 1 PPS signal from the GNSS and the UTC clock. MAIANA&trade; does not synchronize itself to other stations because practical experience revealed that it's literally the "Wild West" out there: There are *many* commercial class A systems in operation today with buggy time slot management, so the simplest solution is to not rely on any of them. That said, the design behaves as a "class B" so it will not attempt to reserve time slots. It will just transmit autonomously and independently, based on Clear Channel Assessment, at the schedule permitted for this class of device. 
 
 All adapters (except the "bare bones" one) feature a *silent mode* switch to explicitly disable transmission. If you need this for the UART adapter, you can wire one yourself.
 
@@ -76,7 +76,7 @@ Everything is [here](latest/CAD).
 
 This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. The antenna switch on board 11.3.0 is about 0.8 x 1 mm and you'll need a microscope to align it. So unless you're very skilled and well equipped, you will find it difficult to build. 
 
-For this reason, I have developed a kit which includes pre-soldered (and programmed) boards. Take a look [at the installation instructions here](latest/Manuals) to get a better understanding of what's involved. I have finally managed to secure enough BOM from spot markets in China to produce these, so if you're insterested, send an email to *maiana.kits@_dontspam_gmail.com* (remove the spambot blocker of course). 
+For this reason, I have developed a kit which includes pre-soldered (and programmed) boards as well as all the antenna, main casing and heat shrink tubing. Take a look [at the installation instructions here](latest/Manuals) to get a better understanding of what's involved. I have finally managed to secure enough BOM from spot markets in China to produce these, so if you're insterested, send an email to *maiana.kits@_dontspam_gmail.com* (remove the spambot blocker of course). 
 
 
 ### License
