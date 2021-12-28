@@ -17,13 +17,13 @@ So with all the core functionality kept outside and under tight control, the onl
 ## Hardware Design
 
 ### Mechanical
-The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is the highest grade of such material, with a solid white PVC core (not a coated houshold grade pipe). Still, it's most inexpensive UV resistant material available, and it looks great too!
+The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is the highest grade of such material, with a solid white PVC core (not a coated houshold grade pipe). Still, it's the most inexpensive UV resistant material available, and it looks great too!
 
 The VHF antenna whip is built using an epoxy wound filament tube coated with high quality, UV resistant irradiated polyolefin ("heat shrink"). The company that makes this tubing (and helped me with this design challenge) also built the landing gear for NASA's Ingenuity helicopter on Mars, so they definitely understand how to deal with harsh environments. The bottomline is that unlike typical fiberglass antenna masts, this antenna is not going to degrade and "blossom" under continuous UV exposure. 
 
 The entire outdoor assembly is held together by the same high grade heat shrink tubing, so there is no need for any adhesives! The main water seal is formed by heat shrinking around a specially designed 3D printed cap made of PLA. This part naturally softens when heated and as it's compressed by the heat shrink tubing surrounding it, it forms a permanent, watertight colar around the antenna tube. This blocks rain water and salt spray from the top. A layer of clear heat shrink in the interior forms a secondary water seal encompassing the lower part of the antenna. Finally, the PCB can be sprayed with conformal coating for an added layer of protection. Silicone spray works best and has no appreciable detuning effect on the GNSS.
 
-With no adhesives getting in the way, the unit can actually be opened and serviced by (carefully) cutting through the heat shrink tubing with a knife, then resealing with the same material and method as before. That was one of my design goals from the beginning.
+With no adhesives getting in the way, the unit can actually be opened and serviced by (carefully) cutting through the heat shrink tubing with a knife, then resealing with the same material and method as before. This, in fact, was one of my design goals from the beginning.
 
 
 ### Electrical
@@ -37,7 +37,7 @@ The microcontroller on this board is a STM32L4 series (422, 431 and 432 supporte
 
 The GNSS is now a Quectel L76L-M33 and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start. With the latest antenna tuning, it offers near-navigation grade accuracy (typical HDOP < 1 meter).
 
-The transmitter front end is based on a power MOSFET typically found in handheld VHF radios and outputs just over 2 Watts (+33dBm). It has a verified range of over 10 nautical miles.
+The transmitter front end is based on a power MOSFET typically found in handheld VHF radios and outputs just over 2 Watts (+33dBm). It has a verified range of over 20 nautical miles on a masthead and 10+ miles on a pushpit.
 
 The system is designed to run from a 12V battery and exposes a 3.3V-level UART for connecting to the rest of the boat. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. It also accepts certain commands for management. The breakout boxes pictured above deliver this stream via USB, NME0183 (RS422) or NMEA 2000 (CAN). All 3 breakouts feature _galvanic isolation_ of their USB connection to avoid causing unintended problems with laptops and other devices whose power supplies are meant to "float". This also means that you cannot use USB to power MAIANA&trade; - it must connect to a 12V battery.
 
