@@ -29,7 +29,7 @@ With no adhesives getting in the way, the unit can actually be opened and servic
 ### Electrical
 As I mentioned already, the transponder circuit is inside the antenna case. It's a 24mm x 84mm 4-layer PCB:
 
-![Image](images/board-11.3.0.jpg?raw=True)
+![Image](images/board-11.5.jpg?raw=True)
 
 The core design is based on two Silicon Labs "EZRadio Pro" series ICs. All kits shipping today are based on the Si4467 as this is the only part I have been able to source from spot markets in China.
 
@@ -41,7 +41,7 @@ The transmitter front end is based on a power MOSFET typically found in handheld
 
 The system is designed to run from a 12V battery and exposes a 3.3V-level UART for connecting to the rest of the boat. The UART continuously sends GPS and AIS data in NMEA0183 format at 38.4Kbps. It also accepts certain commands for management. The breakout boxes pictured above deliver this stream via USB, NME0183 (RS422) or NMEA 2000 (CAN). The 3 "fancy" breakouts feature _galvanic isolation_ of their USB connection to avoid causing unintended problems with laptops and other devices whose power supplies are meant to _float_. This also means that you cannot use USB to power MAIANA&trade; - it must connect to a 12V battery.
 
-In addition, there is now a "bare bones" UART breakout:
+In addition, there is now a "bare bones" UART+USB breakout:
 
 <img src="images/uart+usb-adapter.jpg" height="420"/>
 
