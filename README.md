@@ -43,7 +43,7 @@ The system is designed to run from a 12V battery and exposes a 3.3V-level UART f
 
 In addition, there is now a "bare bones" UART breakout:
 
-<img src="images/uart_breakout.jpg" height="420"/>
+<img src="images/uart+usb-adapter.jpg" height="420"/>
 
 This provides the simplest, lowest cost interface to a Raspberry Pi, Arduino or any other similar system you may want to wire directly.
 
