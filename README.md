@@ -7,7 +7,7 @@ Fast forward to 2021, and several other sailors who are looking for the same fea
 
 <img src="images/InstallOnSolarPanels.jpg" height="320"/><img src="images/InstallOnRadarDome.jpg" height="320"/><img src="images/InstallOnSternRail.jpg" height="320"/>
 
-The main difference between MAIANA&trade; and every commercial transponder is that it's a self-contained unit, and thus its performance is 100% repeatable. The entire transponder circuit, the GNSS and all antennas are in the same housing. The design has been validated by fabricating _over 60 units_ now (December 2021).
+The main difference between MAIANA&trade; and every commercial transponder is that it's a self-contained unit, and thus its performance is 100% repeatable. The entire transponder circuit, the GNSS and all antennas are in the same housing. The design has been validated by fabricating _over 80 units_ now (December 2021).
 
 So with all the core functionality kept outside and under tight control, the only other thing we need is power and data connections. Now, what's the most common cable that can carry a few signals 50 feet away? If you guessed "Ethernet", you guessed right. Commonplace Cat5 cable can deliver power plus serial data signals anywhere on an average sized pleasure boat. So that's how the exterior unit connects to the cabin, where one of these breakouts offers USB, NMEA0183 or NMEA2000 adapters to connect to the rest of the boat's systems. 
 
@@ -76,7 +76,13 @@ Everything is [here](latest/CAD).
 
 This is going to be difficult for all but the most technically advanced. The board features all surface mounted components, with 4 QFNs, a few SOT-363s and tightly spaced 0603 passives. The antenna switch on board 11.3.0 is about 0.8 x 1 mm and you'll need a microscope to align it. So unless you're very skilled and well equipped, you will find it difficult to build. 
 
-For this reason, I have developed a kit which includes pre-soldered (and programmed) boards as well as all the antenna, main casing and heat shrink tubing. Take a look [at the installation instructions here](latest/Manuals) to get a better understanding of what's involved. I have finally managed to secure enough BOM from spot markets in China to produce these, so if you're insterested, send an email to *maiana.kits@_dontspam_gmail.com* (remove the spambot blocker of course). 
+### Buying a kit
+
+I have developed a kit which includes pre-soldered (and programmed) boards as well as the antenna, main casing and heat shrink tubing. See [the installation manual here](https://github.com/peterantypas/maiana/blob/master/latest/Manuals/MAIANA%E2%84%A2%20Assembly%20Manual%20(Rev%204).pdf) to get a better idea of the process.
+
+If you are located in North America, send an email to *maiana.kits@_dontspam_gmail.com* (remove the spambot blocker of course). 
+
+If you're located anywhere else, you can order a kit from the [OpenMarine store](https://shop.openmarine.net) which ships from Barcelona, Spain.
 
 
 ### License
