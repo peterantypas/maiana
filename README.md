@@ -11,7 +11,7 @@ The main difference between MAIANA&trade; and every commercial transponder is th
 
 So with all the core functionality kept outside and under tight control, the only other thing we need is power and data connections. Now, what's the most common cable that can carry a few signals 50 feet away? If you guessed "Ethernet", you guessed right. Commonplace Cat5 cable can deliver power plus serial data signals anywhere on an average sized pleasure boat. So that's how the exterior unit connects to the cabin, where one of these breakouts offers USB, NMEA0183 or NMEA2000 adapters to connect to the rest of the boat's systems. 
 
-<img src="images/usbadapter.jpg" height="420"/><img src="images/nmea0183adapter.jpg" height="420"/><img src="images/nmea2000adapter.jpg" height="420"/>
+<img src="images/new_usb.jpg" height="420"/><img src="images/nmea0183adapter.jpg" height="420"/><img src="images/nmea2000adapter.jpg" height="420"/>
 
 
 ## Hardware Design
