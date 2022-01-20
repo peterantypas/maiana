@@ -17,7 +17,7 @@ So with all the core functionality kept outside and under tight control, the onl
 ## Hardware Design
 
 ### Mechanical
-The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is the highest grade of such material, with a solid white PVC core (not a coated houshold grade pipe). Still, it's the most inexpensive UV resistant material available, and it looks great too!
+The antenna casing that you see in these photos is a piece of 1" Schedule 40 "furniture" grade PVC pipe. It is the highest grade of such material, with a solid white PVC core (not a coated household grade pipe). Still, it's the most inexpensive UV resistant material available, and it looks great too!
 
 The VHF antenna whip is built using an epoxy wound filament tube coated with high quality, UV resistant irradiated polyolefin ("heat shrink"). The company that makes this tubing (and helped me with this design challenge) also built the landing gear for NASA's Ingenuity helicopter on Mars, so they definitely understand how to deal with harsh environments. The bottomline is that unlike typical fiberglass antenna masts, this antenna is not going to degrade and "blossom" under continuous UV exposure. Starting with January of 2022, the antenna tube will be made of two telescopic pieces of the same material. This will greatly reduce the cost of shipping the kit to Europe and Australia.
 
