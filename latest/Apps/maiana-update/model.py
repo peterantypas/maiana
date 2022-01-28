@@ -40,36 +40,51 @@ class MaianaClient:
 
     @staticmethod
     def sendCmdWithResponse(port, cmd, resp):
+        port.flushInput()
+        port.flushOutput()
         port.write(cmd + b'\r\n')
-        for i in range(10):
+        for i in range(25):
             s = port.readline().strip()
+            #print(s)
+            if s == b'':
+                break
             if resp in s:
                 return s
         return None
 
     @staticmethod
     def loadSys(port):
-        sysline = MaianaClient.sendCmdWithResponse(port, b'sys?', b'$PAISYS')
-        if sysline is None:
-            return {}
+        for i in range(2):
+            try:
+                sysline = MaianaClient.sendCmdWithResponse(port, b'sys?', b'$PAISYS')
+                if sysline is None:
+                    return {}
 
-        systokens = re.split(',|\\*', sysline.decode('utf-8'))
-        sysd = {'fw': systokens[2], 'hw': systokens[1], 'cpu': systokens[4]}
+                systokens = re.split(',|\\*', sysline.decode('utf-8'))
+                sysd = {'fw': systokens[2], 'hw': systokens[1], 'cpu': systokens[4]}
+                return sysd
+            finally:
+                pass
 
-        return sysd
+        return {}
 
     @staticmethod
     def loadStation(port):
-        stationline = MaianaClient.sendCmdWithResponse(port, b'station?', b'$PAISTN')
-        if stationline is None:
-            return {}
+        for i in range(2):
+            try:
+                stationline = MaianaClient.sendCmdWithResponse(port, b'station?', b'$PAISTN')
+                if stationline is None:
+                    return {}
 
-        stationtokens = re.split(',|\\*', stationline.decode('utf-8'))
-        stad = {'mmsi': int(stationtokens[1]), 'name': stationtokens[2], 'callsign': stationtokens[3],
-                'type': int(stationtokens[4]), 'len': int(stationtokens[5]), 'beam': int(stationtokens[6]),
-                'portoffset': int(stationtokens[7]), 'bowoffset': int(stationtokens[8])}
+                stationtokens = re.split(',|\\*', stationline.decode('utf-8'))
+                stad = {'mmsi': int(stationtokens[1]), 'name': stationtokens[2], 'callsign': stationtokens[3],
+                        'type': int(stationtokens[4]), 'len': int(stationtokens[5]), 'beam': int(stationtokens[6]),
+                        'portoffset': int(stationtokens[7]), 'bowoffset': int(stationtokens[8])}
 
-        return stad
+                return stad
+            finally:
+                pass
+        return {}
 
     @staticmethod
     def setStationData(port, data):
@@ -85,7 +100,10 @@ class MaianaClient:
         )
 
         resp = MaianaClient.sendCmdWithResponse(port, line.encode('utf-8'), b'$PAISTN')
+        #print(resp)
         if resp:
-            return MaianaClient.sendCmdWithResponse(port, b'reboot', b'$PAISTN')
+            resp = MaianaClient.sendCmdWithResponse(port, b'reboot', b'$PAISTN')
+            #print(resp)
+            return not resp is None
 
         return False

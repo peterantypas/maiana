@@ -15,14 +15,19 @@ class MainWindow(MainFrame):
 
     def onSerialBtnClick(self, event):
         if self.port is None:
-            self.port = serial.Serial(self.m_SerialPortChoice.GetString(self.m_SerialPortChoice.GetSelection()), 38400, timeout=2)
-            if self.port is None:
-                wx.MessageBox(b'Unable to open port, it may be in use', 'Info', wx.OK | wx.ICON_ERROR)
-            else:
-                self.m_SerialBtn.SetLabel(b'Disconnect')
-                self.enableUI()
-                self.refreshSys()
+            try:
+                self.port = serial.Serial(self.m_SerialPortChoice.GetString(self.m_SerialPortChoice.GetSelection()), 38400, timeout=1)
+            except:
+                wx.MessageBox(b'Unable to open port, it may be in use', 'Error', wx.OK | wx.ICON_ERROR)
+                return
+
+            self.port.flushInput()
+            self.port.flushOutput()
+            self.m_SerialBtn.SetLabel(b'Disconnect')
+            self.enableUI()
+            if self.refreshSys():
                 self.refreshStation()
+                self.m_StationSaveBtn.Disable()
         else:
             self.port.close()
             self.port = None
@@ -42,10 +47,11 @@ class MainWindow(MainFrame):
                    'portoffset': int(self.m_PortOffsetText.Value),
                    'bowoffset': int(self.m_BowOffsetText.Value),
                    'type': MaianaClient.VESSEL_TYPES[self.m_VesselTypeChoice.Selection]}
-        print(newdata)
+        #print(newdata)
 
         if MaianaClient.setStationData(self.port, newdata):
             self.stationdata = newdata
+            self.m_StationSaveBtn.Disable()
 
 
     def onFWBinarySelection(self, event):
@@ -64,18 +70,29 @@ class MainWindow(MainFrame):
 
     def refreshSys(self):
         self.sysdata = MaianaClient.loadSys(self.port)
-        self.renderSys()
+        return self.renderSys()
 
     def refreshStation(self):
         self.stationdata = MaianaClient.loadStation(self.port)
-        self.renderStation()
+        return self.renderStation()
 
     def renderSys(self):
+        if not 'hw' in self.sysdata:
+            wx.MessageDialog(self, b'There was no response from MAIANA. Please check connections and try again.',
+                             'Timeout', wx.OK | wx.STAY_ON_TOP|wx.CENTRE).ShowModal()
+            return False
+
         self.m_HWRevLbl.SetLabel(self.sysdata['hw'])
         self.m_FWRevLbl.SetLabel(self.sysdata['fw'])
         self.m_CPULbl.SetLabel(self.sysdata['cpu'])
+        return True
 
     def renderStation(self):
+        if not 'mmsi' in self.stationdata:
+            wx.MessageDialog(self, b'There was no response from MAIANA. Please check connections and try again.',
+                             'Timeout', wx.OK | wx.STAY_ON_TOP|wx.CENTRE).ShowModal()
+            return False
+
         self.m_MMSIText.SetValue('{}'.format(self.stationdata['mmsi']))
         self.m_NameText.SetValue(self.stationdata['name'])
         self.m_CallsignText.SetValue(self.stationdata['callsign'])
@@ -87,8 +104,11 @@ class MainWindow(MainFrame):
         t = self.stationdata['type']
         i = MaianaClient.VESSEL_TYPES.index(t)
         self.m_VesselTypeChoice.SetSelection(i)
+        return True
 
     def validateStationInputs(self):
         return True
 
-
+    def onStationEdit( self, event ):
+        self.m_StationSaveBtn.Enable()
+        event.Skip()

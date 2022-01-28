@@ -180,6 +180,8 @@ class MainFrame ( wx.Frame ):
 		gSizer2.Add( self.m_staticText20, 0, wx.ALL, 5 )
 
 		self.m_StationSaveBtn = wx.Button( self.m_StationPnl, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_StationSaveBtn.Enable( False )
+
 		gSizer2.Add( self.m_StationSaveBtn, 0, wx.ALL|wx.ALIGN_BOTTOM, 5 )
 
 
@@ -240,6 +242,14 @@ class MainFrame ( wx.Frame ):
 		# Connect Events
 		self.m_SerialPortChoice.Bind( wx.EVT_CHOICE, self.onSerialPortSelection )
 		self.m_SerialBtn.Bind( wx.EVT_BUTTON, self.onSerialBtnClick )
+		self.m_MMSIText.Bind( wx.EVT_TEXT, self.onStationEdit )
+		self.m_CallsignText.Bind( wx.EVT_TEXT, self.onStationEdit )
+		self.m_NameText.Bind( wx.EVT_TEXT, self.onStationEdit )
+		self.m_VesselTypeChoice.Bind( wx.EVT_CHOICE, self.onStationEdit )
+		self.m_LengthText.Bind( wx.EVT_TEXT, self.onStationEdit )
+		self.m_BeamText.Bind( wx.EVT_TEXT, self.onStationEdit )
+		self.m_PortOffsetText.Bind( wx.EVT_TEXT, self.onStationEdit )
+		self.m_BowOffsetText.Bind( wx.EVT_TEXT, self.onStationEdit )
 		self.m_StationSaveBtn.Bind( wx.EVT_BUTTON, self.onStationSaveBtnClick )
 		self.m_FWBinaryPicker.Bind( wx.EVT_FILEPICKER_CHANGED, self.onFWBinarySelection )
 		self.m_FWUpdateBtn.Bind( wx.EVT_BUTTON, self.onFWUpdateBtnClick )
@@ -254,6 +264,16 @@ class MainFrame ( wx.Frame ):
 
 	def onSerialBtnClick( self, event ):
 		event.Skip()
+
+	def onStationEdit( self, event ):
+		event.Skip()
+
+
+
+
+
+
+
 
 	def onStationSaveBtnClick( self, event ):
 		event.Skip()
