@@ -2,11 +2,13 @@ from mainframe import MainFrame
 from model import MaianaClient
 import serial
 import wx
+from fwUpdateThread import *
 
 class MainWindow(MainFrame):
     def __init__(self):
         MainFrame.__init__(self, None)
         self.m_SerialPortChoice.Set(MaianaClient.serial_ports())
+        self.portname = None
         self.port = None
         self.data = None
 
@@ -16,7 +18,8 @@ class MainWindow(MainFrame):
     def onSerialBtnClick(self, event):
         if self.port is None:
             try:
-                self.port = serial.Serial(self.m_SerialPortChoice.GetString(self.m_SerialPortChoice.GetSelection()), 38400, timeout=1)
+                self.portname = self.m_SerialPortChoice.GetString(self.m_SerialPortChoice.GetSelection())
+                self.port = serial.Serial(self.portname, 38400, timeout=1)
             except:
                 wx.MessageBox(b'Unable to open port, it may be in use', 'Error', wx.OK | wx.ICON_ERROR)
                 return
@@ -55,10 +58,28 @@ class MainWindow(MainFrame):
 
 
     def onFWBinarySelection(self, event):
-        event.Skip()
+        self.m_FWUpdateBtn.Enable()
 
     def onFWUpdateBtnClick(self, event):
-        event.Skip()
+        self.Connect(-1, -1, EVT_FWUPDATE_ID, self.onFwUpdateEvent)
+        thr = FWUpdateThread(self, self.port, self.m_FWBinaryPicker.Path)
+        thr.start()
+        self.m_FWUpdateBtn.Disable()
+
+    def onFwUpdateEvent(self, evt):
+        print(evt.eventType, evt.data)
+        if evt.eventType == EventType.DFU_ENABLED:
+            self.m_FWUpdateStatusLbl.SetLabel("DFU enabled")
+        elif evt.eventType == EventType.TRANSFER_STARTED:
+            self.m_FWUpdateStatusLbl.SetLabel("Transferring")
+        elif evt.eventType == EventType.TRANSFER_PROGRESS:
+            self.m_FWProgress.SetValue(evt.data * 100)
+        elif evt.eventType == EventType.TRANSFER_COMPLETE:
+            self.m_FWProgress.SetValue(0)
+            self.m_FWUpdateStatusLbl.SetLabel("Transfer completed")
+            self.refreshSys()
+        elif evt.eventType == EventType.ERROR:
+            self.m_FWUpdateStatusLbl.SetLabel(evt.data)
 
     def enableUI(self):
         self.m_StationPnl.Enable()

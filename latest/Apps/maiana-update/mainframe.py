@@ -222,8 +222,12 @@ class MainFrame ( wx.Frame ):
 
 		bSizer41.Add( gSizer5, 1, wx.EXPAND, 5 )
 
+		self.m_FWUpdateStatusLbl = wx.StaticText( self.m_FWUpdatePnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_FWUpdateStatusLbl.Wrap( -1 )
 
-		bSizer41.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+		self.m_FWUpdateStatusLbl.SetMinSize( wx.Size( 520,-1 ) )
+
+		bSizer41.Add( self.m_FWUpdateStatusLbl, 0, wx.ALL, 5 )
 
 
 		self.m_FWUpdatePnl.SetSizer( bSizer41 )
