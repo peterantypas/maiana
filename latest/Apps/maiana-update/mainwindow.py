@@ -1,5 +1,5 @@
 from mainframe import MainFrame
-from model import MaianaClient
+from maianaclient import MaianaClient, MaianaStatus
 import serial
 import wx
 from fwUpdateThread import *
@@ -24,13 +24,23 @@ class MainWindow(MainFrame):
                 wx.MessageBox(b'Unable to open port, it may be in use', 'Error', wx.OK | wx.ICON_ERROR)
                 return
 
-            self.port.flushInput()
-            self.port.flushOutput()
-            self.m_SerialBtn.SetLabel(b'Disconnect')
-            self.enableUI()
-            if self.refreshSys():
-                self.refreshStation()
+            status = MaianaClient.determineStatus(self.port)
+
+            if status == MaianaStatus.UNKNOWN:
+                pass
+            elif status == MaianaStatus.DFU:
+                wx.MessageBox(b'MAIANA is currently in firmware update mode. This is the only task you can perform.',
+                              'DFU warning', wx.OK)
+                self.enableUI()
+                self.m_SerialBtn.SetLabel(b'Disconnect')
                 self.m_StationSaveBtn.Disable()
+            else:
+                #Assuming status is RUNNING
+                self.m_SerialBtn.SetLabel(b'Disconnect')
+                self.enableUI()
+                if self.refreshSys():
+                    self.refreshStation()
+                    self.m_StationSaveBtn.Disable()
         else:
             self.port.close()
             self.port = None
@@ -78,6 +88,7 @@ class MainWindow(MainFrame):
             self.m_FWProgress.SetValue(0)
             self.m_FWUpdateStatusLbl.SetLabel("Transfer completed")
             self.refreshSys()
+            self.refreshStation()
         elif evt.eventType == EventType.ERROR:
             self.m_FWUpdateStatusLbl.SetLabel(evt.data)
 

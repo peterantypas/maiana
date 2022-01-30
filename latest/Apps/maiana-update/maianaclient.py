@@ -3,7 +3,13 @@ import sys
 import glob
 import time
 import re
+from enum import Enum
 
+
+class MaianaStatus(Enum):
+    UNKNOWN = 0
+    RUNNING = 1
+    DFU = 2
 
 class MaianaClient:
     VESSEL_TYPES = [30, 34, 36, 37]
@@ -37,6 +43,23 @@ class MaianaClient:
             except (OSError, Exception):
                 pass
         return result
+
+    @staticmethod
+    def determineStatus(port):
+        port.flushInput()
+        port.flushOutput()
+        s = port.readline().strip()
+        port.write(b'\r\n')
+        for i in range(5):
+            s = port.readline().strip()
+            if s.find(b"bootloader") > -1:
+                return MaianaStatus.DFU
+            else:
+                tokens = s.decode('utf-8').split(',')
+                if (tokens[0][0] == '$' or tokens[0][0] == '!') and len(tokens) >= 2:
+                    return MaianaStatus.RUNNING
+
+        return MaianaStatus.UNKNOWN
 
     @staticmethod
     def sendCmdWithResponse(port, cmd, resp):
