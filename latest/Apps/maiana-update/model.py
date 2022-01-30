@@ -63,7 +63,7 @@ class MaianaClient:
                 systokens = re.split(',|\\*', sysline.decode('utf-8'))
                 sysd = {'fw': systokens[2], 'hw': systokens[1], 'cpu': systokens[4]}
                 return sysd
-            finally:
+            except:
                 pass
 
         return {}
@@ -82,7 +82,7 @@ class MaianaClient:
                         'portoffset': int(stationtokens[7]), 'bowoffset': int(stationtokens[8])}
 
                 return stad
-            finally:
+            except:
                 pass
         return {}
 
