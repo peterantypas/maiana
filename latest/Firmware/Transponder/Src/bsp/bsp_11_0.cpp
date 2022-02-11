@@ -26,8 +26,11 @@
 
 
 #if BOARD_REV==110
-
+#ifndef VECT_TAB_OFFSET
 #define STATION_DATA_ADDRESS          0x0800F800
+#else
+#define STATION_DATA_ADDRESS          0x0801F800
+#endif
 
 
 const char *BSP_HW_REV = "11.x";
