@@ -17,7 +17,7 @@ import wx.xrc
 class MainFrame ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"MAIANA Transponder Manager ver 0.1", pos = wx.DefaultPosition, size = wx.Size( 605,300 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.MINIMIZE_BOX|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"MAIANA Transponder Manager ver 0.2", pos = wx.DefaultPosition, size = wx.Size( 605,300 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.MINIMIZE_BOX|wx.TAB_TRAVERSAL )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
@@ -25,7 +25,7 @@ class MainFrame ( wx.Frame ):
 
 		self.m_notebook2 = wx.Notebook( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_StatusPnl = wx.Panel( self.m_notebook2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		gSizer1 = wx.GridSizer( 5, 2, 0, 0 )
+		gSizer1 = wx.GridSizer( 6, 2, 0, 0 )
 
 		self.m_staticText1 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"Serial Port", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText1.Wrap( -1 )
@@ -52,7 +52,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText7 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"CPU", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText7.Wrap( -1 )
 
-		gSizer1.Add( self.m_staticText7, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer1.Add( self.m_staticText7, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 
 		self.m_CPULbl = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"(unknown)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_CPULbl.Wrap( -1 )
@@ -84,6 +84,26 @@ class MainFrame ( wx.Frame ):
 		self.m_FWRevLbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 
 		gSizer1.Add( self.m_FWRevLbl, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+
+		self.m_staticText21 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"Breakout Board Generation", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText21.Wrap( -1 )
+
+		gSizer1.Add( self.m_staticText21, 0, wx.ALL, 5 )
+
+		self.m_breakoutLbl = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"(unknown)", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_breakoutLbl.Wrap( -1 )
+
+		gSizer1.Add( self.m_breakoutLbl, 0, wx.ALL, 5 )
+
+		self.m_staticText23 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"Bootloader Present", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText23.Wrap( -1 )
+
+		gSizer1.Add( self.m_staticText23, 0, wx.ALL, 5 )
+
+		self.m_bootloaderLbl = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"(unknown)", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_bootloaderLbl.Wrap( -1 )
+
+		gSizer1.Add( self.m_bootloaderLbl, 0, wx.ALL, 5 )
 
 
 		self.m_StatusPnl.SetSizer( gSizer1 )
