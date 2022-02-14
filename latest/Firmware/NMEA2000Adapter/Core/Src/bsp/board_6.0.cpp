@@ -22,6 +22,9 @@
 #define MOSI_PORT                 GPIOA
 #define MOSI_PIN                  GPIO_PIN_7
 
+#define TX_SWITCH_PORT            GPIOA
+#define TX_SWITCH_PIN             GPIO_PIN_8
+
 #define UART_RX_PORT              GPIOA
 #define UART_RX_PIN               GPIO_PIN_10
 
@@ -53,6 +56,7 @@ typedef struct
 } GPIO;
 
 static const GPIO __gpios[] = {
+    {TX_SWITCH_PORT, {TX_SWITCH_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {CS_PORT, {CS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
     {SCK_PORT, {SCK_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, GPIO_AF5_SPI1}, GPIO_PIN_SET},
     {MISO_PORT, {MISO_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, GPIO_AF5_SPI1}, GPIO_PIN_SET},
@@ -174,8 +178,6 @@ void bsp_init()
       Error_Handler();
     }
   __HAL_SPI_ENABLE(&hspi1);
-
-  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 
   // UART1
