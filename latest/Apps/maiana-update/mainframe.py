@@ -30,7 +30,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText1 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"Serial Port", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText1.Wrap( -1 )
 
-		gSizer1.Add( self.m_staticText1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer1.Add( self.m_staticText1, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
 
@@ -52,7 +52,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText7 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"CPU", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText7.Wrap( -1 )
 
-		gSizer1.Add( self.m_staticText7, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		gSizer1.Add( self.m_staticText7, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_CPULbl = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"(unknown)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_CPULbl.Wrap( -1 )
@@ -64,7 +64,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText3 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"Hardware Revision", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText3.Wrap( -1 )
 
-		gSizer1.Add( self.m_staticText3, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer1.Add( self.m_staticText3, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_HWRevLbl = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"(unknown)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_HWRevLbl.Wrap( -1 )
@@ -76,7 +76,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText5 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"Firmware Revision", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText5.Wrap( -1 )
 
-		gSizer1.Add( self.m_staticText5, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer1.Add( self.m_staticText5, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_FWRevLbl = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"(unknown)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_FWRevLbl.Wrap( -1 )
@@ -88,7 +88,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText21 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"Breakout Board Generation", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText21.Wrap( -1 )
 
-		gSizer1.Add( self.m_staticText21, 0, wx.ALL, 5 )
+		gSizer1.Add( self.m_staticText21, 0, wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_breakoutLbl = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"(unknown)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_breakoutLbl.Wrap( -1 )
@@ -98,7 +98,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText23 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"Bootloader Present", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText23.Wrap( -1 )
 
-		gSizer1.Add( self.m_staticText23, 0, wx.ALL, 5 )
+		gSizer1.Add( self.m_staticText23, 0, wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_bootloaderLbl = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"(unknown)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_bootloaderLbl.Wrap( -1 )
@@ -118,7 +118,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText101 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, u"MMSI", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText101.Wrap( -1 )
 
-		gSizer2.Add( self.m_staticText101, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer2.Add( self.m_staticText101, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_MMSIText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 100,-1 ), 0 )
 		gSizer2.Add( self.m_MMSIText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -126,7 +126,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText11 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, u"Call Sign", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText11.Wrap( -1 )
 
-		gSizer2.Add( self.m_staticText11, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer2.Add( self.m_staticText11, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_CallsignText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		gSizer2.Add( self.m_CallsignText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -134,7 +134,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText12 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, u"Name", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText12.Wrap( -1 )
 
-		gSizer2.Add( self.m_staticText12, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer2.Add( self.m_staticText12, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_NameText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_NameText.SetMaxLength( 20 )
@@ -145,7 +145,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText13 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, u"Vessel Type", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText13.Wrap( -1 )
 
-		gSizer2.Add( self.m_staticText13, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer2.Add( self.m_staticText13, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		m_VesselTypeChoiceChoices = [ u"Fishing", u"Diving", u"Sailing", u"Pleasure" ]
 		self.m_VesselTypeChoice = wx.Choice( self.m_StationPnl, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_VesselTypeChoiceChoices, 0 )
@@ -155,7 +155,7 @@ class MainFrame ( wx.Frame ):
 		self._ = wx.StaticText( self.m_StationPnl, wx.ID_ANY, u"Length (m)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self._.Wrap( -1 )
 
-		gSizer2.Add( self._, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer2.Add( self._, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_LengthText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, 0 )
 		gSizer2.Add( self.m_LengthText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -163,7 +163,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText15 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, u"Beam (m)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText15.Wrap( -1 )
 
-		gSizer2.Add( self.m_staticText15, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer2.Add( self.m_staticText15, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_BeamText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, 0 )
 		gSizer2.Add( self.m_BeamText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -171,7 +171,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText17 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, u"Port Offset (m)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText17.Wrap( -1 )
 
-		gSizer2.Add( self.m_staticText17, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer2.Add( self.m_staticText17, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_PortOffsetText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, 0 )
 		gSizer2.Add( self.m_PortOffsetText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -179,7 +179,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText16 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, u"Bow Offset (m)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText16.Wrap( -1 )
 
-		gSizer2.Add( self.m_staticText16, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer2.Add( self.m_staticText16, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_BowOffsetText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, u"0", wx.DefaultPosition, wx.DefaultSize, 0 )
 		gSizer2.Add( self.m_BowOffsetText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -220,7 +220,7 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText28 = wx.StaticText( self.m_FWUpdatePnl, wx.ID_ANY, u"Binary File:", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
 		self.m_staticText28.Wrap( -1 )
 
-		gSizer4.Add( self.m_staticText28, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gSizer4.Add( self.m_staticText28, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_FWBinaryPicker = wx.FilePickerCtrl( self.m_FWUpdatePnl, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.bin", wx.DefaultPosition, wx.Size( -1,-1 ), wx.FLP_CHANGE_DIR|wx.FLP_DEFAULT_STYLE|wx.FLP_FILE_MUST_EXIST|wx.FLP_OPEN )
 		gSizer4.Add( self.m_FWBinaryPicker, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
