@@ -29,7 +29,8 @@ class MaianaClient:
             # this excludes your current terminal "/dev/tty"
             ports = glob.glob('/dev/tty[A-Za-z]*')
         elif sys.platform.startswith('darwin'):
-            ports = glob.glob('/dev/tty\..*')
+            ports = glob.glob('/dev/tty.*')
+            print(ports)
         else:
             raise EnvironmentError('Unsupported platform')
 
@@ -40,7 +41,8 @@ class MaianaClient:
                 s = serial.Serial(port)
                 s.close()
                 result.append(port)
-            except (OSError, Exception):
+            except (OSError, Exception) as e:
+                print(e)
                 pass
         return result
 
