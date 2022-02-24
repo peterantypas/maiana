@@ -33,7 +33,8 @@ class MainWindow(MainFrame):
             elif status == MaianaStatus.DFU:
                 wx.MessageBox(b'MAIANA is currently in firmware update mode. This is the only task you can perform.',
                               'DFU warning', wx.OK)
-                self.enableUI()
+                #self.enableUI()
+                self.m_FWUpdatePnl.Enable()
                 self.m_SerialBtn.SetLabel(b'Disconnect')
                 self.m_StationSaveBtn.Disable()
             else:
