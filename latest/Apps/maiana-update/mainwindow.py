@@ -166,8 +166,9 @@ class MainWindow(MainFrame):
         self.m_BowOffsetText.SetValue('{}'.format(self.stationdata['bowoffset']))
 
         t = self.stationdata['type']
-        i = MaianaClient.VESSEL_TYPES.index(t)
-        self.m_VesselTypeChoice.SetSelection(i)
+        if t in MaianaClient.VESSEL_TYPES:
+            i = MaianaClient.VESSEL_TYPES.index(t)
+            self.m_VesselTypeChoice.SetSelection(i)
         return True
 
     def validateStationInputs(self):
