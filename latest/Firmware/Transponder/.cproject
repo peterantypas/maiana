@@ -1949,22 +1949,33 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="L422-LegacyBreakouts-Bootloader"/>
 		<configuration configurationName="STM32L431-Release"/>
 		<configuration configurationName="STM32L412-Debug"/>
 		<configuration configurationName="STM32L422-Debug"/>
 		<configuration configurationName="STM32L422-Release"/>
-		<configuration configurationName="STM32L432-Release"/>
-		<configuration configurationName="STM32L432-Debug"/>
+		<configuration configurationName="L432-NewBreakouts-Bootloader"/>
+		<configuration configurationName="L432-LegacyBreakouts"/>
 		<configuration configurationName="STM32L431-Debug"/>
 		<configuration configurationName="Default">
 			<resource resourceType="PROJECT" workspacePath="/ais_transponder"/>
 		</configuration>
+		<configuration configurationName="L422-NewBreakouts-Bootloader"/>
+		<configuration configurationName="STM32L412-Release"/>
+		<configuration configurationName="L432-NewBreakouts"/>
+		<configuration configurationName="L432-LegacyBreakouts-Bootloader"/>
+		<configuration configurationName="L422-NewBreakouts"/>
+		<configuration configurationName="L422-Board11.0-NewBreakouts-Bootloader"/>
+		<configuration configurationName="STM32L432-Release"/>
+		<configuration configurationName="STM32L432-Debug"/>
+		<configuration configurationName="L422-Board11.0-LegacyBreakouts-Bootloader"/>
+		<configuration configurationName="L422-LegacyBreakouts"/>
 		<configuration configurationName="Debug"/>
 		<configuration configurationName="Release"/>
 		<configuration configurationName="L422-Legacy">
 			<resource resourceType="PROJECT" workspacePath="/maiana-transponder"/>
 		</configuration>
-		<configuration configurationName="STM32L412-Release"/>
+		<configuration configurationName="L422-Board11.0-LegacyBreakouts"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
