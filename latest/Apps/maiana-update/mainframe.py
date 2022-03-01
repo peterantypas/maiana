@@ -17,7 +17,7 @@ import wx.xrc
 class MainFrame ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"MAIANA Transponder Manager ver 0.2", pos = wx.DefaultPosition, size = wx.Size( 605,300 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.MINIMIZE_BOX|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"MAIANA Transponder Manager ver 0.3", pos = wx.DefaultPosition, size = wx.Size( 620,329 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.MINIMIZE_BOX|wx.TAB_TRAVERSAL )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
@@ -37,7 +37,7 @@ class MainFrame ( wx.Frame ):
 		m_SerialPortChoiceChoices = []
 		self.m_SerialPortChoice = wx.Choice( self.m_StatusPnl, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_SerialPortChoiceChoices, 0 )
 		self.m_SerialPortChoice.SetSelection( 0 )
-		self.m_SerialPortChoice.SetMinSize( wx.Size( 150,-1 ) )
+		self.m_SerialPortChoice.SetMinSize( wx.Size( 180,-1 ) )
 
 		bSizer4.Add( self.m_SerialPortChoice, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
@@ -88,22 +88,22 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText21 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"Breakout Board Generation", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText21.Wrap( -1 )
 
-		gSizer1.Add( self.m_staticText21, 0, wx.ALIGN_RIGHT|wx.ALL, 5 )
+		gSizer1.Add( self.m_staticText21, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_breakoutLbl = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"(unknown)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_breakoutLbl.Wrap( -1 )
 
-		gSizer1.Add( self.m_breakoutLbl, 0, wx.ALL, 5 )
+		gSizer1.Add( self.m_breakoutLbl, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 
 		self.m_staticText23 = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"Bootloader Present", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText23.Wrap( -1 )
 
-		gSizer1.Add( self.m_staticText23, 0, wx.ALIGN_RIGHT|wx.ALL, 5 )
+		gSizer1.Add( self.m_staticText23, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_bootloaderLbl = wx.StaticText( self.m_StatusPnl, wx.ID_ANY, u"(unknown)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_bootloaderLbl.Wrap( -1 )
 
-		gSizer1.Add( self.m_bootloaderLbl, 0, wx.ALL, 5 )
+		gSizer1.Add( self.m_bootloaderLbl, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 
 
 		self.m_StatusPnl.SetSizer( gSizer1 )
@@ -120,7 +120,9 @@ class MainFrame ( wx.Frame ):
 
 		gSizer2.Add( self.m_staticText101, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
-		self.m_MMSIText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 100,-1 ), 0 )
+		self.m_MMSIText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		self.m_MMSIText.SetMinSize( wx.Size( 180,-1 ) )
+
 		gSizer2.Add( self.m_MMSIText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
 		self.m_staticText11 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, u"Call Sign", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -129,6 +131,8 @@ class MainFrame ( wx.Frame ):
 		gSizer2.Add( self.m_staticText11, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_CallsignText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_CallsignText.SetMinSize( wx.Size( 120,-1 ) )
+
 		gSizer2.Add( self.m_CallsignText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
 		self.m_staticText12 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, u"Name", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -138,7 +142,7 @@ class MainFrame ( wx.Frame ):
 
 		self.m_NameText = wx.TextCtrl( self.m_StationPnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_NameText.SetMaxLength( 20 )
-		self.m_NameText.SetMinSize( wx.Size( 140,-1 ) )
+		self.m_NameText.SetMinSize( wx.Size( 180,-1 ) )
 
 		gSizer2.Add( self.m_NameText, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
@@ -187,17 +191,17 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText18 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText18.Wrap( -1 )
 
-		gSizer2.Add( self.m_staticText18, 0, wx.ALL, 5 )
+		gSizer2.Add( self.m_staticText18, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_staticText19 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText19.Wrap( -1 )
 
-		gSizer2.Add( self.m_staticText19, 0, wx.ALL, 5 )
+		gSizer2.Add( self.m_staticText19, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL, 5 )
 
 		self.m_staticText20 = wx.StaticText( self.m_StationPnl, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText20.Wrap( -1 )
 
-		gSizer2.Add( self.m_staticText20, 0, wx.ALL, 5 )
+		gSizer2.Add( self.m_staticText20, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
 
 		self.m_StationSaveBtn = wx.Button( self.m_StationPnl, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_StationSaveBtn.Enable( False )
@@ -217,7 +221,7 @@ class MainFrame ( wx.Frame ):
 		gSizer4 = wx.GridSizer( 1, 2, 0, 0 )
 
 		gSizer4.SetMinSize( wx.Size( -1,90 ) )
-		self.m_staticText28 = wx.StaticText( self.m_FWUpdatePnl, wx.ID_ANY, u"Binary File:", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
+		self.m_staticText28 = wx.StaticText( self.m_FWUpdatePnl, wx.ID_ANY, u"Binary File:", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
 		self.m_staticText28.Wrap( -1 )
 
 		gSizer4.Add( self.m_staticText28, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5 )
