@@ -1,11 +1,9 @@
 *.o
 *.elf
-*.bin
 *.map
 *.hex
 *~
 *.d
-
 Release
 Debug
 /STM32L412-Debug/
@@ -23,7 +21,6 @@ Debug
 /L422-NewBreakouts*
 /L432-LegacyBreakouts*
 /L432-NewBreakouts*
-
 /L422-Board11.0-NewBreakouts-Bootloader/
 /L422-Board11.0-LegacyBreakouts/
 /L422-Board11.0-LegacyBreakouts-Bootloader/
