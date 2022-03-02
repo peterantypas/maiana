@@ -4,6 +4,8 @@ import serial
 import wx
 from fwUpdateThread import *
 
+MIN_HW_REV = [b'11', b'0', b'0']
+
 class MainWindow(MainFrame):
     def __init__(self):
         MainFrame.__init__(self, None)
@@ -31,14 +33,15 @@ class MainWindow(MainFrame):
             elif status == MaianaStatus.DFU:
                 wx.MessageBox(b'MAIANA is currently in firmware update mode. This is the only task you can perform.',
                               'DFU warning', wx.OK)
-                self.enableUI()
+                #self.enableUI()
+                self.m_FWUpdatePnl.Enable()
                 self.m_SerialBtn.SetLabel(b'Disconnect')
                 self.m_StationSaveBtn.Disable()
             else:
                 #Assuming status is RUNNING
                 self.m_SerialBtn.SetLabel(b'Disconnect')
-                self.enableUI()
                 if self.refreshSys():
+                    self.enableUI()
                     self.refreshStation()
                     self.m_StationSaveBtn.Disable()
         else:
@@ -94,7 +97,8 @@ class MainWindow(MainFrame):
 
     def enableUI(self):
         self.m_StationPnl.Enable()
-        self.m_FWUpdatePnl.Enable()
+        if self.sysdata['bootloader']:
+            self.m_FWUpdatePnl.Enable()
 
     def disableUI(self):
         self.m_StationPnl.Disable()
@@ -108,15 +112,43 @@ class MainWindow(MainFrame):
         self.stationdata = MaianaClient.loadStation(self.port)
         return self.renderStation()
 
+    def validateRev(self, rev):
+        tokens = rev.split('.')
+        if len(tokens) < 3:
+            return False
+
+        for i in range(3):
+            if int(tokens[i]) < int(MIN_HW_REV[i]):
+                return False
+
+        return True
+
+
+
     def renderSys(self):
         if not 'hw' in self.sysdata:
             wx.MessageDialog(self, b'There was no response from MAIANA. Please check connections and try again.',
                              'Timeout', wx.OK | wx.STAY_ON_TOP|wx.CENTRE).ShowModal()
             return False
 
+        if not self.validateRev(self.sysdata['hw']):
+            wx.MessageDialog(self, b'This version of MAIANA is too old for this software to manage.',
+                             'Unrecognized', wx.OK | wx.STAY_ON_TOP|wx.CENTRE).ShowModal()
+            return False
+
         self.m_HWRevLbl.SetLabel(self.sysdata['hw'])
         self.m_FWRevLbl.SetLabel(self.sysdata['fw'])
         self.m_CPULbl.SetLabel(self.sysdata['cpu'])
+        if self.sysdata['newbrkout']:
+            self.m_breakoutLbl.SetLabel(b'New')
+        else:
+            self.m_breakoutLbl.SetLabel(b'Legacy')
+
+        if self.sysdata['bootloader']:
+            self.m_bootloaderLbl.SetLabel('Yes')
+        else:
+            self.m_bootloaderLbl.SetLabel('No')
+
         return True
 
     def renderStation(self):
@@ -134,8 +166,9 @@ class MainWindow(MainFrame):
         self.m_BowOffsetText.SetValue('{}'.format(self.stationdata['bowoffset']))
 
         t = self.stationdata['type']
-        i = MaianaClient.VESSEL_TYPES.index(t)
-        self.m_VesselTypeChoice.SetSelection(i)
+        if t in MaianaClient.VESSEL_TYPES:
+            i = MaianaClient.VESSEL_TYPES.index(t)
+            self.m_VesselTypeChoice.SetSelection(i)
         return True
 
     def validateStationInputs(self):

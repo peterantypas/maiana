@@ -84,7 +84,11 @@ class MaianaClient:
                     return {}
 
                 systokens = re.split(',|\\*', sysline.decode('utf-8'))
-                sysd = {'fw': systokens[2], 'hw': systokens[1], 'cpu': systokens[4]}
+                sysd = {'fw': systokens[2],
+                        'hw': systokens[1],
+                        'cpu': systokens[4],
+                        'newbrkout': int(systokens[5]),
+                        'bootloader': int(systokens[6])}
                 return sysd
             except:
                 pass
