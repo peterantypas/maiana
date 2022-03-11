@@ -13,6 +13,9 @@
 #define CS_PORT                   GPIOA
 #define CS_PIN                    GPIO_PIN_2
 
+#define NMEA_IN_PORT              GPIOA
+#define NMEA_IN_PIN               GPIO_PIN_3
+
 #define SCK_PORT                  GPIOA
 #define SCK_PIN                   GPIO_PIN_5
 
@@ -22,11 +25,17 @@
 #define MOSI_PORT                 GPIOA
 #define MOSI_PIN                  GPIO_PIN_7
 
-#define TX_SWITCH_PORT            GPIOA
-#define TX_SWITCH_PIN             GPIO_PIN_8
+#define UART_TX_PORT              GPIOA
+#define UART_TX_PIN               GPIO_PIN_9
 
 #define UART_RX_PORT              GPIOA
 #define UART_RX_PIN               GPIO_PIN_10
+
+#define NMEA_EN_PORT              GPIOB
+#define NMEA_EN_PIN               GPIO_PIN_0
+
+#define GREENPAK_RESET_PORT       GPIOB
+#define GREENPAK_RESET_PIN        GPIO_PIN_3
 
 
 #define CONFIG_ADDRESS            0x0801F800
@@ -56,19 +65,23 @@ typedef struct
 } GPIO;
 
 static const GPIO __gpios[] = {
-    {TX_SWITCH_PORT, {TX_SWITCH_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
     {CS_PORT, {CS_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, 0}, GPIO_PIN_SET},
     {SCK_PORT, {SCK_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, GPIO_AF5_SPI1}, GPIO_PIN_SET},
     {MISO_PORT, {MISO_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, GPIO_AF5_SPI1}, GPIO_PIN_SET},
     {MOSI_PORT, {MOSI_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, GPIO_AF5_SPI1}, GPIO_PIN_SET},
-    {UART_RX_PORT, {UART_RX_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET},
+    //{UART_TX_PORT, {UART_TX_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    //{UART_RX_PORT, {UART_RX_PIN, GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_RESET},
+    {NMEA_IN_PORT, {NMEA_IN_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_HIGH, GPIO_AF7_USART2}, GPIO_PIN_RESET},
+    //{GREENPAK_RESET_PORT, {GREENPAK_RESET_PIN, GPIO_MODE_OUTPUT_OD, GPIO_SPEED_MEDIUM, 0}, GPIO_PIN_SET},
+    {NMEA_EN_PORT, {NMEA_EN_PIN, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_LOW, 0}, GPIO_PIN_SET},
+
 };
 
 
 SPI_HandleTypeDef hspi1;
-UART_HandleTypeDef huart1;
+//UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
-TIM_HandleTypeDef htim6;
+//TIM_HandleTypeDef htim6;
 IWDG_HandleTypeDef hiwdg;
 
 void gpio_pin_init();
@@ -101,11 +114,12 @@ void bsp_refresh_wdt()
   HAL_IWDG_Refresh(&hiwdg);
 }
 
-
+#if 0
 void bsp_set_can_irq_cb(can_irq_callback cb)
 {
   can_irq = cb;
 }
+#endif
 
 uint32_t bsp_dwt_init(void)
 {
@@ -146,13 +160,14 @@ void bsp_init()
   //setvbuf(stderr, NULL, _IONBF, 0);
 
   HAL_Init();
+
   SystemClock_Config();
 
+  __HAL_RCC_SPI1_CLK_ENABLE();
+  //__HAL_RCC_USART1_CLK_ENABLE();
+  __HAL_RCC_USART2_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_SPI1_CLK_ENABLE();
-  __HAL_RCC_USART1_CLK_ENABLE();
-  __HAL_RCC_USART2_CLK_ENABLE();
 
   gpio_pin_init();
 
@@ -179,6 +194,9 @@ void bsp_init()
     }
   __HAL_SPI_ENABLE(&hspi1);
 
+  //HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+#if 0
 
   // UART1
   huart1.Instance = USART1;
@@ -199,11 +217,38 @@ void bsp_init()
   HAL_NVIC_EnableIRQ(USART1_IRQn);
   HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+#endif
+
+
+  // UART2
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 38400;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+  HAL_NVIC_EnableIRQ(USART2_IRQn);
+  HAL_NVIC_SetPriority(USART2_IRQn, 1, 0);
+  __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 
 
   // We'll be using the Cortex M4 cycle counter for microsecond delays
   bsp_dwt_init();
 
+#if 0
+  HAL_GPIO_WritePin(GREENPAK_RESET_PORT, GREENPAK_RESET_PIN, GPIO_PIN_RESET);
+  bsp_delay_us(300);
+  HAL_GPIO_WritePin(GREENPAK_RESET_PORT, GREENPAK_RESET_PIN, GPIO_PIN_SET);
+#endif
 }
 
 void gpio_pin_init()
@@ -304,7 +349,7 @@ void bsp_save_can_address(uint8_t address)
 
 extern "C" {
 
-
+#if 0
   int _write(int fd, char* ptr, int len)
   {
     HAL_StatusTypeDef hstatus;
@@ -315,6 +360,7 @@ extern "C" {
     else
       return -1;
   }
+#endif
 
   // delay() and millis() for compatibility with Arduino
 
@@ -328,16 +374,26 @@ extern "C" {
     return HAL_GetTick();
   }
 
+  void USART2_IRQHandler(void)
+  {
+    if ( __HAL_UART_GET_IT(&huart2, UART_IT_RXNE) )
+      {
+        __HAL_UART_CLEAR_IT(&huart2, UART_IT_RXNE);
+        char c = USART2->RDR;
+        if ( usart_irq )
+          usart_irq(c);
+      }
+  }
+
+#if 0
   void USART1_IRQHandler(void)
   {
     if ( __HAL_UART_GET_IT(&huart1, UART_IT_RXNE) )
       {
         __HAL_UART_CLEAR_IT(&huart1, UART_IT_RXNE);
-        char c = USART1->RDR;
-        if ( usart_irq )
-          usart_irq(c);
       }
   }
+#endif
 
   void SysTick_Handler(void)
   {
@@ -354,7 +410,6 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Configure the main internal regulator output voltage
    */
@@ -365,30 +420,22 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
    * in the RCC_OscInitTypeDef structure.
    */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 1;
   RCC_OscInitStruct.PLL.PLLN = 10;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
   RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
-
-#if defined(STM32L432xx) || defined(STM32L431xx)
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
-#endif
-
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
       Error_Handler();
     }
   /** Initializes the CPU, AHB and APB buses clocks
    */
-
-
-
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
       |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
@@ -397,12 +444,6 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
-    {
-      Error_Handler();
-    }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
-  PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
       Error_Handler();
     }
@@ -455,8 +496,13 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+  //GPIO io = {UART_TX_PORT, {UART_TX_PIN, GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_SPEED_LOW, GPIO_AF7_USART1}, GPIO_PIN_RESET};
+  //HAL_GPIO_Init(io.port, (GPIO_InitTypeDef*)&io.gpio);
+
   __disable_irq();
   asm("bkpt 0");
+
+  //printf("FATAL ERROR\n");
 
   while (1)
     {
