@@ -12,7 +12,7 @@ int main(void)
 {
   bsp_init();
 
-  printf("MAIANA NMEA2000 adapter started\r\n");
+  //printf("MAIANA NMEA2000 adapter started\r\n");
 
   EventPool::instance().init();
   EventQueue::instance().init();
@@ -34,7 +34,7 @@ int main(void)
   n2k->SetProductInformation("",            // Manufacturer's Model serial code
                              1,             // Manufacturer's product code
                              "MAIANA",      // Manufacturer's Model ID
-                             "1.1.0",       // Manufacturer's Software version code
+                             "1.1.1",       // Manufacturer's Software version code
                              "1.0",         // Manufacturer's Model version
                              0);
 
@@ -48,11 +48,11 @@ int main(void)
 
   if ( n2k->Open() )
     {
-      printf("Successfully opened CAN bus\r\n");
+      //printf("Successfully opened CAN bus\r\n");
     }
   else
     {
-      printf("Failed to open CAN bus!!\r\n");
+      //printf("Failed to open CAN bus!!\r\n");
     }
 
 #if !DEBUG_LISTENER

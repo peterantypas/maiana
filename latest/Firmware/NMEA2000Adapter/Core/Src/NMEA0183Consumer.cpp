@@ -144,7 +144,7 @@ void NMEA0183Consumer::processGPSSentence(const char *str)
 
       if ( mN2K->SendMsg(pos) )
         {
-          printf("Sent PGN129029\r\n");
+          //printf("Sent PGN129029\r\n");
         }
 
     }
@@ -168,7 +168,7 @@ void NMEA0183Consumer::processGPSSentence(const char *str)
           SetN2kLatLonRapid(pos, lat, lng);
           if ( mN2K->SendMsg(pos) )
             {
-              printf("Sent PGN129025\r\n");
+              //printf("Sent PGN129025\r\n");
             }
 
           sog = atof(sentence.fields()[7].c_str());
@@ -193,7 +193,7 @@ void NMEA0183Consumer::processGPSSentence(const char *str)
                             KnotsToms(sog));
           if ( mN2K->SendMsg(cogsog) )
             {
-              printf("Sent PGN129026\r\n");
+              //printf("Sent PGN129026\r\n");
             }
         }
     }
@@ -276,7 +276,7 @@ void NMEA0183Consumer::processAISSentence(const char *str)
 /**
  * TODO: This function will be off by a day on leap years.
  * Once GNSS data flows through this system regularly, then this can be fixed.
-*/
+ */
 
 uint16_t NMEA0183Consumer::calcETADate(int month, int day)
 {
@@ -344,7 +344,7 @@ void NMEA0183Consumer::processAISBody(tN2kAISTranceiverInfo aisInfo, const strin
 
         if ( mN2K->SendMsg(n2kmsg) )
           {
-            printf("Sent PGN129038, aisInfo=%d:\r\n", aisInfo);
+            //printf("Sent PGN129038, aisInfo=%d:\r\n", aisInfo);
           }
       }
       break;
@@ -377,11 +377,11 @@ void NMEA0183Consumer::processAISBody(tN2kAISTranceiverInfo aisInfo, const strin
 
         if ( mN2K->SendMsg(n2kmsg) )
           {
-            printf("Sent PGN129794:\r\n");
+            //printf("Sent PGN129794:\r\n");
           }
         else
           {
-            printf("Failed to send PGN 129794\r\n");
+            //printf("Failed to send PGN 129794\r\n");
           }
       }
       break;
@@ -413,11 +413,11 @@ void NMEA0183Consumer::processAISBody(tN2kAISTranceiverInfo aisInfo, const strin
                                 aisInfo);
         if ( mN2K->SendMsg(n2kmsg) )
           {
-            printf("Sent PGN129039\r\n");
+            //printf("Sent PGN129039\r\n");
           }
         else
           {
-            printf("Failed to send PGN 129039\r\n");
+            //printf("Failed to send PGN 129039\r\n");
           }
       }
       break;
@@ -450,11 +450,11 @@ void NMEA0183Consumer::processAISBody(tN2kAISTranceiverInfo aisInfo, const strin
 
         if ( mN2K->SendMsg(n2kmsg) )
           {
-            printf("Sent PGN129041\r\n");
+            //printf("Sent PGN129041\r\n");
           }
         else
           {
-            printf("Failed to send PGN 129041\r\n");
+            //printf("Failed to send PGN 129041\r\n");
           }
       }
       break;
@@ -496,14 +496,16 @@ void NMEA0183Consumer::processAISBody(tN2kAISTranceiverInfo aisInfo, const strin
           {
             if ( m->part_num == 0 )
               {
-                printf("Sent PGN129809\r\n");
+                //printf("Sent PGN129809\r\n");
               }
             else
-              printf("Sent PGN129810\r\n");
+              {
+                //printf("Sent PGN129810\r\n");
+              }
           }
         else
           {
-            printf("Failed to send PGN129809/810\r\n");
+            //printf("Failed to send PGN129809/810\r\n");
           }
       }
       break;
