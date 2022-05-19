@@ -1,7 +1,7 @@
 ## Pre-built binaries
 
-This directory contains binaries for boards 11.3 and newer *purchased through the OpenMarine store*. If you do not use OpenPlotter 
-or you are unsure whether these apply to your board, please start a ticket or a discussion.
+This directory contains binaries for boards 11.3 and newer *purchased through the OpenMarine store*. **If you do not use OpenPlotter 
+or you are unsure whether these apply to your board, please start a ticket or a discussion**. Do NOT attempt to flash these with an SWD programmer. They are not linked for the top of flash (0x08000000). Furthermore, they *must* be used in conjunction with the MAIANA bootloader and should only be written via the UART. The bootloader will checksum them, write their metadata in a dedicated flash page, and only then will it execute them.
 
 ### How to select the right firmware
 
