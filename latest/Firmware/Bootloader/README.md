@@ -10,7 +10,7 @@ This will require manipulation of the BOOT0 signal though, which is only exposed
 
 ## Firmware update
 
-All application firmware must be isntalled via UART. See the example script in the Python subdirectory for the protocol.
+All application firmware must be installed via UART. See the example script in the Python subdirectory for the protocol.
 
 ## Integrity checking
 
