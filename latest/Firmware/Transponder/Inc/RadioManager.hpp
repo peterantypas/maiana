@@ -39,7 +39,7 @@ public:
   void start();
   void stop();
   void onBitClock(uint8_t ic);
-  void timeSlotStarted(uint32_t slotNumber);
+  void timeSlotStarted();
 
   void scheduleTransmission(TXPacket *p);
   bool initialized();

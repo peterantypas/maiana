@@ -47,7 +47,7 @@ public:
   VHFChannel channel();
   virtual void startReceiving(VHFChannel channel, bool reconfigGPIOs);
   virtual void onBitClock();
-  virtual void timeSlotStarted(uint32_t slot);
+  virtual void timeSlotStarted();
   void switchToChannel(VHFChannel channel);
 protected:
   typedef enum
@@ -75,7 +75,6 @@ protected:
   VHFChannel mChannel;
   int mSlotBitNumber;
   VHFChannel mNextChannel;
-  uint32_t mTimeSlot = 0xffffffff;
 };
 
 #endif /* RECEIVER_HPP_ */

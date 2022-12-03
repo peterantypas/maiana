@@ -41,7 +41,7 @@ public:
 
 
   void onBitClock();
-  void timeSlotStarted(uint32_t slot);
+  void timeSlotStarted();
   void assignTXPacket(TXPacket *p);
   TXPacket *assignedTXPacket();
   void startReceiving(VHFChannel channel, bool reconfigGPIOs);

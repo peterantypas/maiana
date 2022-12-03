@@ -1,0 +1,8 @@
+# Partition Table
+# Name	    Type	SubType		Offset	Size
+nvs,        data,       nvs,            0x9000, 16K
+otadata,    data,       ota,                  , 8K
+phy_init,   data,       phy,                  , 4K
+ota_0,      app,        ota_0,                , 1536K
+ota_1,      app,        ota_1,                , 1536K
+storage,    data,       fat,                  , 900K

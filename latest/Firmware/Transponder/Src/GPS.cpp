@@ -41,7 +41,7 @@ GPS::instance()
 }
 
 GPS::GPS()
-: mBuffPos(0), mUTC(0), mLat(0), mLng(0), mStarted(false), mSlotNumber(0), mDelegate(NULL), mCOG(511), mSpeed(0)
+: mBuffPos(0), mUTC(0), mLat(0), mLng(0), mStarted(false), mDelegate(NULL), mCOG(511), mSpeed(0)
 {
   memset(&mTime, 0, sizeof(mTime));
   mPeriod = (bsp_get_system_clock() / 37.5) - 1;
@@ -61,11 +61,6 @@ time_t GPS::UTC()
 struct tm &GPS::time()
 {
   return mTime;
-}
-
-uint32_t GPS::aisSlot()
-{
-  return mSlotNumber;
 }
 
 double GPS::lat()
@@ -142,7 +137,6 @@ void GPS::onPPS()
   if (!mStarted)
     {
       // To keep things simple, we only start the AIS slot timer if we're on an even second (it has a 37.5 Hz frequency)
-      mSlotNumber = (mTime.tm_sec % 60) * 2250; // We know what AIS slot number we're in
       if (!(mTime.tm_sec & 0x00000001))
         startTimer ();
     }
@@ -302,13 +296,9 @@ void GPS::onTimerIRQ()
 {
   if ( mStarted )
     {
-      ++mSlotNumber;
-      if ( mSlotNumber == 2250 )
-        mSlotNumber = 0;
-
       // Delegates need real-time information
       if ( mDelegate )
-        mDelegate->timeSlotStarted(mSlotNumber);
+        mDelegate->timeSlotStarted();
     }
 }
 

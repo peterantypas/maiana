@@ -231,7 +231,7 @@ void bsp_hw_init()
   HAL_NVIC_SetPriority(EXTI2_IRQn, 6, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
-  // SOTDMA
+  // SOTDMA timer and RF IC clock interrupts must have the same priority
   HAL_NVIC_SetPriority(TIM2_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(TIM2_IRQn);
 

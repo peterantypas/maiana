@@ -32,7 +32,7 @@ public:
 	{
 	}
 
-	virtual void timeSlotStarted(uint32_t slotNumber)=0;
+	virtual void timeSlotStarted()=0;
 };
 
 class GPS : public EventConsumer
@@ -72,7 +72,6 @@ private:
 	float mLat;
 	float mLng;
 	bool mStarted;
-	uint32_t mSlotNumber;
 	GPSDelegate *mDelegate;
 	float mCOG;
 	float mSpeed;

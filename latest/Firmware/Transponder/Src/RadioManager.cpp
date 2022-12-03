@@ -154,13 +154,13 @@ void RadioManager::onBitClock(uint8_t ic)
     mReceiverIC->onBitClock();
 }
 
-void RadioManager::timeSlotStarted(uint32_t slotNumber)
+void RadioManager::timeSlotStarted()
 {
   if ( mInitializing )
     return;
 
-  mTransceiverIC->timeSlotStarted(slotNumber);
-  mReceiverIC->timeSlotStarted(slotNumber);
+  mTransceiverIC->timeSlotStarted();
+  mReceiverIC->timeSlotStarted();
 }
 
 void RadioManager::scheduleTransmission(TXPacket *packet)

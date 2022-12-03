@@ -1,11 +1,7 @@
-#!/usr/bin/env python
-
 import serial
 import sys
 import time
 import os
-
-port = None
 
 ACK  = 0x79
 NACK = 0x1F
@@ -14,7 +10,7 @@ GET  = 0x00
 PAGE_SIZE       = 2048
 FLASH_BASE      = 0x08000000
 BAUD_RATE       = 115200
-MAX_IMAGE_SIZE  = 126*1024
+MAX_IMAGE_SIZE  = 128*1024
 
 # These defaults will be overwritten with results of GET command
 GET_VER_CMD             = 0x01
@@ -28,10 +24,14 @@ WRITE_UNPROT_CMD        = 0x73
 READ_PROT_CMD           = 0x82
 READ_UNPROT_CMD         = 0x92
 
+"""
 def print_packet(d):
     for c in d:
         sys.stdout.write("0x{:02x} ".format(c))
     sys.stdout.write('\n')
+"""
+
+error = "No error"
 
 def configure_commands(data):
     global GET_VER_CMD
@@ -70,23 +70,23 @@ def packet_checksum(p):
 
     return x
     
-def read_byte():
+def read_byte(port):
     r = port.read(1)
     if len(r) > 0:
-        return (True, ord(r[0]))
+        return (True, r[0])
     else:
         return (False, 0)
 
-def drain():
+def drain(port):
     keepreading = True
     while True:
-        (r, keepreading) = read_byte()
+        (r, keepreading) = read_byte(port)
         if r == False:
             break
     
-def do_handshake():
+def do_handshake(port):
     port.write([0x7f])
-    (success, b) = read_byte()
+    (success, b) = read_byte(port)
     if not success:
         return False
 
@@ -98,44 +98,44 @@ def complement(cmd):
         c += 256
     return c
 
-def send_command(cmd):
+def send_command(port, cmd):
     packet = [cmd, complement(cmd)]
     #print packet
     port.write(packet)
-    (success, r) = read_byte()
+    (success, r) = read_byte(port)
     #print r
     if not success:
-        print "Failed to send command 0x{0:2x}".format(cmd)
+        #print("Failed to send command 0x{0:2x}".format(cmd))
         return False
     
     if r != ACK:
-        print "Got NACK for command 0x{0:2x}".format(cmd)
+        #print("Got NACK for command 0x{0:2x}".format(cmd))
         return False
 
     #print "Got ACK"
     return True
     
 
-def send_data(packet):
+def send_data(port, packet):
     port.write(packet)    
-    (success, b) = read_byte()
+    (success, b) = read_byte(port)
     if not success:
-        print "No ACK or NACK for data packet"
+        #print("No ACK or NACK for data packet")
         return False
 
     if b == ACK:
         return True
     else:
-        print "Got NACK for data packet"
+        #print("Got NACK for data packet")
         return False
 
 
-def send_get():
-    if not send_command(GET):
-        print "Failed to send command GET"
+def send_get(port):
+    if not send_command(port, GET):
+        #print("Failed to send command GET")
         return (False, [])
 
-    (success, bytes) = read_byte()
+    (success, bytes) = read_byte(port)
 
     if success:
         bytes += 1
@@ -146,13 +146,13 @@ def send_get():
     if len(data) < bytes:
         return (False, [])
 
-    (success, b) = read_byte()
+    (success, b) = read_byte(port)
     if not success:
         return (False, [])
 
     ba = bytearray()
     ba.extend(data)
-    #print ba
+    
     return (b == ACK, ba)
 
 
@@ -165,8 +165,8 @@ def lobyte(s):
 def send_erase_cmd(startpage, numpages):
     return False
 
-def send_ext_erase_cmd(startpage, numpages):
-    if not send_command(ERASE_CMD):
+def send_ext_erase_cmd(port, startpage, numpages):
+    if not send_command(port, ERASE_CMD):
         return False
         
     packet = bytearray()
@@ -182,14 +182,14 @@ def send_ext_erase_cmd(startpage, numpages):
     #print "Sending packet:"
     #print_packet(packet)
     
-    if not send_data(packet):
+    if not send_data(port, packet):
         return False
     else:
         return True
     
-def write_chunk(address, chunk):
+def write_chunk(port, address, chunk):
     #print "Writing chunk at 0x{0:08x}".format(address)
-    if not send_command(WRITE_MEM_CMD):
+    if not send_command(port, WRITE_MEM_CMD):
         return False
 
     #print "Sending address"
@@ -199,7 +199,7 @@ def write_chunk(address, chunk):
     packet.append((address >> 8) & 0xff)
     packet.append(address & 0xff)
     packet.append(packet_checksum(packet))
-    if not send_data(packet):
+    if not send_data(port, packet):
         return False
 
     #print "Sending chunk"
@@ -207,10 +207,10 @@ def write_chunk(address, chunk):
     packet.append(len(chunk)-1)
     packet.extend(chunk)
     packet.append(packet_checksum(packet))
-    return send_data(packet)
+    return send_data(port, packet)
 
-def boot(address):
-    if not send_command(GO_CMD):
+def boot(port, address):
+    if not send_command(port, GO_CMD):
         return False
 
     packet = bytearray()
@@ -219,98 +219,75 @@ def boot(address):
     packet.append((address >> 8) & 0xff)
     packet.append(address & 0xff)
     packet.append(packet_checksum(packet))
-    if not send_data(packet):
+    if not send_data(port, packet):
         return False
 
     return True
     
 
-def enter_dfu(portname):
-    p = serial.Serial(portname, 38400, timeout=2, parity=serial.PARITY_NONE, stopbits=1)
-    if not p.is_open:
+def programFirmware(portname, filename):
+    address = FLASH_BASE                # Always!
+
+    global error
+    
+    st = os.stat(filename)
+    if st.st_size > MAX_IMAGE_SIZE:
+        error = "Image file too large"
         return False
 
-    p.write('dfu\r\n')
-    time.sleep(1)
-    s = p.readline()
-    p.close()
-    return len(s) == 0
-    
-if __name__ == '__main__':
-    if len(sys.argv) < 4:
-        print "Usage: {0} port image address".format(sys.argv[0])
-        sys.exit(1)
-
-    # Determine which pages of Flash must be erased to write the image
-    address = int(sys.argv[3], 16)
-    if address % PAGE_SIZE:
-        print "Invalid address: Must be aligned at 2K boundaries"
-        sys.exit(1)
-
-    if not os.path.isfile(sys.argv[2]):
-        print "File not found: {0}".format(sys.argv[2])
-        sys.exit(2)
-
-    st = os.stat(sys.argv[2])
-    if st.st_size > MAX_IMAGE_SIZE:
-        print "Image file too large"
-        sys.exit(1)
-
-    
-    port = serial.Serial(sys.argv[1], BAUD_RATE, timeout=2, parity=serial.PARITY_EVEN, stopbits=1)
-    if not port.is_open:
-        print "Failed to open port"
-        sys.exit(2)
+    port = serial.Serial(portname, baudrate=BAUD_RATE, timeout=2, parity=serial.PARITY_EVEN, stopbits=1)
+    if port is None or not port.is_open:
+        error = "Failed to open port"
+        return False
 
     bl_present = False
-    for i in range(10):
-        if do_handshake():
-            print "Bootloader is present"
+    for i in range(5):
+        if do_handshake(port):
+            #print("Bootloader is present")
             bl_present = True
             break
         else:
-            print "No response from bootloader"
+            pass
+            #print("No response from bootloader")
             
     if not bl_present:
-        sys.exit(1)
+        port.close()
+        error = "No response from MCU bootloader"
+        return False
 
-    drain()
+    drain(port)
         
-    (success, data) = send_get()
+    (success, data) = send_get(port)
     if success:
         configure_commands(data[2:])
     else:
-        print "Failed to configure command table"
-        sys.exit(1)
+        #print("Failed to configure command table")
+        error = "Failed to configure command table"
+        port.close()
+        return False
         
     
-    startpage = (address - FLASH_BASE)/PAGE_SIZE
-    numpages = st.st_size / PAGE_SIZE
+    startpage = 0
+    numpages = int(st.st_size / PAGE_SIZE)
     if st.st_size % PAGE_SIZE > 0:
         numpages += 1
 
     if ERASE_CMD == 0x43:
-        r = send_erase_cmd(startpage, numpages)
+        r = send_erase_cmd(port, startpage, numpages)
     else:
-        r = send_ext_erase_cmd(startpage, numpages)
+        r = send_ext_erase_cmd(port, startpage, numpages)
 
 
     if r == False:
-        print "Failed to erase pages"
+        #print("Failed to erase pages")
+        pass
     else:
-        print "Erased {0} flash pages".format(numpages)
+        #print("Erased {0} flash pages".format(numpages))
+        pass
 
     
-    """
-    if send_command(WRITE_UNPROT_CMD):
-        print "Write unprotect"
-    else:
-        print "Failed to unprotect flash"
-        sys.exit(1)
-   """
-
     addr = address
-    with open(sys.argv[2], "rb") as f:
+    with open(filename, "rb") as f:
         while True:
             chunk = f.read(256)
             if len(chunk) == 0:
@@ -320,31 +297,35 @@ if __name__ == '__main__':
             for i in range(rem):
                 chunk += 0xff
 
-            if not write_chunk(addr, chunk):
-                print "Write failed"
-                sys.exit(1)
+            if not write_chunk(port, addr, chunk):
+                #print("Write failed")
+                port.close()
+                error = "Write failed"
+                return False
                 
             addr += len(chunk)
 
-            sys.stdout.write("Flashing: {0:3d}%\r".format(100*(addr-address)/st.st_size))
+            sys.stdout.write("Flashing: {0:3d}%\r".format(int(100*(addr-address)/st.st_size)))
             sys.stdout.flush()
 
-    print
+    print()
 
-    """
-    if send_command(WRITE_PROT_CMD):
-        print "Write protect"
-    else:
-        print "Failed to protect flash"
+    if not boot(port, address):
+        error = "Failed to send GO command"
+        port.close()
+        return False
+
+    port.close()    
+    return True
+
+if __name__ == '__main__':
+    if len(sys.argv) < 3:
+        print("Usage: {0} port image".format(sys.argv[0]))
         sys.exit(1)
-    """
 
-    if not boot(address):
-        print "Failed to send GO command"
-        sys.exit(1)
+    if not programFirmware(sys.argv[1], sys.argv[2]):
+        print("Error: {}".format(error))
 
-    print "Booted"
-        
         
 
     

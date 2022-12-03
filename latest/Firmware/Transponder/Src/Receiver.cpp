@@ -136,7 +136,7 @@ void Receiver::onBitClock()
     {
       startReceiving(mNextChannel, false);
     }
-  else if ( mTimeSlot != 0xffffffff && mSlotBitNumber != 0xffff && mSlotBitNumber == CCA_SLOT_BIT )
+  else if ( mSlotBitNumber == CCA_SLOT_BIT )
     {
       mRXPacket->setRSSI(reportRSSI());
     }
@@ -147,18 +147,15 @@ void Receiver::onBitClock()
  * So timeSlotStarted() and onBitClock() cannot preempt each other.
  */
 
-void Receiver::timeSlotStarted(uint32_t slot)
+void Receiver::timeSlotStarted()
 {
   // This should never be called while transmitting. Transmissions start after the slot boundary and end before the end of it.
   ASSERT(gRadioState == RADIO_RECEIVING);
 
   mSlotBitNumber = -1;
-  mTimeSlot = slot;
   if ( mBitState == BIT_STATE_IN_PACKET )
     return;
 
-  if ( mRXPacket )
-    mRXPacket->setSlot(slot);
 
   if ( mChannel != mNextChannel )
     {

@@ -280,9 +280,9 @@ void Transceiver::onBitClock()
 }
 
 
-void Transceiver::timeSlotStarted(uint32_t slot)
+void Transceiver::timeSlotStarted()
 {
-  Receiver::timeSlotStarted(slot);
+  Receiver::timeSlotStarted();
 
   // Switch channel if we have a transmission scheduled and we're not on the right channel
   if ( gRadioState == RADIO_RECEIVING && mTXPacket && mTXPacket->channel() != mChannel )
