@@ -18,7 +18,6 @@ void start_httpd()
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.uri_match_fn = httpd_uri_match_wildcard;
   config.max_uri_handlers = 20;
-  //config.max_open_sockets = 1;
 
   if (httpd_start(&__handle, &config) == ESP_OK)
   {

@@ -1,8 +1,47 @@
 <html>
-  <head>    
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>  
     <title>MAIANA Configuration</title>
+    <style>
+      h1 {
+        font: 50px helvetica;
+        font-weight: bold;
+        color: #0072b6;
+        max-height:28px;
+      }
+
+      h2 {
+        font: 30px helvetica;
+        color: #00a5a4;
+        max-height: 20px;
+        padding-bottom: 8px;
+      }
+
+      img {
+        max-width:50%;
+        object-fit:contain;
+      }
+
+      button {
+        width: 92%;
+        height: 60px;
+        font-size: 24px;
+        color: #0072b6;
+      }      
+
+    </style>
+    <script>         
+    </script>
   </head>
   <body>    
-    <h1>This is the content</h1>
+    <center><h1>MAIANA&trade;</h1></center>
+    <center><img src="images/maiana-logo.jpg"/></center>
+    <center><h2>The Open Source AIS</h2></center>
+    
+    <center><button type="button" onclick="location.href='wifi.html'">Configure WiFi</button></center>
+    &nbsp;
+    <center><button type="button" onclick="location.href='ais.html'">Configure AIS Station</button></center>
+    &nbsp;
+    <center><button type="button" onclick="location.href='nmea.html'">Configure NMEA Gateway</button></center>
   </body>
 </html>
