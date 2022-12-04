@@ -11,6 +11,9 @@
 extern const char index_html[] asm("index_html");
 extern const uint8_t maiana_logo_jpg[] asm("maiana_logo_jpg");
 extern const uint32_t maiana_logo_jpg_len asm("maiana_logo_jpg_length");
+extern const char wifi_html[] asm("wifi_html");
+extern const char ais_html[] asm("ais_html");
+extern const char nmea_html[] asm("nmea_html");
 
 static const char *TAG = "httpd";
 
@@ -23,6 +26,14 @@ void send_std_headers(httpd_req_t *req)
   httpd_resp_set_hdr(req, "Cache-Control", "no-cache");
 }
 
+esp_err_t http_html_handler(httpd_req_t *req, const char *html)
+{
+  send_std_headers(req);
+  esp_err_t err = httpd_resp_send(req, html, HTTPD_RESP_USE_STRLEN);
+  ESP_LOGI(TAG, "GET %s %d %d", req->uri, strlen(html), err);
+  return err;
+}
+
 esp_err_t http_root_handler(httpd_req_t *req)
 {
   ESP_LOGI(TAG, "Request: %s", req->uri);
@@ -30,13 +41,23 @@ esp_err_t http_root_handler(httpd_req_t *req)
   {
     return http_img_handler(req);
   }
-  else if ( strcmp(req->uri, "/") == 0 || strcmp(req->uri, "/index.html") == 0 )
+  else if ( strcmp(req->uri, "/") == 0 || strstr(req->uri, "index.html") )
   {
-    send_std_headers(req);
-    esp_err_t err = httpd_resp_send(req, index_html, HTTPD_RESP_USE_STRLEN);
-    ESP_LOGI(TAG, "GET %s %d %d", req->uri, strlen(index_html), err);
+    return http_html_handler(req, index_html);
   }
-  else if ( strcmp(req->uri, "/favicon.ico") == 0 )
+  else if ( strstr(req->uri, "wifi.html") )
+  {
+    return http_html_handler(req, wifi_html);
+  }
+  else if ( strstr(req->uri, "ais.html") )
+  {
+    return http_html_handler(req, ais_html);
+  }
+  else if ( strstr(req->uri, "nmea.html") )
+  {
+    return http_html_handler(req, nmea_html);
+  }
+  else 
   {
     httpd_resp_send_404(req);
   }
