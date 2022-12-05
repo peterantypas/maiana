@@ -37,7 +37,7 @@ esp_err_t http_html_handler(httpd_req_t *req, const char *html)
 
 esp_err_t http_root_handler(httpd_req_t *req)
 {
-  ESP_LOGI(TAG, "Request: %s", req->uri);
+  //ESP_LOGI(TAG, "Request: %s", req->uri);
   if ( strcmp(req->uri, "/") == 0 || strstr(req->uri, "index.html") )
   {
     return http_html_handler(req, index_html);
@@ -66,7 +66,7 @@ esp_err_t http_nmea_handler(httpd_req_t *req)
 
 esp_err_t http_image_handler(httpd_req_t *req)
 {
-  ESP_LOGI(TAG, "Request: %s", req->uri);
+  //ESP_LOGI(TAG, "Request: %s", req->uri);
   if ( strstr(req->uri, "maiana-logo.jpg") )
   {
     send_std_headers(req);
@@ -83,20 +83,7 @@ esp_err_t http_image_handler(httpd_req_t *req)
 }
 
 
-esp_err_t http_wifi_post_handler(httpd_req_t *req)
-{
-  return ESP_OK;
-}
 
-esp_err_t http_ais_post_handler(httpd_req_t *req)
-{
-  return ESP_OK;
-}
-
-esp_err_t http_nmea_post_handler(httpd_req_t *req)
-{
-  return ESP_OK;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // URIs
@@ -151,35 +138,12 @@ httpd_uri_t uri_nmea =
   .user_ctx = NULL
 };
 
-httpd_uri_t uri_wifi_post = 
-{
-  .uri = "/wifi.html",
-  .method = HTTP_POST,
-  .handler = http_wifi_post_handler,
-  .user_ctx = NULL
-};
-
-httpd_uri_t uri_ais_post = 
-{
-  .uri = "/ais.html",
-  .method = HTTP_POST,
-  .handler = http_ais_post_handler,
-  .user_ctx = NULL
-};
-
-httpd_uri_t uri_nmea_post = 
-{
-  .uri = "/nmea.html",
-  .method = HTTP_POST,
-  .handler = http_nmea_post_handler,
-  .user_ctx = NULL
-};
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Registration
 ////////////////////////////////////////////////////////////////////////////////////////
 
-void register_http_handlers(httpd_handle_t handle)
+void register_http_web_handlers(httpd_handle_t handle)
 {
   httpd_register_uri_handler(handle, &uri_root1);
   httpd_register_uri_handler(handle, &uri_root2);
@@ -187,7 +151,4 @@ void register_http_handlers(httpd_handle_t handle)
   httpd_register_uri_handler(handle, &uri_wifi);
   httpd_register_uri_handler(handle, &uri_ais);
   httpd_register_uri_handler(handle, &uri_nmea);
-  httpd_register_uri_handler(handle, &uri_wifi_post);
-  httpd_register_uri_handler(handle, &uri_ais_post);
-  httpd_register_uri_handler(handle, &uri_nmea_post);
 }

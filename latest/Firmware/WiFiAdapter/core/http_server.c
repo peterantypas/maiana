@@ -11,7 +11,10 @@ static httpd_handle_t __handle = NULL;
 
 static const char *TAG = "httpd";
 
-extern void register_http_handlers(httpd_handle_t);
+extern void register_http_web_handlers(httpd_handle_t);
+extern void register_wifi_api_handlers(httpd_handle_t);
+extern void register_ais_api_handlers(httpd_handle_t);
+extern void register_nmea_api_handlers(httpd_handle_t);
 
 void start_httpd()
 {
@@ -21,7 +24,10 @@ void start_httpd()
 
   if (httpd_start(&__handle, &config) == ESP_OK)
   {
-    register_http_handlers(__handle);
+    register_http_web_handlers(__handle);
+    register_wifi_api_handlers(__handle);
+    register_ais_api_handlers(__handle);
+    register_nmea_api_handlers(__handle);
     ESP_LOGI(TAG, "Started HTTPD");
   }
  }

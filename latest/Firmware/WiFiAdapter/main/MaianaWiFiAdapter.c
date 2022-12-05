@@ -35,6 +35,7 @@ void app_main(void)
   esp_event_loop_create_default();
 
   config_init();
+  //config_reset_all();
 
   bsp_set_uart_rx_cb(uart_rx_cb);
   bsp_hw_init();

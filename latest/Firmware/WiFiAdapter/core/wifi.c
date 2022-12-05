@@ -73,6 +73,7 @@ void wifi_start()
     {
       case WIFI_OPEN_AP:
       {
+        ESP_LOGI(TAG, "Starting open access point with SSID %s", ssid);
         memcpy(wifi_config.ap.ssid, ssid, strlen(ssid));
         wifi_config.ap.ssid_len = strlen(ssid);
         wifi_config.ap.authmode = WIFI_AUTH_OPEN;
@@ -83,19 +84,20 @@ void wifi_start()
       break;
       case WIFI_SECURE_AP:
       {
+        ESP_LOGI(TAG, "Starting secure access point with SSID %s and password %s", ssid, password);
         memcpy(wifi_config.ap.ssid, ssid, strlen(ssid));
         wifi_config.ap.ssid_len = strlen(ssid);
         strncpy((char *)wifi_config.ap.password, password, sizeof wifi_config.ap.password);
       
-        wifi_config.ap.authmode = WIFI_AUTH_WPA2_PSK;
         wifi_config.ap.max_connection = 8;
+        wifi_config.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
         esp_wifi_set_mode(WIFI_MODE_AP);
         esp_wifi_set_config(WIFI_IF_AP, &wifi_config);
-
       } 
       break;
       case WIFI_STATION:
       {
+        ESP_LOGI(TAG, "Starting station with SSID %s", ssid);
         memcpy(wifi_config.sta.ssid, ssid, strlen(ssid));
         strncpy((char *)wifi_config.sta.password, password, sizeof wifi_config.ap.password);
         esp_wifi_set_mode(WIFI_MODE_STA);

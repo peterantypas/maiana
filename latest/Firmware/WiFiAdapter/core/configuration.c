@@ -90,7 +90,9 @@ const char *config_get_ssid()
 
 const char *config_get_password()
 {
-  if ( nvs_get_str(__nvs, WIFI_PASSWORD_KEY, __password, sizeof __password) == ESP_ERR_NVS_NOT_FOUND )
+  size_t len = sizeof __password;
+
+  if ( nvs_get_str(__nvs, WIFI_PASSWORD_KEY, __password, &len) == ESP_ERR_NVS_NOT_FOUND )
     return NULL;
 
   return __password;
@@ -102,5 +104,22 @@ wifi_operation_mode_t config_get_wifi_operation_mode()
   if ( nvs_get_i32(__nvs, WIFI_MODE_KEY, &mode) == ESP_ERR_NVS_NOT_FOUND )
     return WIFI_OPEN_AP;
 
-  else return (wifi_operation_mode_t)mode;
+  return (wifi_operation_mode_t)mode;
 }
+
+void config_wifi(wifi_operation_mode_t mode, const char *ssid, const char *password)
+{
+  nvs_set_i32(__nvs, WIFI_MODE_KEY, mode);
+  nvs_set_str(__nvs, WIFI_SSID_KEY, ssid);
+  if ( password )
+    nvs_set_str(__nvs, WIFI_PASSWORD_KEY, password);
+
+  nvs_commit(__nvs);
+}
+
+void config_reset_all()
+{
+  nvs_erase_all(__nvs);
+  nvs_commit(__nvs);
+}
+
