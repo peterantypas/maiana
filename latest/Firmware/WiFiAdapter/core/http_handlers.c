@@ -34,28 +34,13 @@ esp_err_t http_html_handler(httpd_req_t *req, const char *html)
   return err;
 }
 
+
 esp_err_t http_root_handler(httpd_req_t *req)
 {
   ESP_LOGI(TAG, "Request: %s", req->uri);
-  if ( strstr(req->uri, "/images") )
-  {
-    return http_img_handler(req);
-  }
-  else if ( strcmp(req->uri, "/") == 0 || strstr(req->uri, "index.html") )
+  if ( strcmp(req->uri, "/") == 0 || strstr(req->uri, "index.html") )
   {
     return http_html_handler(req, index_html);
-  }
-  else if ( strstr(req->uri, "wifi.html") )
-  {
-    return http_html_handler(req, wifi_html);
-  }
-  else if ( strstr(req->uri, "ais.html") )
-  {
-    return http_html_handler(req, ais_html);
-  }
-  else if ( strstr(req->uri, "nmea.html") )
-  {
-    return http_html_handler(req, nmea_html);
   }
   else 
   {
@@ -64,7 +49,22 @@ esp_err_t http_root_handler(httpd_req_t *req)
   return ESP_OK;
 }
 
-esp_err_t http_img_handler(httpd_req_t *req)
+esp_err_t http_wifi_handler(httpd_req_t *req)
+{
+  return http_html_handler(req, wifi_html);
+}
+
+esp_err_t http_ais_handler(httpd_req_t *req)
+{
+  return http_html_handler(req, ais_html);
+}
+
+esp_err_t http_nmea_handler(httpd_req_t *req)
+{
+  return http_html_handler(req, nmea_html);
+}
+
+esp_err_t http_image_handler(httpd_req_t *req)
 {
   ESP_LOGI(TAG, "Request: %s", req->uri);
   if ( strstr(req->uri, "maiana-logo.jpg") )
@@ -83,19 +83,111 @@ esp_err_t http_img_handler(httpd_req_t *req)
 }
 
 
-/** URI definitions */
-
-httpd_uri_t uri_root = 
+esp_err_t http_wifi_post_handler(httpd_req_t *req)
 {
-  .uri = "*",
+  return ESP_OK;
+}
+
+esp_err_t http_ais_post_handler(httpd_req_t *req)
+{
+  return ESP_OK;
+}
+
+esp_err_t http_nmea_post_handler(httpd_req_t *req)
+{
+  return ESP_OK;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+// URIs
+////////////////////////////////////////////////////////////////////////////////////////
+
+
+httpd_uri_t uri_root1 = 
+{
+  .uri = "/",
   .method = HTTP_GET,
   .handler = http_root_handler,
   .user_ctx = NULL
 };
 
+httpd_uri_t uri_root2 = 
+{
+  .uri = "/index.html",
+  .method = HTTP_GET,
+  .handler = http_root_handler,
+  .user_ctx = NULL
+};
 
-/** Registration */
+httpd_uri_t uri_images = 
+{
+  .uri = "/images/*",
+  .method = HTTP_GET,
+  .handler = http_image_handler,
+  .user_ctx = NULL
+};
+
+httpd_uri_t uri_wifi = 
+{
+  .uri = "/wifi.html",
+  .method = HTTP_GET,
+  .handler = http_wifi_handler,
+  .user_ctx = NULL
+};
+
+httpd_uri_t uri_ais = 
+{
+  .uri = "/ais.html",
+  .method = HTTP_GET,
+  .handler = http_ais_handler,
+  .user_ctx = NULL
+};
+
+httpd_uri_t uri_nmea = 
+{
+  .uri = "/nmea.html",
+  .method = HTTP_GET,
+  .handler = http_nmea_handler,
+  .user_ctx = NULL
+};
+
+httpd_uri_t uri_wifi_post = 
+{
+  .uri = "/wifi.html",
+  .method = HTTP_POST,
+  .handler = http_wifi_post_handler,
+  .user_ctx = NULL
+};
+
+httpd_uri_t uri_ais_post = 
+{
+  .uri = "/ais.html",
+  .method = HTTP_POST,
+  .handler = http_ais_post_handler,
+  .user_ctx = NULL
+};
+
+httpd_uri_t uri_nmea_post = 
+{
+  .uri = "/nmea.html",
+  .method = HTTP_POST,
+  .handler = http_nmea_post_handler,
+  .user_ctx = NULL
+};
+
+////////////////////////////////////////////////////////////////////////////////////////
+// Registration
+////////////////////////////////////////////////////////////////////////////////////////
+
 void register_http_handlers(httpd_handle_t handle)
 {
-  httpd_register_uri_handler(handle, &uri_root);
+  httpd_register_uri_handler(handle, &uri_root1);
+  httpd_register_uri_handler(handle, &uri_root2);
+  httpd_register_uri_handler(handle, &uri_images);
+  httpd_register_uri_handler(handle, &uri_wifi);
+  httpd_register_uri_handler(handle, &uri_ais);
+  httpd_register_uri_handler(handle, &uri_nmea);
+  httpd_register_uri_handler(handle, &uri_wifi_post);
+  httpd_register_uri_handler(handle, &uri_ais_post);
+  httpd_register_uri_handler(handle, &uri_nmea_post);
 }
