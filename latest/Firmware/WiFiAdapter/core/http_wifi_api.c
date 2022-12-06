@@ -66,6 +66,8 @@ esp_err_t http_wifi_post_handler(httpd_req_t *req)
       * ensure that the underlying socket is closed */
     return ESP_FAIL;
   }
+  __inbuff[ret] = 0;
+  ESP_LOGI(TAG, "%s", __inbuff);
 
   json_t const *doc = json_create(__inbuff, __jsonpool, MAX_JSON_FIELDS);
   if ( doc == NULL )
@@ -83,7 +85,10 @@ esp_err_t http_wifi_post_handler(httpd_req_t *req)
     mode = json_getInteger(modeprop);
 
   ssid = json_getPropertyValue(doc, "ssid");
-  pwd = json_getPropertyValue(doc, "password");
+  
+  json_t const *pwdprop = json_getProperty(doc, "password");
+  if ( pwdprop->type != JSON_NULL )
+    pwd = json_getValue(pwdprop);
 
   wifi_operation_mode_t wifi_mode = (wifi_operation_mode_t)mode;
   if ( mode < 0 || ssid == NULL )

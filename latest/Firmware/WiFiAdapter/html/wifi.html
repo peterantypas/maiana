@@ -2,14 +2,175 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>  
     <title>WiFi Setup</title>
-    
     <style>
-    </style>
+      form {
+        font: 22px helvetica;
+        color:gray;
+      }
 
-    <script>         
+      fieldset {
+        border-radius: 10px;
+        width: 92%;
+        color: #0072b6;
+        padding: 12px;
+      }
+
+      input {
+        color: gray;
+        font: 20px helvetica;
+        max-height: 32px;
+      }
+
+
+      h1 {
+        font: 50px helvetica;
+        font-weight: bold;
+        color: #0072b6;
+        max-height:28px;
+      }
+
+      h2 {
+        font: 30px helvetica;
+        color: #00a5a4;
+        max-height: 20px;
+        padding-bottom: 8px;
+      }
+
+      img {
+        max-width:50%;
+        object-fit:contain;
+      }
+
+      button {
+        width: 92%;
+        height: 60px;
+        font-size: 28px;
+        color: #0072b6;
+      }      
+
+    </style>
+    <script>
+      async function loadForm() {
+        let url = '/api/wifi';
+        try {
+          let res = await fetch(url);
+          data = await res.json();
+          //alert(JSON.stringify(data));
+          document.forms[0].elements["ssid"].value = data.ssid;
+          if ( data.password )
+            document.forms[0].elements["password"].value = data.password;
+          document.forms[0].elements["mode"].value = data.mode;
+        }
+        catch(error) {
+          alert(error);
+        }
+      }
+
+      async function postData(obj)
+      {
+        json = JSON.stringify(obj);
+        try {
+          let res = await fetch('/api/wifi', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: json
+          });
+          response = await res;
+          if ( response.ok )
+          {
+            document.location.reload();
+          }
+          else
+          {
+            alert("Response status: " + response.status);
+          }
+        }
+        catch(error) {
+          alert(error);
+        }
+      }
+
+      function validate()
+      {
+        form = document.forms[0];
+        mode = form.elements["mode"].value;
+        if ( mode == 0 )
+        {
+          // We only need SSID
+          ssid = form.elements["ssid"].value;
+          password = form.elements["password"].value;
+          if ( ssid.length == 0 )
+            return false;
+          
+          if ( password.length > 0 )
+          {
+            alert("To use a password, you must select either Secure Access Point or Wireless Station mode");
+            return false;
+          }
+          
+          obj = {mode: Number(mode), ssid: ssid, password: null};  
+          postData(obj);
+          return true;          
+        }
+        else if ( mode == 1 )
+        {
+          // We need SSID & strong password
+          ssid = form.elements["ssid"].value;
+          password = form.elements["password"].value;
+          if ( ssid.length == 0 )
+            return false;
+
+          if ( password.length < 8 )
+          {
+            alert("You must use a password with a minimum length of 8");
+            return false;
+          }
+            
+          obj = {mode: Number(mode), ssid: ssid, password: password};  
+          postData(obj);
+          return true;
+        }
+        else 
+        {
+          // We need SSID & maybe password
+          ssid = form.elements["ssid"].value;
+          password = form.elements["password"].value;
+          if ( ssid.length == 0 )
+            return false;
+            
+          obj = {mode: Number(mode), ssid: ssid, password: password};  
+          postData(obj);
+          return true;
+        }
+      }
     </script>
   </head>
-  <body> 
-    This is the WiFi form   
+  <body onload="loadForm()"> 
+    <center><h1>MAIANA&trade;</h1></center>
+    <center><h2>WiFi Configuration</h2></center>
+
+    <form>
+      <fieldset>
+        <legend>Wireless Mode</legend>
+        <input type="radio" id="open_ap" name="mode" value="0" checked/>
+        <label for="open_ap">Open Access Point</label>
+        <br/>
+        <input type="radio" id="sec_ap" name="mode" value="1"/>
+        <label for="sec_ap">Secure Access Point</label>
+        <br/>
+        <input type="radio" id="station" name="mode" value="2"/>
+        <label for="station">Wireless Station</label>
+        </fieldset>
+      <br/>
+      <fieldset>
+        <legend>Parameters</legend>
+        <label class="left-label">SSID<input id="ssid" type="text" name="ssid" /></label>
+        <br/>
+        <label class="left-label">Password<input id="password" type="password" name="password"/></label>
+      </fieldset>
+      <br/>
+      <center><button type="button" onclick="validate();">Apply</button></center>
+
+    </form>
   </body>
 </html>
