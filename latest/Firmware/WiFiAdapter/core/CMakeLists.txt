@@ -9,6 +9,7 @@ set (SOURCES
   tiny-json.c
   json-maker.c
   http_utils.c
+  button.c
   )
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS .

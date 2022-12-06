@@ -138,6 +138,9 @@
           if ( ssid.length == 0 )
             return false;
             
+          if ( password.length == 0 )
+            password = null;
+            
           obj = {mode: Number(mode), ssid: ssid, password: password};  
           postData(obj);
           return true;

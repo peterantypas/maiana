@@ -5,10 +5,13 @@
 #include "driver/gpio.h"
 #include "hal/gpio_hal.h"
 #include <string.h>
+#include "freertos/timers.h"
 
 //static const char *TAG = "bsp";
 static QueueHandle_t uart1_queue;
 static uart_rx_cb_t *uart_cb = NULL;
+static TimerHandle_t timer_h;
+static StaticTimer_t static_timer;
 
 #define BUF_SIZE (128)
 #define RD_BUF_SIZE (BUF_SIZE)
@@ -95,6 +98,19 @@ void btn_isr(void *args)
   esp_event_isr_post(BSP_EVENT, BSP_TX_BTN_EVENT, NULL, 0, NULL);
 }
 
+void bsp_timer_tick()
+{
+  esp_event_isr_post(BSP_EVENT, BSP_ONE_SEC_TIMER_EVENT, NULL, 0, NULL);
+}
+
+void bsp_timer_init()
+{
+  timer_h = xTimerCreateStatic("OneSec", 1000 / portTICK_PERIOD_MS, pdTRUE, (void*)0, bsp_timer_tick, &static_timer);
+  if ( timer_h )
+    xTimerStart(timer_h, 0);
+}
+
+
 void bsp_hw_init()
 {
   uart_set_pin(UART_NUM_1, GPIO_UART1_TX, GPIO_UART1_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
@@ -102,10 +118,11 @@ void bsp_hw_init()
 
   config_gpio(GPIO_TX_BUTTON, GPIO_MODE_INPUT, false, false);
   gpio_set_direction(GPIO_TX_BUTTON, GPIO_MODE_INPUT);
-  gpio_set_intr_type(GPIO_TX_BUTTON, GPIO_INTR_ANYEDGE);
+  gpio_set_intr_type(GPIO_TX_BUTTON, GPIO_INTR_NEGEDGE);
 
   gpio_install_isr_service(0);
   gpio_isr_handler_add(GPIO_TX_BUTTON, btn_isr, NULL);
+  bsp_timer_init();
 }
 
 void bsp_reboot()

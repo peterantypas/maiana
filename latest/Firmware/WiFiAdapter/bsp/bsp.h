@@ -5,7 +5,8 @@
 
 ESP_EVENT_DECLARE_BASE(BSP_EVENT);
 
-#define BSP_TX_BTN_EVENT    1
+#define BSP_TX_BTN_EVENT          1
+#define BSP_ONE_SEC_TIMER_EVENT   2
 
 typedef void (uart_rx_cb_t)(char *in);
 
