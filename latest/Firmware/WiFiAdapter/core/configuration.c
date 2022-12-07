@@ -2,6 +2,9 @@
 #include "nvs_flash.h"
 #include "esp_mac.h"
 
+ESP_EVENT_DEFINE_BASE(CONFIG_EVENT);
+
+
 static char __ssid[48] = {0};
 static char __password[60] = {0};
 static char __ap_mac[32] = {0};
@@ -121,6 +124,7 @@ void config_wifi(wifi_operation_mode_t mode, const char *ssid, const char *passw
     nvs_set_str(__nvs, WIFI_PASSWORD_KEY, password);
 
   nvs_commit(__nvs);
+  esp_event_post(CONFIG_EVENT, WIFI_CONFIG_CHANGED_EVENT, NULL, 0, portMAX_DELAY);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -174,5 +178,7 @@ void config_nmea_gateway(nmea_gateway_mode_t mode, const char *ip, uint16_t port
   }
 
   nvs_commit(__nvs);
+  esp_event_post(CONFIG_EVENT, NMEA_CONFIG_CHANGED_EVENT, NULL, 0, portMAX_DELAY);
+
 }
 

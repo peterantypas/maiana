@@ -3,15 +3,15 @@
 
 #include "esp_event.h"
 
-ESP_EVENT_DECLARE_BASE(BSP_EVENT);
 
-#define BSP_TX_BTN_EVENT          1
-#define BSP_ONE_SEC_TIMER_EVENT   2
-
-typedef void (uart_rx_cb_t)(char *in);
+typedef void (uart_rx_cb_t)(char c);
+typedef void (button_isr_cb_t)();
+typedef void (timer_cb_t)();
 
 void bsp_hw_init();
 void bsp_reboot();
 void bsp_set_uart_rx_cb(uart_rx_cb_t *cb);
+void bsp_set_button_isr_cb(button_isr_cb_t *cb);
+void bsp_set_timer_cb(timer_cb_t *cb);
 
 #endif

@@ -10,6 +10,8 @@ set (SOURCES
   json-maker.c
   http_utils.c
   button.c
+  nmea_gateway.c
+  types.c
   )
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS .

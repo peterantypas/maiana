@@ -4,20 +4,17 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "types.h"
+#include <esp_event.h>
 
-typedef enum
-{
-  WIFI_OPEN_AP,
-  WIFI_SECURE_AP,
-  WIFI_STATION
-} wifi_operation_mode_t;
 
-typedef enum
-{
-  NMEA_TCP_LISTENER,
-  NMEA_TCP_SENDER,
-  NMEA_UDP_SENDER
-} nmea_gateway_mode_t;
+ESP_EVENT_DECLARE_BASE(CONFIG_EVENT);
+
+
+#define WIFI_CONFIG_CHANGED_EVENT   1
+#define AIS_CONFIG_CHANGED_EVENT    2
+#define NMEA_CONFIG_CHANGED_EVENT   3
+
 
 void config_init();
 

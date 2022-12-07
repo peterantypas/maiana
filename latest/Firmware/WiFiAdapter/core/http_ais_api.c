@@ -8,7 +8,7 @@
 #include "freertos/FreeRTOS.h"
 #include "configuration.h"
 
-static const char *TAG = "httpd";
+//static const char *TAG = "httpd";
 
 
 ////////////////////////////////////////////////////////////////////////////////////////

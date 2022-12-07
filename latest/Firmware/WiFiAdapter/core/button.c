@@ -3,10 +3,17 @@
 #include "esp_log.h"
 #include "../bsp/bsp.h"
 #include "configuration.h"
+#include "types.h"
 
 const char *TAG = "button";
 static int toggles = 0;
 static uint32_t last_btn_press = 0;
+
+void button_isr()
+{
+  esp_event_isr_post(MAIANA_EVENT, BTN_EVENT, NULL, 0, NULL);
+}
+
 
 void btn_press_handler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
@@ -40,6 +47,7 @@ static void one_sec_handler(void *args, esp_event_base_t base, int32_t id, void 
 
 void button_init()
 {
-  esp_event_handler_register(BSP_EVENT, BSP_TX_BTN_EVENT, btn_press_handler, NULL); 
-  esp_event_handler_register(BSP_EVENT, BSP_ONE_SEC_TIMER_EVENT, one_sec_handler, NULL); 
+  esp_event_handler_register(MAIANA_EVENT, BTN_EVENT, btn_press_handler, NULL); 
+  esp_event_handler_register(MAIANA_EVENT, ONE_SEC_TIMER_EVENT, one_sec_handler, NULL); 
+  bsp_set_button_isr_cb(button_isr);
 }

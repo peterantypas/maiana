@@ -8,17 +8,15 @@
 #include "http_server.h"
 #include "configuration.h"
 #include "button.h"
+#include "types.h"
+#include "nmea_gateway.h"
 
 
-void uart_rx_cb(char *s)
+
+void one_sec_timer()
 {
-  if ( strlen(s) == 0 )
-    return;
-
-  printf(s);
+  esp_event_isr_post(MAIANA_EVENT, ONE_SEC_TIMER_EVENT, NULL, 0, NULL);
 }
-
-
 
 
 void app_main(void)
@@ -28,12 +26,14 @@ void app_main(void)
   config_init();
   //config_reset_all();
 
-  bsp_set_uart_rx_cb(uart_rx_cb);
+  bsp_set_timer_cb(one_sec_timer);
   bsp_hw_init();
+
 
   wifi_start();
   start_httpd();
   button_init();
+  nmea_gateway_start();
 
   vTaskDelete(NULL);
 }
