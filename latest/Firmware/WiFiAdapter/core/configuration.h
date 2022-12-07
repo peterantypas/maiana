@@ -76,13 +76,6 @@ const char *config_get_nmea_gateway_ip();
  */
 uint16_t config_get_nmea_gateway_port();
 
-/**
- * @brief Indicates whether the NMEA output stream includes GNSS sentences
- * 
- * @return true 
- * @return false 
- */
-bool config_nmea_stream_includes_gnss();
 
 /**
  * @brief Congigures the NMEA gateway
@@ -90,9 +83,8 @@ bool config_nmea_stream_includes_gnss();
  * @param mode Desired mode
  * @param ip Target IP (for senders only)
  * @param port TCP port
- * @param include_gnss Whether or not to include GNSS sentences
  */
-void config_nmea_gateway(nmea_gateway_mode_t mode, const char *ip, uint16_t port, bool include_gnss);
+void config_nmea_gateway(nmea_gateway_mode_t mode, const char *ip, uint16_t port);
 
 /*** Misc ***/
 

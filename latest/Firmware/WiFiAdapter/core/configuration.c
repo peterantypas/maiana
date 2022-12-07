@@ -4,9 +4,12 @@
 
 static char __ssid[48] = {0};
 static char __password[60] = {0};
-
 static char __ap_mac[32] = {0};
 static char __st_mac[32] = {0};
+static char __nmea_ip[16] = {0};
+static nvs_handle_t __nvs = 0;
+
+#define NMEA_DEFAULT_PORT     5555
 
 // NVS Keys
 #define WIFI_MODE_KEY         "wifi_mode"
@@ -16,9 +19,7 @@ static char __st_mac[32] = {0};
 #define NMEA_MODE_KEY         "nmea_mode"
 #define NMEA_IP_ADDR_KEY      "nmea_ip"
 #define NMEA_PORT_KEY         "nmea_port"
-#define NMEA_INCL_GNSS_KEY    "nmea_gnss"
 
-static nvs_handle_t __nvs = 0;
 
 void config_init()
 {
@@ -55,6 +56,11 @@ const char *config_st_mac_address()
   return __st_mac;
 }
 
+void config_reset_all()
+{
+  nvs_erase_all(__nvs);
+  nvs_commit(__nvs);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // WiFi
@@ -117,9 +123,56 @@ void config_wifi(wifi_operation_mode_t mode, const char *ssid, const char *passw
   nvs_commit(__nvs);
 }
 
-void config_reset_all()
+////////////////////////////////////////////////////////////////////////////////////
+// NMEA
+////////////////////////////////////////////////////////////////////////////////////
+nmea_gateway_mode_t config_get_nmea_gateway_mode()
 {
-  nvs_erase_all(__nvs);
+  nmea_gateway_mode_t result;
+  if ( nvs_get_i32(__nvs, NMEA_MODE_KEY, (int*)&result) == ESP_ERR_NVS_NOT_FOUND )
+    return NMEA_TCP_LISTENER;
+  
+  return result;
+}
+
+const char *config_get_nmea_gateway_ip()
+{
+  size_t len = sizeof __nmea_ip;
+  if ( config_get_nmea_gateway_mode() == NMEA_TCP_LISTENER )
+    return "0.0.0.0";
+  else
+    nvs_get_str(__nvs, NMEA_IP_ADDR_KEY, __nmea_ip, &len);
+
+  return __nmea_ip;
+}
+
+uint16_t config_get_nmea_gateway_port()
+{
+  uint16_t result;
+  if ( nvs_get_u16(__nvs, NMEA_PORT_KEY, &result) == ESP_ERR_NVS_NOT_FOUND )
+    return NMEA_DEFAULT_PORT;
+
+  return result;
+}
+
+void config_nmea_gateway(nmea_gateway_mode_t mode, const char *ip, uint16_t port)
+{
+  switch(mode)
+  {
+    case NMEA_TCP_LISTENER:
+      // IP is always "0.0.0.0"
+      nvs_set_str(__nvs, NMEA_IP_ADDR_KEY, "0.0.0.0");
+      nvs_set_u16(__nvs, NMEA_PORT_KEY, port);
+      nvs_set_i32(__nvs, NMEA_MODE_KEY, mode);
+      break;
+    case NMEA_TCP_SENDER:
+    case NMEA_UDP_SENDER:
+      nvs_set_str(__nvs, NMEA_IP_ADDR_KEY, ip);
+      nvs_set_u16(__nvs, NMEA_PORT_KEY, port);
+      nvs_set_i32(__nvs, NMEA_MODE_KEY, mode);
+      break;
+  }
+
   nvs_commit(__nvs);
 }
 

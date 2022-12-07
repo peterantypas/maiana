@@ -13,8 +13,8 @@
 
 
 static const char *TAG = "httpd";
-static char __outbuff[2048];
-static char __inbuff[2048];
+static char __outbuff[256];
+static char __inbuff[256];
 
 #define MAX_JSON_FIELDS 20
 static json_t __jsonpool[MAX_JSON_FIELDS];

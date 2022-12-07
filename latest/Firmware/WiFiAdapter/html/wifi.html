@@ -42,11 +42,20 @@
       }
 
       button {
-        width: 92%;
+        width: 96%;
         height: 60px;
         font-size: 28px;
         color: #0072b6;
       }      
+
+      .left-label {
+        color: #0072b6;
+        font: 20px helvetica;
+      }
+
+      .right-align-input {
+        float: right;
+      }
 
     </style>
     <script>
@@ -140,7 +149,7 @@
             
           if ( password.length == 0 )
             password = null;
-            
+
           obj = {mode: Number(mode), ssid: ssid, password: password};  
           postData(obj);
           return true;
@@ -167,9 +176,16 @@
       <br/>
       <fieldset>
         <legend>Parameters</legend>
-        <label class="left-label">SSID<input id="ssid" type="text" name="ssid" /></label>
-        <br/>
-        <label class="left-label">Password<input id="password" type="password" name="password"/></label>
+        <table>
+          <tr>
+            <td class="left-label">SSID:</td>
+            <td><input class="right-align-input" id="ssid" type="text" name="ssid" /></td>
+          </tr>
+          <tr>
+            <td class="left-label">Password:</td>
+            <td><input class="right-align-input" id="password" type="password" name="password"/></td>
+          </tr>
+        </table>
       </fieldset>
       <br/>
       <center><button type="button" onclick="validate();">Apply</button></center>

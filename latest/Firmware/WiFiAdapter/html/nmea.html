@@ -2,14 +2,195 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>  
     <title>NMEA Setup</title>
-    
     <style>
-    </style>
+      form {
+        font: 22px helvetica;
+        color:gray;
+      }
 
-    <script>         
+      fieldset {
+        border-radius: 10px;
+        width: 92%;
+        color: #0072b6;
+        padding: 12px;
+      }
+
+      input {
+        color: gray;
+        font: 20px helvetica;
+        max-height: 32px;
+      }
+
+
+      h1 {
+        font: 50px helvetica;
+        font-weight: bold;
+        color: #0072b6;
+        max-height:28px;
+      }
+
+      h2 {
+        font: 30px helvetica;
+        color: #00a5a4;
+        max-height: 20px;
+        padding-bottom: 8px;
+      }
+
+      img {
+        max-width:50%;
+        object-fit:contain;
+      }
+
+      button {
+        width: 96%;
+        height: 60px;
+        font-size: 28px;
+        color: #0072b6;
+      }      
+
+      .left-label {
+        color: #0072b6;
+        font: 20px helvetica;
+      }
+
+      .right-align-input {
+        float: right;
+      }
+
+    </style>
+    <script>
+      async function loadForm() {
+        let url = '/api/nmea';
+        try {
+          let res = await fetch(url);
+          data = await res.json();
+          //alert(JSON.stringify(data));
+          document.forms[0].elements["mode"].value = data.mode;
+          document.forms[0].elements["ip"].value = data.ip;
+          document.forms[0].elements["port"].value = data.port;
+        }
+        catch(error) {
+          alert(error);
+        }
+      }
+
+      async function postData(obj)
+      {
+        json = JSON.stringify(obj);
+        try {
+          let res = await fetch('/api/nmea', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: json
+          });
+          response = await res;
+          if ( response.ok )
+          {
+            document.location.reload();
+          }
+          else
+          {
+            alert("Response status: " + response.status);
+          }
+        }
+        catch(error) {
+          alert(error);
+        }
+      }
+
+      function isValidIP(ip) 
+      {
+        if ( ip === undefined )
+          return false;
+
+        var arrIp = ip.split(".");
+        if (arrIp.length !== 4) 
+          return false;
+
+        if ( Number(arrIp[0]) == 0 )
+          return false;
+
+        for (let oct of arrIp) {
+          if ( isNaN(oct) || Number(oct) < 0 || Number(oct) > 255)
+            return false;
+        }
+        return "Valid IP";
+      }
+
+      function validate()
+      {
+        form = document.forms[0];
+        mode = form.elements["mode"].value;
+        if ( mode == 0 )
+        {
+          // We only need a valid port
+          port = form.elements["port"].value;
+          if ( port < 1024 || port > 65535 )
+          {
+            alert("Port must be in the range 1024-65535");
+            return false;
+          }
+          
+          obj = {mode: Number(mode), ip: "0.0.0.0", port: port};  
+          postData(obj);
+          return true;          
+        }
+        else 
+        {
+          // We need both a valid IP and port
+          ip = form.elements["ip"].value;
+          if ( !isValidIP(ip) )
+          {
+            alert("Please enter a proper IP address");
+            return false;
+          }
+
+          port = form.elements["port"].value;
+          if ( port < 1024 || port > 65535 )
+          {
+            alert("Port must be between 1024 and 65535");
+            return false;
+          }
+
+          obj = {mode: Number(mode), ip: ip, port: port};  
+          postData(obj);
+          return true;
+        }
+      }
     </script>
   </head>
-  <body> 
-    This is the NMEA form   
+  <body onload="loadForm();"> 
+    <center><h1>MAIANA&trade;</h1></center>
+    <center><h2>NMEA Configuration</h2></center>
+
+    <form>
+      <fieldset>
+        <legend>Mode</legend>
+        <input type="radio" id="tcp_server" name="mode" value="0" checked/>
+        <label for="tcp_server">TCP Listener</label>
+        <br/>
+        <input type="radio" id="tcp_client" name="mode" value="1"/>
+        <label for="tcp_client">TCP Sender</label>
+        <br/>
+        <input type="radio" id="udp_sender" name="mode" value="2"/>
+        <label for="udp_sender">UDP Sender</label>
+        </fieldset>
+      <br/>
+      <fieldset>
+        <table>
+          <tr>
+            <td class="left-label">IP Address:</td>
+            <td><input class="right-align-input" id="ip" type="text" name="ip" /></td>
+          </tr>
+          <tr>
+            <td class="left-label">Port:</td>
+            <td><input class="right-align-input" id="port" type="number" name="port"/></td>
+          </tr>
+        </table>
+      </fieldset>
+      <br/>
+      <center><button type="button" onclick="validate();">Apply</button></center>
+
+    </form>
   </body>
 </html>
