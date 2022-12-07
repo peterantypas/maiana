@@ -14,6 +14,7 @@ extern const uint32_t maiana_logo_jpg_len asm("maiana_logo_jpg_length");
 extern const char wifi_html[] asm("wifi_html");
 extern const char ais_html[] asm("ais_html");
 extern const char nmea_html[] asm("nmea_html");
+extern const char forms_css[] asm("forms_css");
 
 static const char *TAG = "httpd";
 
@@ -82,12 +83,13 @@ esp_err_t http_image_handler(httpd_req_t *req)
   return ESP_OK;
 }
 
-#if 0
+
 esp_err_t http_css_handler(httpd_req_t *req)
 {
   if ( strstr(req->uri, "forms.css") ) 
   {
-    return http_html_handler(req, common_css);
+    
+    return http_html_handler(req, forms_css);
   }
   else
   {
@@ -96,7 +98,6 @@ esp_err_t http_css_handler(httpd_req_t *req)
 
   return ESP_OK;
 }
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // URIs
@@ -151,7 +152,6 @@ httpd_uri_t uri_nmea =
   .user_ctx = NULL
 };
 
-#if 0
 httpd_uri_t uri_css = 
 {
   .uri = "/css/*",
@@ -159,7 +159,6 @@ httpd_uri_t uri_css =
   .handler = http_css_handler,
   .user_ctx = NULL
 };
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Registration
@@ -173,5 +172,5 @@ void register_http_web_handlers(httpd_handle_t handle)
   httpd_register_uri_handler(handle, &uri_wifi);
   httpd_register_uri_handler(handle, &uri_ais);
   httpd_register_uri_handler(handle, &uri_nmea);
-  //httpd_register_uri_handler(handle, &uri_css);
+  httpd_register_uri_handler(handle, &uri_css);
 }

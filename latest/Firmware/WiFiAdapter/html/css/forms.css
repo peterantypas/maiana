@@ -1,0 +1,54 @@
+form {
+  font: 22px helvetica;
+  color:gray;
+}
+
+fieldset {
+  border-radius: 10px;
+  width: 92%;
+  color: #0072b6;
+  padding: 12px;
+}
+
+input {
+  color: gray;
+  font: 20px helvetica;
+  max-height: 32px;
+}
+
+
+h1 {
+  font: 50px helvetica;
+  font-weight: bold;
+  color: #0072b6;
+  max-height:28px;
+}
+
+h2 {
+  font: 30px helvetica;
+  color: #00a5a4;
+  max-height: 20px;
+  padding-bottom: 8px;
+}
+
+img {
+  max-width:50%;
+  object-fit:contain;
+}
+
+button {
+  width: 96%;
+  height: 60px;
+  font-size: 28px;
+  color: #0072b6;
+}      
+
+.left-label {
+  color: #0072b6;
+  font: 20px helvetica;
+}
+
+.right-align-input {
+  float: right;
+}
+

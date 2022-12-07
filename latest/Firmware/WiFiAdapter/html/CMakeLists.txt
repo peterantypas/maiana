@@ -3,6 +3,7 @@ idf_component_register(EMBED_TXTFILES
                         "wifi.html"
                         "ais.html"
                         "nmea.html"
+                        "css/forms.css"
                        EMBED_FILES
                          "images/maiana-logo.jpg" 
                       )
