@@ -18,6 +18,7 @@ static nvs_handle_t __nvs = 0;
 #define WIFI_MODE_KEY         "wifi_mode"
 #define WIFI_SSID_KEY         "wifi_ssid"
 #define WIFI_PASSWORD_KEY     "wifi_pwd"
+#define WIFI_SUCCESS_KEY      "wifi_ok"
 
 #define NMEA_MODE_KEY         "nmea_mode"
 #define NMEA_IP_ADDR_KEY      "nmea_ip"
@@ -63,6 +64,14 @@ void config_reset_all()
 {
   nvs_erase_all(__nvs);
   nvs_commit(__nvs);
+}
+
+void config_reset_wifi()
+{
+  nvs_erase_key(__nvs, WIFI_SSID_KEY);
+  nvs_erase_key(__nvs, WIFI_PASSWORD_KEY);
+  nvs_erase_key(__nvs, WIFI_MODE_KEY);
+  nvs_erase_key(__nvs, WIFI_SUCCESS_KEY);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -181,3 +190,17 @@ void config_nmea_gateway(nmea_gateway_mode_t mode, const char *ip, uint16_t port
 
 }
 
+void config_set_wifi_success()
+{
+  nvs_set_i32(__nvs, WIFI_SUCCESS_KEY, 1);
+  nvs_commit(__nvs);
+}
+
+bool config_has_wifi_success()
+{
+  int result = 0;
+  if ( nvs_get_i32(__nvs, WIFI_SUCCESS_KEY, (int*)&result) == ESP_ERR_NVS_NOT_FOUND )
+    return false;
+
+  return true;
+}

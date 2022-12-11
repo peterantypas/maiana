@@ -100,10 +100,29 @@ const char *config_ap_mac_address();
 const char *config_st_mac_address();
 
 /**
+ * @brief Resets WiFi configuration to default 
+ * 
+ */
+void config_reset_wifi();
+
+/**
  * @brief Resets everything to defaults. Will take effect after reboot.
  * 
  */
 void config_reset_all();
 
+/**
+ * @brief Sets a flag that indicates successul association with the target AP
+ * 
+ */
+void config_set_wifi_success();
+
+/**
+ * @brief Returns true if association with the target AP worked at least once before
+ * 
+ * @return true 
+ * @return false 
+ */
+bool config_has_wifi_success();
 
 #endif
