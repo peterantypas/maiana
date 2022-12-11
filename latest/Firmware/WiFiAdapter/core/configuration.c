@@ -131,7 +131,9 @@ void config_wifi(wifi_operation_mode_t mode, const char *ssid, const char *passw
   nvs_set_str(__nvs, WIFI_SSID_KEY, ssid);
   if ( password )
     nvs_set_str(__nvs, WIFI_PASSWORD_KEY, password);
-
+  else
+    nvs_set_str(__nvs, WIFI_PASSWORD_KEY, "");
+    
   nvs_commit(__nvs);
   esp_event_post(CONFIG_EVENT, WIFI_CONFIG_CHANGED_EVENT, NULL, 0, portMAX_DELAY);
 }

@@ -10,7 +10,7 @@
 #include "json-maker.h"
 #include "tiny-json.h"
 #include "http_utils.h"
-
+#include "../bsp/bsp.h"
 
 static const char *TAG = "httpd";
 static char __outbuff[256];
@@ -107,7 +107,7 @@ esp_err_t http_wifi_post_handler(httpd_req_t *req)
 
   config_wifi(wifi_mode, ssid, pwd);
   httpd_resp_send(req, NULL, 0);
-
+  esp_event_post(MAIANA_EVENT, REBOOT_EVENT, NULL, 0, 0);
   return ESP_OK;
 }
 

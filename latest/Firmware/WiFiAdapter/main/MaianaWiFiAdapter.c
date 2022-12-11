@@ -18,10 +18,17 @@ void one_sec_timer()
   esp_event_isr_post(MAIANA_EVENT, ONE_SEC_TIMER_EVENT, NULL, 0, NULL);
 }
 
+void reboot_handler()
+{
+  sleep(2);
+  bsp_reboot();
+}
 
 void app_main(void)
 {
   esp_event_loop_create_default();
+  esp_event_handler_register(MAIANA_EVENT, REBOOT_EVENT, reboot_handler, NULL); 
+
 
   config_init();
   //config_reset_all();
