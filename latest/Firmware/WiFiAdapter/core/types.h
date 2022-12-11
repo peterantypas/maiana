@@ -14,7 +14,6 @@ wifi_operation_mode_t;
 typedef enum
 {
   NMEA_TCP_LISTENER,
-  NMEA_TCP_SENDER,
   NMEA_UDP_SENDER
 } 
 nmea_gateway_mode_t;

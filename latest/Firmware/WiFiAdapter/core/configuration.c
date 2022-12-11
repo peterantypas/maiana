@@ -169,7 +169,6 @@ void config_nmea_gateway(nmea_gateway_mode_t mode, const char *ip, uint16_t port
       nvs_set_u16(__nvs, NMEA_PORT_KEY, port);
       nvs_set_i32(__nvs, NMEA_MODE_KEY, mode);
       break;
-    case NMEA_TCP_SENDER:
     case NMEA_UDP_SENDER:
       nvs_set_str(__nvs, NMEA_IP_ADDR_KEY, ip);
       nvs_set_u16(__nvs, NMEA_PORT_KEY, port);

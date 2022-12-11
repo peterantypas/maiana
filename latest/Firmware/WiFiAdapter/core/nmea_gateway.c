@@ -34,6 +34,7 @@ typedef struct
   nmea_term_func *term;
   nmea_process_func *cb;
   TaskHandle_t task;
+  struct sockaddr_in addr;
 }
 nmea_server_t;
 
@@ -92,8 +93,6 @@ void tcp_server_shutdown(void *p)
 void tcp_server_process(void *p, const char *text)
 {
   nmea_server_t *server = p;
-  //printf(text);
-#if 1
   for ( int i = 0; i < MAX_CONNECTIONS; ++i )
   {
     int fd = server->connections[i];
@@ -108,25 +107,25 @@ void tcp_server_process(void *p, const char *text)
       server->connections[i] = -1;
     }
   }
-#endif
 }
 
 void tcp_server_task(void *p)
 {
   nmea_server_t *server = (nmea_server_t*)p;
 
-  struct sockaddr_in destAddr;
-  destAddr.sin_addr.s_addr = htonl(INADDR_ANY); //Change hostname to network byte order
-  destAddr.sin_family = AF_INET;		//Define address family as Ipv4
-  destAddr.sin_port = htons(config_get_nmea_gateway_port()); 	//Define PORT
-
+  memset(&server->addr, 0, sizeof(server->addr));
+  server->addr.sin_len = sizeof (server->addr);
+  server->addr.sin_addr.s_addr = htonl(INADDR_ANY); //Change hostname to network byte order
+  server->addr.sin_family = AF_INET;		//Define address family as Ipv4
+  server->addr.sin_port = htons(config_get_nmea_gateway_port()); 	//Define PORT
   server->fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
   if (server->fd < 0)
   {
     ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
   }
 
-  if ( bind(server->fd, (struct sockaddr *)&destAddr, sizeof(destAddr)) )
+  if ( bind(server->fd, (struct sockaddr *)&server->addr, sizeof(server->addr)) )
   {
     ESP_LOGE(TAG, "Socket unable to bind: errno %d", errno);
   }
@@ -172,46 +171,50 @@ void tcp_server_task(void *p)
   vTaskDelete(NULL);
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// TCP Sender
-//////////////////////////////////////////////////////////////////////////////
-bool tcp_sender_init()
-{
-  return false;
-}
-
-void tcp_sender_shutdown()
-{
-
-}
-
-void tcp_sender_process()
-{
-
-}
-
-
 
 //////////////////////////////////////////////////////////////////////////////
 // UDP Sender
 //////////////////////////////////////////////////////////////////////////////
-bool udp_sender_init()
+bool udp_sender_init(void *p)
 {
-  return false;
+  nmea_server_t *server = (nmea_server_t*)p;
+
+  server->fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+  if (server->fd < 0)
+  {
+    ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
+    return false;
+  }
+
+  memset(&server->addr, 0, sizeof server->addr);
+  server->addr.sin_len = sizeof (server->addr);
+  server->addr.sin_addr.s_addr = inet_addr(config_get_nmea_gateway_ip());
+  server->addr.sin_family = AF_INET;		
+  server->addr.sin_port = htons(config_get_nmea_gateway_port()); 	
+
+  return true;
 }
 
-void udp_sender_shutdown()
+void udp_sender_shutdown(void *p)
 {
-
+  nmea_server_t *server = (nmea_server_t*)p;
+  close(server->fd);
 }
 
-void udp_sender_process(const char *text)
+void udp_sender_process(void *p, const char *text)
 {
-
+  nmea_server_t *server = (nmea_server_t*)p;
+  sendto(server->fd, text, strlen(text), 0, (struct sockaddr *)&server->addr, sizeof server->addr);
 }
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Common functions
+//////////////////////////////////////////////////////////////////////////////
 
 void nmea_input_task(void *params)
 {
+  ESP_LOGI(TAG, "Started NMEA task");
   serial_message_t msg;
   while (true)
   {
@@ -244,14 +247,12 @@ void configure_network()
         __nmea_server.init(&__nmea_server);
       }
       break;
-    case NMEA_TCP_SENDER:
-      {
-
-      }
-      break;
     case NMEA_UDP_SENDER:
       {
-
+        __nmea_server.init = udp_sender_init;
+        __nmea_server.term = udp_sender_shutdown;
+        __nmea_server.cb = udp_sender_process;
+        __nmea_server.init(&__nmea_server);
       }
       break;
   }

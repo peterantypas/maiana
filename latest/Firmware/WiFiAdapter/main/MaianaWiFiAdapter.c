@@ -33,6 +33,7 @@ void app_main(void)
   wifi_start();
   start_httpd();
   button_init();
+
   nmea_gateway_start();
 
   vTaskDelete(NULL);
