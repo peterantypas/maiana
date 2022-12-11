@@ -86,6 +86,7 @@ esp_err_t http_nmea_post_handler(httpd_req_t *req)
   config_nmea_gateway(mode, ip, port);
   httpd_resp_send(req, NULL, 0);
 
+  esp_event_post(MAIANA_EVENT, NMEA_RESTART_EVENT, NULL, 0, 0);
   return ESP_OK;
 }
 

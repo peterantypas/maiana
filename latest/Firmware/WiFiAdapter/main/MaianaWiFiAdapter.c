@@ -18,7 +18,7 @@ void one_sec_timer()
   esp_event_isr_post(MAIANA_EVENT, ONE_SEC_TIMER_EVENT, NULL, 0, NULL);
 }
 
-void reboot_handler()
+void reboot_handler(void *args, esp_event_base_t base, int32_t id, void *data)
 {
   sleep(2);
   bsp_reboot();

@@ -29,5 +29,6 @@ ESP_EVENT_DECLARE_BASE(MAIANA_EVENT);
 #define BTN_EVENT                   1
 #define ONE_SEC_TIMER_EVENT         2
 #define REBOOT_EVENT                3
+#define NMEA_RESTART_EVENT          4
 
 #endif

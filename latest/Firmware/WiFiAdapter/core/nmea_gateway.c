@@ -87,7 +87,9 @@ bool tcp_server_init(void *p)
 
 void tcp_server_shutdown(void *p)
 {
-
+  nmea_server_t *server = p;
+  close(server->fd);
+  sleep(1);  
 }
 
 void tcp_server_process(void *p, const char *text)
@@ -163,7 +165,8 @@ void tcp_server_task(void *p)
     else
     {
       // The socket has been closed
-      ESP_LOGE(TAG, "Failed to accept connection");
+      ESP_LOGE(TAG, "Shutting down TCP listener");
+      break;
     }
 
   } // while
@@ -258,11 +261,28 @@ void configure_network()
   }
 }
 
+void nmea_gateway_restart();
+
+static void nmea_restart_handler(void *args, esp_event_base_t base, int32_t id, void *data)
+{
+  nmea_gateway_restart();
+}
+
 void nmea_gateway_start()
 {
   configure_network();
   bsp_set_uart_rx_cb(uart_rx_cb);
 
+  esp_event_handler_register(MAIANA_EVENT, NMEA_RESTART_EVENT, nmea_restart_handler, NULL); 
+
   __queue_handle = xQueueCreateStatic(QUEUE_LENGTH, sizeof(serial_message_t), (uint8_t*)__queue_data, &__queue);
   xTaskCreate(nmea_input_task, "nmea", 2048, NULL, 4, &__task_handle);
 }
+
+void nmea_gateway_restart()
+{
+  __nmea_server.cb = NULL;
+  __nmea_server.term(&__nmea_server);
+  configure_network();
+}
+
