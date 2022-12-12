@@ -4,25 +4,108 @@
     <title>AIS Setup</title>
     <link rel="stylesheet" href="css/forms.css?v=2"/>
     <script>         
-      async function loadForm() {
+      async function loadForm() 
+      {
         let url = '/api/ais';
         try {
           let res = await fetch(url);
-          data = await res.json();
-          //alert(JSON.stringify(data));
-          form = document.forms[0];
-          form.elements["mmsi"].value = data.mmsi;
-          form.elements["name"].value = data.name;
-          form.elements["callsign"].value = data.callsign;
-          form.elements["type"].value = data.type;
-          form.elements["len"].value = data.len;
-          form.elements["beam"].value = data.beam;
-          form.elements["portOffset"].value = data.portOffset;
-          form.elements["bowOffset"].value = data.bowOffset;
+          if ( res.status == 200 )
+          {
+            data = await res.json();
+            form = document.forms[0];
+            form.elements["mmsi"].value = data.mmsi;
+            form.elements["name"].value = data.name;
+            form.elements["callsign"].value = data.callsign;
+            form.elements["type"].value = data.type;
+            form.elements["len"].value = data.len;
+            form.elements["beam"].value = data.beam;
+            form.elements["portOffset"].value = data.portOffset;
+            form.elements["bowOffset"].value = data.bowOffset;
+          }
+          else
+          {
+            alert("Failed to communicate with MAIANA transponder. Check connection.")
+          }
         }
         catch(error) {
           alert(error);
         }
+      }
+
+      async function postData(obj)
+      {
+        json = JSON.stringify(obj);
+        try {
+          let res = await fetch('/api/ais', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: json
+          });
+          response = await res;
+          if ( response.ok )
+          {
+            document.location.reload();
+          }
+          else
+          {
+            alert("Failed to communicate with MAIANA transponder. Check connection.")
+          }
+        }
+        catch(error) {
+          alert(error);
+        }
+      }
+
+
+      function validate()
+      {
+        // At least MMSI and name must be set. Everything else has a default or is optional.
+        form = document.forms[0];
+        if ( form["mmsi"].value.length < 9 )
+        {
+          alert("MMSI must be set");
+          return false;
+        }
+
+        if ( form["name"].value.length == 0 )
+        {
+          alert("Vessel name must be set");
+          return false;
+        }
+
+        if ( form["len"].value.length == 0 )
+        {
+          form["len"].value = 0;
+        }
+
+        if ( form["beam"].value.length == 0 )
+        {
+          form["beam"].value = 0;
+        }
+
+        if ( form["portOffset"].value.length == 0 )
+        {
+          form["portOffset"].value = 0;
+        }
+        
+        if ( form["bowOffset"].value.length == 0 )
+        {
+          form["bowOffset"].value = 0;
+        }
+
+        obj = {
+          mmsi: Number(form["mmsi"].value),
+          name: form["name"].value,
+          callsign: form["callsign"].value,
+          type: Number(form["type"].value),
+          len: Number(form["len"].value),
+          beam: Number(form["beam"].value),
+          portOffset: Number(form["portOffset"].value),
+          bowOffset: Number(form["bowOffset"].value)
+        };  
+        postData(obj);
+        //alert(JSON.stringify(obj));
+        return true;        
       }
 
     </script>
@@ -39,11 +122,11 @@
           </tr>
           <tr>
             <td class="left-label">Name:</td>
-            <td><input class="right-align-input" id="name" type="text" name="name" maxlength="20"/></td>
+            <td><input class="right-align-input" id="name" type="text" name="name" maxlength="20" onkeyup="this.value=this.value.toUpperCase();"/></td>
           </tr>
           <tr>
             <td class="left-label">Call sign:</td>
-            <td><input class="right-align-input" id="callsign" type="text" name="callsign" maxlength="7" /></td>
+            <td><input class="right-align-input" id="callsign" type="text" name="callsign" maxlength="7" onkeyup="this.value=this.value.toUpperCase();"/></td>
           </tr>
           <tr>
             <td class="left-label">Type:</td>

@@ -57,6 +57,68 @@ esp_err_t http_ais_get_handler(httpd_req_t *req)
 
 esp_err_t http_ais_post_handler(httpd_req_t *req)
 {
+  int ret = read_http_body(req, __inbuff, sizeof __inbuff);
+  if (ret <= 0)
+  {  /* 0 return value indicates connection closed */
+    /* Check if timeout occurred */
+    if (ret == HTTPD_SOCK_ERR_TIMEOUT)
+    {
+      /* In case of timeout one can choose to retry calling                                                      
+        * httpd_req_recv(), but to keep it simple, here we                                                       
+        * respond with an HTTP 408 (Request Timeout) error */
+      httpd_resp_send_408(req);
+    }
+    /* In case of error, returning ESP_FAIL will                                                                 
+      * ensure that the underlying socket is closed */
+    return ESP_FAIL;
+  }
+  __inbuff[ret] = 0;
+  ESP_LOGI(TAG, "%s", __inbuff);
+
+  json_t const *doc = json_create(__inbuff, __jsonpool, MAX_JSON_FIELDS);
+  if ( doc == NULL )
+  {
+    ESP_LOGE(TAG, "Unable to parse JSON");
+    return ESP_FAIL;
+  }
+
+  ais_station_t station;
+  json_t const *mmsi = json_getProperty(doc, "mmsi");
+  station.mmsi = json_getInteger(mmsi);
+
+  const char *name = json_getPropertyValue(doc, "name");
+  strncpy(station.name, name, sizeof station.name);
+
+  const char *callsign = json_getPropertyValue(doc, "callsign");
+  strncpy(station.callsign, callsign, sizeof station.callsign);
+
+  json_t const *type = json_getProperty(doc, "type");
+  station.type = json_getInteger(type);
+
+  json_t const *len = json_getProperty(doc, "len");
+  station.len = json_getInteger(len);
+
+  json_t const *beam = json_getProperty(doc, "beam");
+  station.beam = json_getInteger(beam);
+  
+  json_t const *portOffset = json_getProperty(doc, "portOffset");
+  station.port_offs = json_getInteger(portOffset);
+  
+  json_t const *bowOffset = json_getProperty(doc, "bowOffset");
+  station.bow_offs = json_getInteger(bowOffset);
+
+  if ( ais_config_write(&station) )
+  {
+    httpd_resp_send(req, NULL, 0);
+    return ESP_OK;
+  }
+  else
+  {
+    httpd_resp_set_status(req, "500");
+    httpd_resp_send(req, NULL, 0);
+    return ESP_FAIL;
+  }
+
   return ESP_OK;
 }
 

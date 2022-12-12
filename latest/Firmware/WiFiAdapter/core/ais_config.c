@@ -97,6 +97,24 @@ bool ais_config_read(ais_station_t *data)
 
 bool ais_config_write(ais_station_t *data)
 {
+  sprintf(__station, 
+    "station %lld,%s,%s,%d,%d,%d,%d,%d\r\n",
+    data->mmsi,
+    data->name,
+    data->callsign,
+    data->type,
+    data->len,
+    data->beam,
+    data->port_offs,
+    data->bow_offs);
+
+  nmea_gateway_send_command(__station);
+  if ( ais_config_read(data) )
+    {
+      nmea_gateway_send_command("reboot\r\n");
+      return true;
+    }
+
   return false;
 }
 
