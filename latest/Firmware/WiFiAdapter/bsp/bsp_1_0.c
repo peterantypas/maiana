@@ -5,6 +5,7 @@
 #include "hal/gpio_hal.h"
 #include <string.h>
 #include "freertos/timers.h"
+#include "esp_intr_alloc.h"
 
 static uart_rx_cb_t *uart_cb = NULL;
 static button_isr_cb_t *btn_cb = NULL;
@@ -32,6 +33,11 @@ void uart_rx_task(void *params)
   }
 }
 
+void bsp_uart_write(const char *text)
+{
+  uart_write_bytes(UART_NUM_1, text, strlen(text));
+}
+
 void bsp_uart_init()
 {
   uart_config_t uart_config = {
@@ -45,6 +51,7 @@ void bsp_uart_init()
   uart_set_pin(UART_NUM_1, GPIO_UART1_TX, GPIO_UART1_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
   uart_driver_install(UART_NUM_1, BUF_SIZE*2, 0, 0, NULL, 0);
   uart_enable_rx_intr(UART_NUM_1);
+  //uart_enable_tx_intr(UART_NUM_1, 1, 0);
 
   xTaskCreate(uart_rx_task, "uart_event_task", 1024, NULL, 5, NULL);
 }
@@ -86,6 +93,7 @@ void bsp_timer_tick()
 {
   if ( timer_cb )
     (*timer_cb)();
+
 }
 
 void bsp_timer_init()

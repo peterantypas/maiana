@@ -52,3 +52,7 @@ button {
   float: right;
 }
 
+select {
+  color: #0072b6;
+  font: 20px helvetica;
+}

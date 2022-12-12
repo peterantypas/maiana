@@ -12,6 +12,8 @@ set (SOURCES
   button.c
   nmea_gateway.c
   types.c
+  ais_config.c
+  utils.c
   )
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS .

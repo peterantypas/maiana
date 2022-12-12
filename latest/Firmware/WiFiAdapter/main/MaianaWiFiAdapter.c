@@ -10,7 +10,7 @@
 #include "button.h"
 #include "types.h"
 #include "nmea_gateway.h"
-
+#include "ais_config.h"
 
 
 void one_sec_timer()
@@ -42,6 +42,11 @@ void app_main(void)
   button_init();
 
   nmea_gateway_start();
+
+  sleep(1);
+  ais_config_init();
+  //ais_station_t s;
+  //ais_config_read(&s);
 
   vTaskDelete(NULL);
 }

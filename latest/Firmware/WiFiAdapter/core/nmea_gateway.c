@@ -13,6 +13,7 @@
 
 
 static const char *TAG = "nmea";
+static nmea_data_callback_t *__callback = NULL;
 
 //////////////////////////////////////////////////////////////////////////////
 // Private types
@@ -212,8 +213,18 @@ void udp_sender_process(void *p, const char *text)
 
 
 //////////////////////////////////////////////////////////////////////////////
-// Common functions
+// Utilities
 //////////////////////////////////////////////////////////////////////////////
+void nmea_gateway_set_callback(nmea_data_callback_t *cb)
+{
+  __callback = cb;
+}
+
+void nmea_gateway_send_command(const char *command)
+{
+  bsp_uart_write(command);
+}
+
 
 void nmea_input_task(void *params)
 {
@@ -226,8 +237,12 @@ void nmea_input_task(void *params)
       if ( msg.text[0] == '!' || msg.text[0] == '$' )
       {
         // This is a NMEA sentence
+        if ( __callback )
+          (*__callback)(msg.text);
+
         if ( __nmea_server.cb )
           (*__nmea_server.cb)(&__nmea_server, msg.text);
+
       }      
       else
       {

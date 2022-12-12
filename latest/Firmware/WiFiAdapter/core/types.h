@@ -1,6 +1,7 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
+#include <stdint.h>
 #include <esp_event.h>
 
 typedef enum
@@ -23,6 +24,21 @@ typedef struct
   char text[128];
 } 
 serial_message_t;
+
+typedef void (nmea_data_callback_t)(const char *text);
+
+typedef struct
+{
+  int64_t mmsi;
+  char name[24];
+  char callsign[8];
+  int32_t type;
+  int16_t len;
+  int16_t beam;
+  int16_t port_offs;
+  int16_t bow_offs;
+}
+ais_station_t;
 
 ESP_EVENT_DECLARE_BASE(MAIANA_EVENT);
 

@@ -2,14 +2,82 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>  
     <title>AIS Setup</title>
-    
-    <style>
-    </style>
-
+    <link rel="stylesheet" href="css/forms.css?v=2"/>
     <script>         
+      async function loadForm() {
+        let url = '/api/ais';
+        try {
+          let res = await fetch(url);
+          data = await res.json();
+          //alert(JSON.stringify(data));
+          form = document.forms[0];
+          form.elements["mmsi"].value = data.mmsi;
+          form.elements["name"].value = data.name;
+          form.elements["callsign"].value = data.callsign;
+          form.elements["type"].value = data.type;
+          form.elements["len"].value = data.len;
+          form.elements["beam"].value = data.beam;
+          form.elements["portOffset"].value = data.portOffset;
+          form.elements["bowOffset"].value = data.bowOffset;
+        }
+        catch(error) {
+          alert(error);
+        }
+      }
+
     </script>
   </head>
-  <body> 
-    This is the AIS form   
+  <body onload="loadForm();"> 
+    <center><h1>MAIANA&trade;</h1></center>
+    <center><h2>AIS Setup</h2></center>
+    <form>
+      <fieldset>
+        <table>
+          <tr>
+            <td class="left-label">MMSI:</td>
+            <td><input class="right-align-input" id="mmsi" type="number" name="mmsi" maxlength="9" /></td>
+          </tr>
+          <tr>
+            <td class="left-label">Name:</td>
+            <td><input class="right-align-input" id="name" type="text" name="name" maxlength="20"/></td>
+          </tr>
+          <tr>
+            <td class="left-label">Call sign:</td>
+            <td><input class="right-align-input" id="callsign" type="text" name="callsign" maxlength="7" /></td>
+          </tr>
+          <tr>
+            <td class="left-label">Type:</td>
+            <td>
+              <select name="type" id="type">
+                <option value="30">Fishing</option>
+                <option value="34">Diving</option>
+                <option value="36">Sailing</option>
+                <option value="37">Pleasure</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="left-label">Length:</td>
+            <td><input class="right-align-input" id="len" type="number" name="len" maxlength="3" /></td>
+          </tr>
+          <tr>
+            <td class="left-label">Beam:</td>
+            <td><input class="right-align-input" id="beam" type="number" name="beam" maxlength="2" /></td>
+          </tr>
+          <tr>
+            <td class="left-label">Port offset:</td>
+            <td><input class="right-align-input" id="portOffset" type="number" name="portOffset" maxlength="2" /></td>
+          </tr>
+          <tr>
+            <td class="left-label">Bow offset:</td>
+            <td><input class="right-align-input" id="bowOffset" type="number" name="bowOffset" maxlength="3" /></td>
+          </tr>
+        </table>
+
+      </fieldset>
+      <br/>
+      <center><button type="button" onclick="validate();">Apply</button></center>
+
+    </form>
   </body>
 </html>
