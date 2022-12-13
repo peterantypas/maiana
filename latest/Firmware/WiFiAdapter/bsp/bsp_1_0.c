@@ -51,7 +51,6 @@ void bsp_uart_init()
   uart_set_pin(UART_NUM_1, GPIO_UART1_TX, GPIO_UART1_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
   uart_driver_install(UART_NUM_1, BUF_SIZE*2, 0, 0, NULL, 0);
   uart_enable_rx_intr(UART_NUM_1);
-  //uart_enable_tx_intr(UART_NUM_1, 1, 0);
 
   xTaskCreate(uart_rx_task, "uart_event_task", 1024, NULL, 5, NULL);
 }
