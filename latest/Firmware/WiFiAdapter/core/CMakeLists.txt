@@ -14,6 +14,7 @@ set (SOURCES
   types.c
   ais_config.c
   utils.c
+  http_sys_api.c
   )
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS .

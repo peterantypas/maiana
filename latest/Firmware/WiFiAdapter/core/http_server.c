@@ -15,6 +15,7 @@ extern void register_http_web_handlers(httpd_handle_t);
 extern void register_wifi_api_handlers(httpd_handle_t);
 extern void register_ais_api_handlers(httpd_handle_t);
 extern void register_nmea_api_handlers(httpd_handle_t);
+extern void register_sys_api_handlers(httpd_handle_t);
 
 void start_httpd()
 {
@@ -28,6 +29,7 @@ void start_httpd()
     register_wifi_api_handlers(__handle);
     register_ais_api_handlers(__handle);
     register_nmea_api_handlers(__handle);
+    register_sys_api_handlers(__handle);
     ESP_LOGI(TAG, "Started HTTPD");
   }
  }

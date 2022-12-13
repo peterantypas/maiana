@@ -26,7 +26,7 @@ static char __inbuff[256];
 esp_err_t http_ais_get_handler(httpd_req_t *req)
 {
   ais_station_t station;
-  if ( !ais_config_read(&station) )
+  if ( !ais_config_read_station(&station) )
   {
     httpd_resp_set_status(req, "500");
     httpd_resp_send(req, NULL, 0);
@@ -107,7 +107,7 @@ esp_err_t http_ais_post_handler(httpd_req_t *req)
   json_t const *bowOffset = json_getProperty(doc, "bowOffset");
   station.bow_offs = json_getInteger(bowOffset);
 
-  if ( ais_config_write(&station) )
+  if ( ais_config_write_station(&station) )
   {
     httpd_resp_send(req, NULL, 0);
     return ESP_OK;
@@ -151,5 +151,4 @@ void register_ais_api_handlers(httpd_handle_t handle)
 {
   httpd_register_uri_handler(handle, &uri_ais_get);
   httpd_register_uri_handler(handle, &uri_ais_post);
-
 }

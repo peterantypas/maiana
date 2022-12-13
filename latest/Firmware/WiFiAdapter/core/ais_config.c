@@ -61,7 +61,7 @@ void ais_config_init()
   nmea_gateway_set_callback(nmea_sentence_callback);
 }
 
-bool ais_config_read(ais_station_t *data)
+bool ais_config_read_station(ais_station_t *data)
 {
   __scan_state = NMEA_SCAN_STATION;
   nmea_gateway_send_command("station?\r\n");
@@ -95,7 +95,7 @@ bool ais_config_read(ais_station_t *data)
   return false;
 }
 
-bool ais_config_write(ais_station_t *data)
+bool ais_config_write_station(ais_station_t *data)
 {
   sprintf(__station, 
     "station %lld,%s,%s,%d,%d,%d,%d,%d\r\n",
@@ -109,7 +109,7 @@ bool ais_config_write(ais_station_t *data)
     data->bow_offs);
 
   nmea_gateway_send_command(__station);
-  if ( ais_config_read(data) )
+  if ( ais_config_read_station(data) )
     {
       nmea_gateway_send_command("reboot\r\n");
       return true;
@@ -117,6 +117,32 @@ bool ais_config_write(ais_station_t *data)
 
   return false;
 }
+
+bool ais_config_read_sys(ais_system_t *data)
+{
+  __scan_state = NMEA_SCAN_SYS;
+  nmea_gateway_send_command("sys?\r\n");
+
+  for ( int i = 0; i < 5; ++i )
+  {
+    sleep(1);
+    if ( __scan_state == NMEA_SCAN_NONE )
+    {
+      memset(data, 0, sizeof(ais_station_t));
+      char *index[10];
+      int count = tokenize(__sys, ",*", index, 10);
+      if ( count >= 5 )
+      {
+        strncpy(data->hw, index[1], sizeof data->hw);
+        strncpy(data->fw, index[2], sizeof data->fw);
+      }
+      return true;
+    }
+  }
+
+  return false;
+}
+
 
 
 

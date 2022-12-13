@@ -40,6 +40,14 @@ typedef struct
 }
 ais_station_t;
 
+typedef struct
+{
+  char hw[32];
+  char fw[32];
+}
+ais_system_t;
+
+
 ESP_EVENT_DECLARE_BASE(MAIANA_EVENT);
 
 #define BTN_EVENT                   1

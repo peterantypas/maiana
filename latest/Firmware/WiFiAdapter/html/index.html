@@ -5,20 +5,20 @@
     <style>
       h1 {
         font: 50px helvetica;
-        font-weight: bold;
+        font-weight: medium;
         color: #0072b6;
         max-height:28px;
       }
 
       h2 {
-        font: 30px helvetica;
+        font: 24px helvetica;
         color: #00a5a4;
         max-height: 20px;
         padding-bottom: 8px;
       }
 
       img {
-        max-width:50%;
+        max-width:30%;
         object-fit:contain;
       }
 
@@ -29,19 +29,50 @@
         color: #0072b6;
       }      
 
+      .infotable {
+        width: 100%;
+        padding-left: 16px;
+        padding-right: 16px;
+        font: 20px Helvetica;
+        color: #0072b6;
+      }
+
     </style>
     <script>         
+      async function loadForm() {
+        let url = '/api/sys';
+        try {
+          let res = await fetch(url);
+          if ( res.ok ) {
+            data = await res.json();          
+            //alert(JSON.stringify(data));
+            document.getElementById("hw").innerHTML = "HW rev: " + data.hw;
+            document.getElementById("fw").innerHTML = "FW rev: " + data.fw;
+          }
+        }
+        catch(error) {
+          alert(error);
+        }
+      }
+
     </script>
   </head>
-  <body>    
+  <body onload="loadForm();">    
     <center><h1>MAIANA&trade;</h1></center>
     <center><img src="images/maiana-logo.jpg"/></center>
     <center><h2>The Open Source AIS</h2></center>
     
+    <table class="infotable">
+      <tr>
+        <td id="hw">&nbsp;</td><td id="fw" align="right">&nbsp;</td>
+      </tr>
+    </table>
+    <br/>
+    
     <center><button type="button" onclick="location.href='wifi.html'">Configure WiFi</button></center>
-    &nbsp;
+    <br/>
     <center><button type="button" onclick="location.href='ais.html'">Configure AIS Station</button></center>
-    &nbsp;
+    <br/>
     <center><button type="button" onclick="location.href='nmea.html'">Configure NMEA Gateway</button></center>
   </body>
 </html>

@@ -17,7 +17,7 @@ void ais_config_init();
  * @return true 
  * @return false 
  */
-bool ais_config_read(ais_station_t *data);
+bool ais_config_read_station(ais_station_t *data);
 
 /**
  * @brief Writes a new station configuration into the main board
@@ -26,8 +26,17 @@ bool ais_config_read(ais_station_t *data);
  * @return true 
  * @return false 
  */
-bool ais_config_write(ais_station_t *data);
+bool ais_config_write_station(ais_station_t *data);
 
+
+/**
+ * @brief Reads system information
+ * 
+ * @param data 
+ * @return true 
+ * @return false 
+ */
+bool ais_config_read_sys(ais_system_t *data);
 
 
 #endif
