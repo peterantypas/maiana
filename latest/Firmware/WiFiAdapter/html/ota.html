@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>  
+    <title>FW Update</title>
+    <link rel="stylesheet" href="css/forms.css"/>
+    <script>
+
+      async function postData(obj)
+      {
+        json = JSON.stringify(obj);
+        try {
+          let res = await fetch('/api/ota', {
+            method: 'POST',
+            body: json
+          });
+          response = await res;
+          if ( response.ok )
+          {
+            document.location.reload();
+          }
+          else
+          {
+            alert("Response status: " + response.status);
+          }
+        }
+        catch(error) {
+          alert(error);
+        }
+      }
+
+    </script>
+  </head>
+  <body> 
+    <center><h1>MAIANA&trade;</h1></center>
+    <center><h2>Firmware Update</h2></center>
+
+    <form>
+      <table>
+        <tr>
+          <td class="left-label">
+            <label for="file">Binary File</label>
+          </td>
+          <td>
+            <input type="file" id="file" name="file" accept=".bin"/>
+          </td>
+        </tr>
+      </table>
+      <br/>
+      <br/>
+      <center><button type="button">Upload</button></center>
+    </form>
+  </body>
+</html>

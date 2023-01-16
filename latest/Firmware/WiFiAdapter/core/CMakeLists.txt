@@ -21,5 +21,6 @@ idf_component_register(SRCS ${SOURCES}
                        REQUIRES 
                         nvs_flash
                         esp_http_server
+                        app_update
                       )
                        
