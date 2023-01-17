@@ -29,7 +29,7 @@ void app_main(void)
   esp_event_loop_create_default();
   esp_event_handler_register(MAIANA_EVENT, REBOOT_EVENT, reboot_handler, NULL); 
 
-
+  //sleep(5);
   config_init();
   //config_reset_all();
 

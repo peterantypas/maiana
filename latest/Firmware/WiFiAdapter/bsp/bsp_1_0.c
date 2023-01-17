@@ -20,6 +20,8 @@ uint8_t dtmp[RD_BUF_SIZE];
 #define GPIO_UART1_RX   GPIO_NUM_25
 #define GPIO_UART1_TX   GPIO_NUM_26
 #define GPIO_TX_BUTTON  GPIO_NUM_34
+#define GPIO_RED_LED    GPIO_NUM_5
+#define GPIO_GREEN_LED  GPIO_NUM_4
 
 void uart_rx_task(void *params)
 {
@@ -110,6 +112,17 @@ void bsp_hw_init()
   config_gpio(GPIO_TX_BUTTON, GPIO_MODE_INPUT, false, false);
   gpio_set_direction(GPIO_TX_BUTTON, GPIO_MODE_INPUT);
   gpio_set_intr_type(GPIO_TX_BUTTON, GPIO_INTR_NEGEDGE);
+
+  config_gpio(GPIO_RED_LED, GPIO_MODE_OUTPUT, false, false);
+  config_gpio(GPIO_GREEN_LED, GPIO_MODE_OUTPUT, false, false);
+
+#if 0
+  gpio_set_direction(GPIO_RED_LED, GPIO_MODE_OUTPUT);
+  gpio_set_direction(GPIO_GREEN_LED, GPIO_MODE_OUTPUT);
+
+  gpio_set_level(GPIO_RED_LED, 1);
+  gpio_set_level(GPIO_GREEN_LED, 1);
+#endif
 
   gpio_install_isr_service(0);
   gpio_isr_handler_add(GPIO_TX_BUTTON, btn_isr, NULL);
