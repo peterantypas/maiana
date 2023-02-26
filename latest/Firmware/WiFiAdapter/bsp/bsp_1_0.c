@@ -17,11 +17,13 @@ static StaticTimer_t static_timer;
 #define RD_BUF_SIZE (BUF_SIZE)
 uint8_t dtmp[RD_BUF_SIZE];
 
-#define GPIO_UART1_RX   GPIO_NUM_25
-#define GPIO_UART1_TX   GPIO_NUM_26
-#define GPIO_TX_BUTTON  GPIO_NUM_34
-#define GPIO_RED_LED    GPIO_NUM_5
-#define GPIO_GREEN_LED  GPIO_NUM_4
+#define GPIO_UART1_RX       GPIO_NUM_25
+#define GPIO_UART1_TX       GPIO_NUM_26
+#define GPIO_TX_BUTTON      GPIO_NUM_34
+#define GPIO_RED_LED        GPIO_NUM_5
+#define GPIO_GREEN_LED      GPIO_NUM_4
+#define GPIO_STM32_RESET_N  GPIO_NUM_12
+#define GPIO_STM32_TX_EN    GPIO_NUM_13
 
 void uart_rx_task(void *params)
 {
@@ -54,7 +56,7 @@ void bsp_uart_init()
   uart_driver_install(UART_NUM_1, BUF_SIZE*2, 0, 0, NULL, 0);
   uart_enable_rx_intr(UART_NUM_1);
 
-  xTaskCreate(uart_rx_task, "uart_event_task", 1024, NULL, 5, NULL);
+  xTaskCreate(uart_rx_task, "uart_event_task", 4096, NULL, 5, NULL);
 }
 
 void bsp_set_uart_rx_cb(uart_rx_cb_t *cb)
@@ -109,12 +111,20 @@ void bsp_hw_init()
 {
   bsp_uart_init();
 
-  config_gpio(GPIO_TX_BUTTON, GPIO_MODE_INPUT, false, false);
-  gpio_set_direction(GPIO_TX_BUTTON, GPIO_MODE_INPUT);
-  gpio_set_intr_type(GPIO_TX_BUTTON, GPIO_INTR_NEGEDGE);
+  //config_gpio(GPIO_TX_BUTTON, GPIO_MODE_INPUT, false, false);
+  //gpio_set_direction(GPIO_TX_BUTTON, GPIO_MODE_INPUT);
+  //gpio_set_intr_type(GPIO_TX_BUTTON, GPIO_INTR_NEGEDGE);
 
   config_gpio(GPIO_RED_LED, GPIO_MODE_OUTPUT, false, false);
   config_gpio(GPIO_GREEN_LED, GPIO_MODE_OUTPUT, false, false);
+  config_gpio(GPIO_STM32_RESET_N, GPIO_MODE_OUTPUT_OD, false, false);
+
+  config_gpio(GPIO_STM32_TX_EN, GPIO_MODE_OUTPUT_OD, false, false);
+  gpio_set_level(GPIO_STM32_TX_EN, 1);
+
+  //gpio_set_level(GPIO_STM32_RESET_N, 0);
+  //usleep(2000);
+  //gpio_set_level(GPIO_STM32_RESET_N, 1);
 
 #if 0
   gpio_set_direction(GPIO_RED_LED, GPIO_MODE_OUTPUT);
@@ -124,8 +134,8 @@ void bsp_hw_init()
   gpio_set_level(GPIO_GREEN_LED, 1);
 #endif
 
-  gpio_install_isr_service(0);
-  gpio_isr_handler_add(GPIO_TX_BUTTON, btn_isr, NULL);
+  //gpio_install_isr_service(0);
+  //gpio_isr_handler_add(GPIO_TX_BUTTON, btn_isr, NULL);
   bsp_timer_init();
 }
 

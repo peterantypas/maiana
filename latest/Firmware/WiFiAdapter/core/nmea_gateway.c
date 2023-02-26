@@ -291,7 +291,7 @@ void nmea_gateway_start()
   esp_event_handler_register(MAIANA_EVENT, NMEA_RESTART_EVENT, nmea_restart_handler, NULL); 
 
   __queue_handle = xQueueCreateStatic(QUEUE_LENGTH, sizeof(serial_message_t), (uint8_t*)__queue_data, &__queue);
-  xTaskCreate(nmea_input_task, "nmea", 2048, NULL, 4, &__task_handle);
+  xTaskCreate(nmea_input_task, "nmea", 4096, NULL, 4, &__task_handle);
 }
 
 void nmea_gateway_restart()

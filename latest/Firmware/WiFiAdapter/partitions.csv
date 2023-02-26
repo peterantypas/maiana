@@ -5,4 +5,5 @@ otadata,    data,       ota,                  , 8K
 phy_init,   data,       phy,                  , 4K
 factory,    app,        factory,              , 1536K
 ota_0,      app,        ota_0,                , 1536K
-storage,    data,       fat,                  , 900K
+ota_1,      app,        ota_1,                , 1536K
+
