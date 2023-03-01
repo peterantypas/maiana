@@ -157,7 +157,11 @@ void Transceiver::configureGPIOsForTX()
   gpiocfg.GPIO0 = 0x00;       // No change
   gpiocfg.GPIO1 = 0x04;       // RX/TX bit data
   gpiocfg.GPIO2 = 0x1F;       // RX/TX bit clock
-  gpiocfg.GPIO3 = 0x20;       // RX_STATE; high in TX, low in RX
+#if BOARD_REV < 105
+  gpiocfg.GPIO3 = 0x21;       // RX_STATE; low during TX and high during RX
+#else
+  gpiocfg.GPIO3 = 0x20;       // RX_STATE; high during TX and low during RX
+#endif
   gpiocfg.NIRQ  = 0x00;       // No change
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change
@@ -328,7 +332,11 @@ void Transceiver::configureGPIOsForRX()
   gpiocfg.GPIO0 = 0x00;       // No change
   gpiocfg.GPIO1 = 0x14;       // RX data bits
   gpiocfg.GPIO2 = 0x1F;       // RX/TX data clock
+#if BOARD_REV < 105
+  gpiocfg.GPIO3 = 0x21;       // RX_STATE; high during TX and low during RX
+#else
   gpiocfg.GPIO3 = 0x20;       // RX_STATE; high during TX and low during RX
+#endif
   gpiocfg.NIRQ  = 0x00;       // No change
   gpiocfg.SDO   = 0x00;       // No change
   gpiocfg.GENCFG = 0x00;      // No change

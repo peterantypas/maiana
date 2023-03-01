@@ -109,6 +109,8 @@ extern const char *BSP_HW_REV;
 #include <bsp_9_3.hpp>
 #elif BOARD_REV == 100
 #include <bsp_10_0.hpp>
+#elif BOARD_REV == 101
+#include <bsp_10_1.hpp>
 #elif BOARD_REV == 105
 #include <bsp_10_5.hpp>
 #elif BOARD_REV == 109
