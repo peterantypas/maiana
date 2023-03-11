@@ -122,9 +122,9 @@ void bsp_hw_init()
   config_gpio(GPIO_STM32_TX_EN, GPIO_MODE_OUTPUT_OD, false, false);
   gpio_set_level(GPIO_STM32_TX_EN, 1);
 
-  //gpio_set_level(GPIO_STM32_RESET_N, 0);
-  //usleep(2000);
-  //gpio_set_level(GPIO_STM32_RESET_N, 1);
+  gpio_set_level(GPIO_STM32_RESET_N, 0);
+  usleep(2000);
+  gpio_set_level(GPIO_STM32_RESET_N, 1);
 
 #if 0
   gpio_set_direction(GPIO_RED_LED, GPIO_MODE_OUTPUT);

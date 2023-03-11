@@ -105,6 +105,7 @@ esp_err_t http_wifi_post_handler(httpd_req_t *req)
     return ESP_FAIL;
   }
 
+  ESP_LOGI(TAG, "Setting WiFi mode to %d, with SSID %s and password %s", wifi_mode, ssid, pwd);
   config_wifi(wifi_mode, ssid, pwd);
   httpd_resp_send(req, NULL, 0);
   esp_event_post(MAIANA_EVENT, REBOOT_EVENT, NULL, 0, 0);
