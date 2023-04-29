@@ -6,9 +6,8 @@
 *~
 *.d
 
-/Default
-/Release/
-/Debug/
-/L422-Release/
-/L422-Debug/
-/L432-Debug/
+/L412
+/L422
+/L431
+/L432
+
