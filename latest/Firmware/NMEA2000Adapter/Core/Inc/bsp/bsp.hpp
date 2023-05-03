@@ -8,7 +8,7 @@
 #ifndef INC_BSP_BSP_HPP_
 #define INC_BSP_BSP_HPP_
 
-#include <stm32l4xx_hal.h>
+#include <stdint.h>
 
 // All HW initialization
 void bsp_init();
@@ -39,6 +39,10 @@ void bsp_set_uart_irq_cb(uart_irq_callback cb);
 // Persistence
 uint8_t bsp_last_can_address();
 void bsp_save_can_address(uint8_t);
+
+void bsp_enable_irq();
+void bsp_disable_irq();
+void bsp_wfi();
 
 
 

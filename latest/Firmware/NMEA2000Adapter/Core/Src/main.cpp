@@ -69,7 +69,7 @@ int main(void)
       n2k->ParseMessages();
 
       // We have Systick at a minimum, so this is 1ms at most
-      __WFI();
+      bsp_wfi();
 
       // Only run this about every 10 seconds
       uint32_t c = millis();

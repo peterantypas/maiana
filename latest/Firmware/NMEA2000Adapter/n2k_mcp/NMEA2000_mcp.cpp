@@ -111,7 +111,7 @@ bool tNMEA2000_mcp::CANSendFrame(unsigned long id, unsigned char len, const unsi
   volatile tFrameBuffer *pTxBuf=0;
   if ( UseInterrupt() ) {
       //noInterrupts();   // disable interrupts
-      __disable_irq();
+      bsp_disable_irq();
       pTxBuf=(wait_sent?pTxBufferFastPacket:pTxBuffer);
       // If buffer is not empty, it has pending messages, so add new message to it
       if ( !pTxBuf->IsEmpty() ) {
@@ -129,7 +129,7 @@ bool tNMEA2000_mcp::CANSendFrame(unsigned long id, unsigned char len, const unsi
       SREG = SaveSREG;   // restore the interrupt flag
 #else
       //interrupts();
-      __enable_irq();
+      bsp_enable_irq();
 #endif  
   } else {
       result=(N2kCAN.trySendExtMsgBuf(id, len, buf, wait_sent?N2kCAN.getLastTxBuffer():0xff)==CAN_OK);
@@ -172,7 +172,7 @@ bool tNMEA2000_mcp::CANOpen() {
       uint8_t SaveSREG = SREG;   // save interrupt flag
 #endif
       //noInterrupts();
-      __disable_irq();
+      bsp_disable_irq();
       N2kCAN.enableTxInterrupt();
       //attachInterrupt(digitalPinToInterrupt(N2k_CAN_int_pin), Can1Interrupt, FALLING);
       bsp_set_can_irq_cb(Can1Interrupt);
@@ -181,7 +181,7 @@ bool tNMEA2000_mcp::CANOpen() {
       SREG = SaveSREG;   // restore the interrupt flag
 #else
       //interrupts();
-      __enable_irq();
+      bsp_enable_irq();
 #endif  
   }
 
@@ -199,13 +199,13 @@ bool tNMEA2000_mcp::CANGetFrame(unsigned long &id, unsigned char &len, unsigned 
       uint8_t SaveSREG = SREG;   // save interrupt flag
 #endif  
       //noInterrupts();   // disable interrupts
-      __disable_irq();
+      bsp_disable_irq();
       HasFrame=pRxBuffer->GetFrame(id,len,buf);
 #ifdef USE_SREG
       SREG = SaveSREG;   // restore the interrupt flag
 #else
       //interrupts();
-      __enable_irq();
+      bsp_enable_irq();
 #endif  
   } else {
       if ( CAN_MSGAVAIL == N2kCAN.checkReceive() ) {           // check if data coming
