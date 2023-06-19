@@ -631,9 +631,18 @@ uint32_t bsp_get_system_clock()
 
 uint8_t bsp_tx_spi_byte(uint8_t data)
 {
+#if 1
+  while (!(SPI1->SR & SPI_SR_TXE));
+
+  *((__IO uint8_t *)&(SPI1->DR)) = data;
+  while (!(SPI1->SR & SPI_SR_RXNE));
+
+  return SPI1->DR;
+#else
   uint8_t result = 0;
   HAL_SPI_TransmitReceive(&hspi1, &data, &result, 1, 2);
   return result;
+#endif
 }
 
 void bsp_reboot()

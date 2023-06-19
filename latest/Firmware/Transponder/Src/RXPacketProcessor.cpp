@@ -40,7 +40,7 @@ RXPacketProcessor::RXPacketProcessor ()
 {
   mSentences.reserve(4); // We're not going to need more than 2 sentences for the longest AIS message we report ...
   Configuration::instance().readStationData(mStationData);
-  EventQueue::instance().addObserver(this, AIS_PACKET_EVENT);
+  EventQueue::instance().addObserver(this, AIS_PACKET_EVENT|CLOCK_EVENT);
 }
 
 RXPacketProcessor::~RXPacketProcessor ()
@@ -53,12 +53,28 @@ void RXPacketProcessor::processEvent(const Event &e)
 {
   switch(e.type)
   {
+  case CLOCK_EVENT:
+    if ( e.clock.utc % 60 == 0 )
+      {
+        dumpStats();
+      }
+    break;
   case AIS_PACKET_EVENT:
     {
       ASSERT(e.rxPacket);
-      if (e.rxPacket->isBad() || !e.rxPacket->checkCRC ())
-        return;
+      if ( e.rxPacket->isBad() )
+        {
+          mStats.bad++;
+          return;
+        }
 
+      if ( !e.rxPacket->checkCRC ())
+        {
+          mStats.invalid++;
+          return;
+        }
+
+      mStats.good++;
       bsp_rx_led_on();
 
       if ( e.rxPacket->messageType() == 15 )
@@ -156,4 +172,19 @@ void RXPacketProcessor::processEvent(const Event &e)
     break;
   }
 
+}
+
+void RXPacketProcessor::dumpStats()
+{
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  sprintf(e->nmeaBuffer.sentence, "$PAISTAT,%lu,%lu,%lu*", mStats.good, mStats.bad, mStats.invalid);
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
+
+  mStats.good = 0;
+  mStats.bad = 0;
+  mStats.invalid = 0;
 }

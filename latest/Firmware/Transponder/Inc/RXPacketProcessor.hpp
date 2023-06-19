@@ -37,6 +37,7 @@ public:
 private:
   void ensureChannelIsTracked(VHFChannel ch);
 
+  void dumpStats();
 private:
   class PacketStats
   {
@@ -55,6 +56,7 @@ private:
   NMEAEncoder mEncoder;
   std::vector<std::string> mSentences;
   StationData mStationData;
+  PacketStats mStats;
 };
 
 #endif /* RXPACKETPROCESSOR_HPP_ */
