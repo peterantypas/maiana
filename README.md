@@ -31,11 +31,11 @@ As I mentioned already, the transponder circuit is inside the antenna case. It's
 
 ![Image](images/board-11.5.jpg?raw=True)
 
-The core design is based on two Silicon Labs "EZRadio Pro" series ICs. All kits shipping today are based on the Si4467 as this is the only part I have been able to source from spot markets in China.
+The core design is based on two Silicon Labs "EZRadio Pro" series ICs. All kits shipping today are based on the Si4460.
 
-The microcontroller on this board is a STM32L4 series (422, 431 and 432 supported). I chose these because the 80MHz clock allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Silabs RF ICs. This is important, as a transponder is a *hard real time* application so SPI latency must be minimized. All kits today are based on the STM32L432KBU6 as (again) it's the only part that I have been able to source from China.
+The microcontroller on this board is a STM32L4 series (422, 431 and 432 supported). I chose these because the 80MHz clock allows the SPI bus to operate at exactly 10MHz which is the maximum supported by the Si446x ICs. This is important, as a transponder is a *hard real time* application, so SPI latency must be minimized. All kits today are based on the STM32L432KBU6.
 
-The GNSS is now a Quectel L76L-M33 and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start. With the latest antenna tuning, it offers near-navigation grade accuracy (typical HDOP at sea < 1 meter).
+The GNSS is now a Quectel L76L-M33 and relies on a Johansson ceramic chip antenna. It usually takes a minute to acquire a fix outdoors from a cold start. With the latest antenna tuning, it offers near-navigation grade accuracy (typical HDOP at sea is less than 2 meters).
 
 The transmitter front end is based on a power MOSFET typically found in handheld VHF radios and outputs just over 2 Watts (+33dBm). It has a verified range of over 20 nautical miles on a masthead and 10+ miles on a pushpit.
 
@@ -53,7 +53,7 @@ SOTDMA synchronization is based on the very acurate 1 PPS signal from the GNSS a
 
 All adapters (except the "bare bones" one) feature a *silent mode* switch to explicitly disable transmission. If you need this for the UART adapter, you can wire one yourself.
 
-In terms of power consumption, the main board draws about 35mA from 12V in receive mode, and spikes up to 650mA during transmission (for only 27 milliseconds). The adapters add an extra 0.5mA - 25mA depending on choice. So MAIANA&trade;'s most power hungry configuration needs about 0.8 Watts, which is a lot less than a typical LED-based cabin light.
+In terms of power consumption, the main board draws about 45mA from 12V in receive mode, and spikes up to 700mA during transmission (for only 27 milliseconds). The adapters add an extra 0.5mA - 25mA depending on choice. So MAIANA&trade;'s most power hungry configuration needs about 0.6 Watts, which is a lot less than a typical LED-based cabin light.
 
 
 ### Software
