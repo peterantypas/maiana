@@ -5,7 +5,7 @@ I was not impressed with commercial AIS class B transponders. They seemed bloate
 
 Fast forward to 2021, and several other sailors who are looking for the same features in an AIS unit asked me to build it for them. Here are some examples:
 
-<img src="images/InstallOnSolarPanels.jpg" height="320"/><img src="images/InstallOnRadarDome.jpg" height="320"/><img src="images/InstallOnSternRail.jpg" height="320"/>
+<img src="images/InstallOnSolarPanels.jpg" height="320"/><img src="images/InstallOnRadarDome.jpg" height="320"/><img src="images/InstallOnSternRail.jpg" height="320"/><img src="images/swedish_oceanic.jpg" height="320"/>
 
 The main difference between MAIANA&trade; and every commercial transponder is that it's a self-contained unit, and thus its performance is 100% repeatable. The entire transponder circuit, the GNSS and all antennas are in the same housing. The design has been validated by fabricating _over 200 units_ now (May 2023).
 
