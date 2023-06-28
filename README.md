@@ -3,7 +3,7 @@
 I started this project around 2015 with the intention of experimenting and eventually building something for my own boat.
 I was not impressed with commercial AIS class B transponders. They seemed bloated, expensive and some of them were particularly power-hungry. Also, my boat is rather small and I have very little room for "nav" instruments, so I didn't want a huge enclosure inside plus two external RF cables, one for VHF and one for GPS. So I set out to create my own "lean and mean" design and I sailed with it for 2 years.
 
-Fast forward to 2021, and several other sailors who are looking for the same features in an AIS unit asked me to build it for them. Here are some examples:
+Fast forward to 2023, and it has taken a life of its own:
 
 <img src="images/InstallOnSolarPanels.jpg" height="320"/><img src="images/InstallOnRadarDome.jpg" height="320"/><img src="images/InstallOnSternRail.jpg" height="320"/><img src="images/swedish_oceanic.jpg" height="320"/>
 
