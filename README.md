@@ -7,7 +7,7 @@ Fast forward to 2023, and it has taken a life of its own:
 
 <img src="images/InstallOnSolarPanels.jpg" height="320"/><img src="images/InstallOnRadarDome.jpg" height="320"/><img src="images/InstallOnSternRail.jpg" height="320"/><img src="images/swedish_oceanic.jpg" height="320"/>
 
-The main difference between MAIANA&trade; and every commercial transponder is that it's a self-contained unit, and thus its performance is 100% repeatable. The entire transponder circuit, the GNSS and all antennas are in the same housing. The design has been validated by fabricating _over 200 units_ now (May 2023).
+The main difference between MAIANA&trade; and every commercial transponder is that it's a self-contained unit, and thus its performance is 100% repeatable. The entire transponder circuit, the GNSS and all antennas are in the same housing. The design has been validated by fabricating _over 300 units_ now (July 2023).
 
 So with all the core functionality kept outside and under tight control, the only other thing we need is power and data connections. Now, what's the most common cable that can carry a few signals 50 feet away? If you guessed "Ethernet", you guessed right. Commonplace Cat5 cable can deliver power plus serial data signals anywhere on an average sized pleasure boat. So that's how the exterior unit connects to the cabin, where one of these breakouts offers USB, NMEA0183 or NMEA2000 adapters to connect to the rest of the boat's systems. 
 
