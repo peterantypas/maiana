@@ -22,4 +22,7 @@ DFU mode automatically.
 
 If the TX switch is toggled twice during the first 2.5 seconds after power-up, the bootloader enters DFU mode again, regardless of application firmware state.
 
+## Pre-built binaries
+The Binaries/ folder contains pre-built binaries for L422, L431 and L432. You can flash those via SWD into the top of flash (0x08000000) and then use one of the scripts in the Python folder for installing an application binary.
+
 
