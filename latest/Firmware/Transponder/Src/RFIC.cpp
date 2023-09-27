@@ -49,7 +49,11 @@ RFIC::RFIC(GPIO_TypeDef *sdnPort,
   mChipID = chipID;
 
   if ( !isInitialized() )
-    powerOnReset();
+    {
+      mPORSuccess = powerOnReset();
+    }
+  else
+    mPORSuccess = true;
 
 }
 
@@ -65,6 +69,11 @@ inline void RFIC::spiOn()
 inline void RFIC::spiOff()
 {
   HAL_GPIO_WritePin(mCSPort, mCSPin, GPIO_PIN_SET);
+}
+
+bool RFIC::isResponsive()
+{
+  return mPORSuccess;
 }
 
 bool RFIC::sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, uint8_t resultLen)
@@ -205,7 +214,7 @@ bool RFIC::isInitialized()
     }
 }
 
-void RFIC::powerOnReset()
+bool RFIC::powerOnReset()
 {
   // Pull SDN high to shut down the IC
   HAL_GPIO_WritePin(mSDNP, mSDNPin, GPIO_PIN_SET);
@@ -216,8 +225,14 @@ void RFIC::powerOnReset()
   // Pull SDN low and poll the status of GPIO1
   HAL_GPIO_WritePin(mSDNP, mSDNPin, GPIO_PIN_RESET);
 
-  while ( HAL_GPIO_ReadPin(mDataPort, mDataPin) == GPIO_PIN_RESET )
-    ;
+  uint32_t start = HAL_GetTick();
+  while ( HAL_GetTick() - start < 1000 )
+    {
+      if ( HAL_GPIO_ReadPin(mDataPort, mDataPin) == GPIO_PIN_SET )
+        return true;
+    }
+
+  return false;
 }
 
 /**

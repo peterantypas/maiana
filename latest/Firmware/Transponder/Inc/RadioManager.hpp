@@ -54,6 +54,7 @@ private:
   RadioManager();
   void spiOff();
   void configureInterrupts();
+  void reportError(int chipId);
 private:
   Transceiver *mTransceiverIC;
   Receiver *mReceiverIC;

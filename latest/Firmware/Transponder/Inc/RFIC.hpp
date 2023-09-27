@@ -48,12 +48,13 @@ public:
 
   void setRSSIAdjustment(short rssiAdj);
   uint16_t partNumber();
+  bool isResponsive();
 protected:
   virtual void configure();
   bool sendCmd(uint8_t cmd, void* params, uint8_t paramLen, void* result, uint8_t resultLen);
   bool sendCmdNoWait(uint8_t cmd, void* params, uint8_t paramLen);
   bool isInitialized();
-  void powerOnReset();
+  bool powerOnReset();
   bool isReceiving();
   uint8_t readRSSI();
   bool checkStatus();
@@ -76,6 +77,7 @@ protected:
   uint32_t            mChipID;
   bool                mCTSPending = false;
   uint16_t            mPartNumber;
+  bool                mPORSuccess = false;
 };
 
 #endif /* RFIC_HPP_ */

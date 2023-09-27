@@ -65,8 +65,11 @@ void mainLoop()
 
   if ( !cliBootMode )
     {
-      GPS::instance().enable();
-      RadioManager::instance().start();
+      if ( RadioManager::instance().initialized() )
+        {
+          GPS::instance().enable();
+          RadioManager::instance().start();
+        }
     }
   else
     {

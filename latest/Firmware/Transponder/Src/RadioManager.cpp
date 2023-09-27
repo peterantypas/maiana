@@ -55,15 +55,31 @@ void RadioManager::init()
       CS1_PORT, CS1_PIN,
       TRX_IC_DATA_PORT, TRX_IC_DATA_PIN,
       TRX_IC_CLK_PORT, TRX_IC_CLK_PIN, 0);
-  mTransceiverIC->init();
+
+  if ( mTransceiverIC->isResponsive() )
+    {
+      mTransceiverIC->init();
+    }
+  else
+    {
+      reportError(1);
+    }
 
   mReceiverIC = new Receiver(SDN2_PORT, SDN2_PIN,
       CS2_PORT, CS2_PIN,
       RX_IC_DATA_PORT, RX_IC_DATA_PIN,
       RX_IC_CLK_PORT, RX_IC_CLK_PIN, 1);
-  mReceiverIC->init();
+  if ( mReceiverIC->isResponsive() )
+    {
+      mReceiverIC->init();
+    }
+  else
+    {
+      reportError(2);
+    }
 
-  mInitializing = false;
+  if ( mReceiverIC->isResponsive() && mTransceiverIC->isResponsive() )
+    mInitializing = false;
 }
 
 void RadioManager::transmitCW(VHFChannel channel)
@@ -88,6 +104,16 @@ void RadioManager::stop()
   // TODO: Implement this
 }
 
+void RadioManager::reportError(int chipId)
+{
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  sprintf(e->nmeaBuffer.sentence, "$PAIERR,RFIC,%d*", chipId);
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
+}
 
 void RadioManager::configureInterrupts()
 {
