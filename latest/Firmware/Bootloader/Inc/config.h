@@ -10,9 +10,16 @@
 
 
 // The bootloader occupies up to 16K at 0x08000000
+
+#if defined STM32L412xx && __SHRINK_TO_64K__==1
+#define METADATA_ADDRESS        0x08001800
+#define APPLICATION_ADDRESS     0x08002000
+#define ISR_VECTOR_OFFSET       0x00002000
+#else
 #define METADATA_ADDRESS        0x08004000
 #define APPLICATION_ADDRESS     0x08004800
 #define ISR_VECTOR_OFFSET       0x00004800
+#endif
 
 #define BOOTMODE_ADDRESS        0x20009C00
 #define DFU_FLAG_MAGIC          0xa191feed
