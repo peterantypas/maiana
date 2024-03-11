@@ -132,10 +132,15 @@ void CommandProcessor::processCommand(const char *buff)
     {
       jumpToBootloader();
     }
+  else if ( s.find("erase station") == 0 )
+    {
+      Configuration::instance().eraseStationData();
+      Configuration::instance().reportStationData();
+    }
   else if ( s.find("factory reset") == 0 )
     {
-      // Clear station data
-      Configuration::instance().resetToDefaults();
+      Configuration::instance().factoryReset();
+      Configuration::instance().reportStationData();
     }
   else if ( s.find("tx test") == 0 )
     {

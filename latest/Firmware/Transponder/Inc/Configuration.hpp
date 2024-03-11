@@ -37,7 +37,8 @@ public:
   bool writeStationData(const StationData &data);
   bool readStationData(StationData &data);
   bool isStationDataProvisioned();
-  void resetToDefaults();
+  void eraseStationData();
+
   void reportStationData();
   void reportOTPData();
   const OTPData *readOTP();
@@ -51,6 +52,8 @@ public:
   void setXOTrimValue(uint8_t value);
   uint8_t getXOTrimValue();
   void reportXOTrimValue();
+
+  void factoryReset();
 private:
 
   Configuration();

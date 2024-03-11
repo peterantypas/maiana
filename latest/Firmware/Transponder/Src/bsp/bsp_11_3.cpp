@@ -480,6 +480,12 @@ void bsp_write_xo_trim(const XOTrim &t)
 
 }
 
+void bsp_erase_xo_trim()
+{
+  XOTrim t = {0, 0, {0}};
+  bsp_write_xo_trim(t);
+}
+
 void bsp_set_rx_mode()
 {
   HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_RESET);       // Kill the RF MOSFET bias voltage

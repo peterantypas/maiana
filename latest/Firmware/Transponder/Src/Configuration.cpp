@@ -174,6 +174,11 @@ bool Configuration::isStationDataProvisioned()
   return bsp_is_station_data_provisioned();
 }
 
+void Configuration::eraseStationData()
+{
+  bsp_erase_station_data();
+}
+
 #if OTP_DATA
 void Configuration::reportOTPData()
 {
@@ -214,12 +219,12 @@ void Configuration::reportXOTrimValue()
   EventQueue::instance().push(e);
 }
 
-void Configuration::resetToDefaults()
+void Configuration::factoryReset()
 {
   bsp_erase_station_data();
-  reportStationData();
   mFlags = {0};
   bsp_erase_config_flags();
+  bsp_erase_xo_trim();
 }
 
 bool Configuration::writeStationData(const StationData &data)

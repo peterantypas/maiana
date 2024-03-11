@@ -75,6 +75,7 @@ void bsp_erase_config_flags();
 
 void bsp_read_xo_trim(XOTrim *t);
 void bsp_write_xo_trim(const XOTrim &t);
+void bsp_erase_xo_trim();
 
 // Callback for processing UART input (interrupt)
 typedef void(*char_input_cb)(char c);
