@@ -21,6 +21,12 @@ typedef union
   uint64_t dw[4];
 } ConfigPage;
 
+typedef struct
+{
+  uint32_t magic;
+  uint8_t value;
+  uint8_t fill[3];
+} XOTrim;
 
 
 #endif /* INC_CONFIGFLAGS_H_ */

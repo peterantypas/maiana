@@ -73,6 +73,9 @@ void bsp_read_config_flags(ConfigFlags *flags);
 void bsp_write_config_flags(const ConfigFlags &flags);
 void bsp_erase_config_flags();
 
+void bsp_read_xo_trim(XOTrim *t);
+void bsp_write_xo_trim(const XOTrim &t);
+
 // Callback for processing UART input (interrupt)
 typedef void(*char_input_cb)(char c);
 

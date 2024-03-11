@@ -24,6 +24,7 @@
 #include "EZRadioPRO.h"
 #include <string.h>
 #include "bsp.hpp"
+#include "Configuration.hpp"
 
 RFIC::RFIC(GPIO_TypeDef *sdnPort,
     uint32_t sdnPin,
@@ -187,6 +188,23 @@ void RFIC::configure()
       sendCmd(cmd, cfg, count, NULL, 0);      // send bytes to chip
       cfg += count;                           // point at next line
     }
+
+  if ( Configuration::instance().isXOTrimmed() )
+    {
+      setXOTrimValue(Configuration::instance().getXOTrimValue());
+    }
+}
+
+void RFIC::setXOTrimValue(uint8_t value)
+{
+  SET_PROPERTY_PARAMS params = {0};
+  params.Group          = 0;
+  params.NumProperties  = 2;
+  params.StartProperty  = 0;
+  params.Data[0] = value;
+
+  sendCmd(SET_PROPERTY, &params, sizeof params, NULL, 0);
+
 }
 
 uint16_t RFIC::partNumber()

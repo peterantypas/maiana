@@ -48,7 +48,11 @@ public:
 
   void processEvent(const Event &e);
   void transmitCW(VHFChannel channel);
+  void stopTX();
+
   VHFChannel alternateChannel(VHFChannel channel);
+
+  void setXOTrimValue(uint8_t value);
 
 private:
   RadioManager();

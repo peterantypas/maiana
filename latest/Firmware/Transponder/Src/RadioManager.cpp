@@ -82,9 +82,25 @@ void RadioManager::init()
     mInitializing = false;
 }
 
+void RadioManager::setXOTrimValue(uint8_t value)
+{
+  if ( mTransceiverIC )
+    mTransceiverIC->setXOTrimValue(value);
+
+  if ( mReceiverIC )
+    mReceiverIC->setXOTrimValue(value);
+}
+
 void RadioManager::transmitCW(VHFChannel channel)
 {
-  mTransceiverIC->transmitCW(channel);
+  if ( mTransceiverIC )
+    mTransceiverIC->transmitCW(channel);
+}
+
+void RadioManager::stopTX()
+{
+  if ( mTransceiverIC )
+    mTransceiverIC->startReceiving(CH_87, true);
 }
 
 void RadioManager::start()

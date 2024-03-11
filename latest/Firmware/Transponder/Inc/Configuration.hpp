@@ -47,16 +47,13 @@ public:
   void disableTX();
   bool isTXEnabled();
 
+  bool isXOTrimmed();
+  void setXOTrimValue(uint8_t value);
+  uint8_t getXOTrimValue();
+  void reportXOTrimValue();
 private:
 
   Configuration();
-  //bool eraseStationDataPage();
-  //bool writeStationDataPage();
-  //bool eraseConfigFlags();
-
-  //bool readConfigFlags();
-  //bool writeConfigFlags();
-  //bool erasePage(uint32_t address);
 
   uint32_t nextAvailableOTPSlot();
   const char *hwRev();

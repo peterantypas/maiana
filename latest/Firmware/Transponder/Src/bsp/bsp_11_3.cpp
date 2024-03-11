@@ -31,6 +31,7 @@
 #define EEPROM_ADDRESS                  (0x50 << 1)
 #define EEPROM_STATION_ADDRESS          0x00
 #define EEPROM_CONFIG_ADDRESS           0x40
+#define EEPROM_XOTRIM_ADDRESS           0x60
 #define STATION_DATA_FLASH_ADDRESS      0x0800F800
 
 const char *BSP_HW_REV = "11.x";
@@ -454,6 +455,29 @@ void bsp_write_config_flags(const ConfigFlags &flags)
 void bsp_erase_config_flags()
 {
   bsp_write_config_flags({0});
+}
+
+
+void bsp_read_xo_trim(XOTrim *t)
+{
+  uint8_t *d = (uint8_t*)t;
+  for ( uint8_t i = 0; i < sizeof (XOTrim); ++i, ++d )
+    {
+      HAL_I2C_Mem_Read(&hi2c1, EEPROM_ADDRESS|1, i+EEPROM_XOTRIM_ADDRESS, 1, d, 1, 5);
+    }
+
+}
+
+void bsp_write_xo_trim(const XOTrim &t)
+{
+  XOTrim __t = t;
+  uint8_t *d = (uint8_t*)&__t;
+  for ( uint8_t i = 0; i < sizeof (XOTrim); ++i, ++d )
+    {
+      HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDRESS, i+EEPROM_XOTRIM_ADDRESS, 1, d, 1, 5);
+      HAL_Delay(5);
+    }
+
 }
 
 void bsp_set_rx_mode()

@@ -45,7 +45,6 @@ public:
   void assignTXPacket(TXPacket *p);
   TXPacket *assignedTXPacket();
   void startReceiving(VHFChannel channel, bool reconfigGPIOs);
-  void startListening(VHFChannel channel, bool reconfigGPIOs);
   void transmitCW(VHFChannel channel);
   void processEvent(const Event &);
 

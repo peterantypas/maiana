@@ -155,6 +155,18 @@ void CommandProcessor::processCommand(const char *buff)
     {
       TXScheduler::instance().reportTXStatus();
     }
+  else if ( s.find("txcw a") == 0 )
+    {
+      RadioManager::instance().transmitCW(CH_87);
+    }
+  else if ( s.find("txcw b") == 0 )
+    {
+      RadioManager::instance().transmitCW(CH_88);
+    }
+  else if ( s.find("stoptx") == 0 )
+    {
+      RadioManager::instance().stopTX();
+    }
   else if (s.find("reboot") == 0 )
     {
       bsp_reboot();
@@ -185,6 +197,16 @@ void CommandProcessor::processCommand(const char *buff)
       writeOTPData(s);
     }
 #endif
+  else if ( s.find("xotrim ") == 0 )
+    {
+      uint8_t value = Utils::toInt(s.substr(7));
+      RadioManager::instance().setXOTrimValue(value);
+      Configuration::instance().setXOTrimValue(value);
+    }
+  else if ( s.find("xotrim?") == 0 )
+    {
+      Configuration::instance().reportXOTrimValue();
+    }
 }
 
 void CommandProcessor::enterCLIMode()

@@ -168,10 +168,6 @@ void Transceiver::configureGPIOsForTX()
   sendCmd(GPIO_PIN_CFG, &gpiocfg, sizeof gpiocfg, NULL, 0);
 }
 
-void Transceiver::startListening(VHFChannel channel, bool reconfigGPIOs)
-{
-  Receiver::startListening(channel, reconfigGPIOs);
-}
 
 void Transceiver::assignTXPacket(TXPacket *p)
 {
@@ -249,7 +245,7 @@ void Transceiver::onBitClock()
             }
         }
     }
-  else
+  else if ( mTXPacket )
     {
       if ( mTXPacket->eof() )
         {
@@ -280,6 +276,10 @@ void Transceiver::onBitClock()
           if ( mTXPacket->canRampDown() )
             HAL_GPIO_WritePin(PA_BIAS_PORT, PA_BIAS_PIN, GPIO_PIN_RESET);
         }
+    }
+  else
+    {
+      // We're transmitting carrier wave, do nothing. This is only done during XO trimming.
     }
 }
 

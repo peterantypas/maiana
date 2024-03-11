@@ -14,12 +14,6 @@
 #define OTP_REV       0x00000002
 
 
-#define MCU_UNKNOWN       0x00
-#define MCU_STM32L412     0x01
-#define MCU_STM32L422     0x02
-#define MCU_STM32L431     0x03
-#define MCU_STM32L432     0x04
-
 
 // This structure must be double-word aligned
 

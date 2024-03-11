@@ -32,6 +32,7 @@
 
 
 #define CONFIG_FLAGS_MAGIC    0x2092ED2C
+#define XO_TRIM_MAGIC         0x8112AAAA
 
 
 //static StationDataPage __page;
@@ -195,6 +196,24 @@ void Configuration::reportOTPData()
 }
 #endif
 
+void Configuration::reportXOTrimValue()
+{
+  uint8_t value = 0;
+
+  if ( this->isXOTrimmed() )
+    {
+      value = this->getXOTrimValue();
+    }
+
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  sprintf(e->nmeaBuffer.sentence, "$PAIXOTR,%d*", value);
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
+}
+
 void Configuration::resetToDefaults()
 {
   bsp_erase_station_data();
@@ -214,6 +233,27 @@ bool Configuration::readStationData(StationData &data)
 {
   bsp_read_station_data(&data);
   return data.magic == STATION_DATA_MAGIC;
+}
+
+
+bool Configuration::isXOTrimmed()
+{
+  XOTrim x;
+  bsp_read_xo_trim(&x);
+  return x.magic == XO_TRIM_MAGIC;
+}
+
+void Configuration::setXOTrimValue(uint8_t value)
+{
+  XOTrim x = {XO_TRIM_MAGIC, value, {0}};
+  bsp_write_xo_trim(x);
+}
+
+uint8_t Configuration::getXOTrimValue()
+{
+  XOTrim x;
+  bsp_read_xo_trim(&x);
+  return x.value;
 }
 
 
