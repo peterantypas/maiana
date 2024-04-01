@@ -6,6 +6,7 @@ or you are unsure whether these apply to your board, please start a ticket or a 
 ### How to select the right firmware
 
 Launch the MAIANA app and connect to the transponder. You may need to disable / disconnect MAIANA from Signal K first.
+Make a note of:
 
 - Your board's hardware revision (example: 11.6.0)
 - Your board's MCU model (example: STM32L422)
@@ -15,6 +16,18 @@ Locate the appropriate binary in this directory. Ignore the last digit of your b
 
 
 ## Firmware update history
+
+### Version 4.4.1
+
+This release fixes a bug introduced in 4.3.0, where boards with the L412 processor do not report the MCU in the CLI.
+
+### Version 4.4.0
+
+This release added a CLI for trimming the crystals during manufacturing. This will be necessary going forward.
+
+### Version 4.3.0
+
+This release includes enhancements for manufacturing
 
 ### Version 4.1.0
 
