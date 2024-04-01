@@ -108,6 +108,8 @@ const char *Configuration::mcuType()
   return "STM32L422";
 #elif defined STM32L432xx
   return "STM32L432";
+#elif defined STM32L412xx
+  return "STM32L412";
 #else
     return "";
 #endif
