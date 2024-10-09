@@ -84,6 +84,7 @@ If you are located in North America, send an email to *maiana.kits@_dontspam_gma
 
 If you're located anywhere else, you can order a kit from the [OpenMarine store](https://shop.openmarine.net) which ships from Barcelona, Spain.
 
+**UPDATE: Supply is now constrained due to other work load, so keep this in mind**
 
 ### License
 
