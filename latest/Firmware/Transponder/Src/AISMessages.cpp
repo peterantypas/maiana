@@ -170,6 +170,7 @@ void AISMessage::bitStuff(uint8_t *buff, uint16_t &size)
             // Insert a 0 right after this one
             memmove(buff + i + 2, buff + i + 1, size-i-1);
             buff[i+1] = 0;
+            numOnes = 0;
             ++size;
           }
         break;
