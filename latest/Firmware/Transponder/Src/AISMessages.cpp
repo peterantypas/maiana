@@ -18,7 +18,7 @@
  */
 
 
-#include <cmath>
+
 #include "AISMessages.hpp"
 #include "Utils.hpp"
 #include "_assert.h"

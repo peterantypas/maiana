@@ -21,11 +21,11 @@
 
 #include <cstring>
 #include <algorithm>
-#include <cstdio>
+#include <stdio.h>
 //#include <sstream>
 #include <vector>
 #include <limits>
-#include <cmath>
+#include <math.h>
 #include <errno.h>
 #include <cassert>
 #include <sstream>

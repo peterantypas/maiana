@@ -20,7 +20,7 @@
 
 #include "NMEAEncoder.hpp"
 #include "Utils.hpp"
-#include <cstdio>
+#include <stdio.h>
 #include <cstring>
 #include <algorithm>
 #include "AISChannels.h"
