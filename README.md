@@ -80,9 +80,8 @@ This is going to be difficult for all but the most technically advanced. The boa
 
 I have developed a kit which includes pre-soldered (and programmed) boards as well as the antenna, main casing and heat shrink tubing. See [the installation manual here](https://github.com/peterantypas/maiana/blob/master/latest/Manuals/MAIANA%E2%84%A2%20Assembly%20Manual%20(Rev%204).pdf) to get a better idea of the process.
 
-~~If you are located in North America, send an email to *maiana.kits@_dontspam_gmail.com* (remove the spambot blocker of course). If you're located anywhere else, you can order a kit from the [OpenMarine store](https://shop.openmarine.net) which ships from Barcelona, Spain~~.
+If you are located in North America, send an email to *maiana.kits@_dontspam_gmail.com* (remove the spambot blocker of course). Tariffs have made it difficult to ship to Europe and vice versa, so [OpenMarine](https://shop.openmarine.net) is working with European based teams to build and ship directly from Barcelona, Spain.
 
-**UPDATE: I can no longer fulfill new orders. I have no bandwidth to build MAIANA kits**
 
 ### License
 
