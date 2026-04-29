@@ -34,6 +34,12 @@
 #define CONFIG_FLAGS_MAGIC    0x2092ED2C
 #define XO_TRIM_MAGIC         0x8112AAAA
 
+// Bits in mFlags.flags[0]:
+//   bit 0 — TX inhibit (1 = TX disabled)
+//   bit 1 — External GPS enabled (1 = use NMEA from USART1 instead of internal GPS)
+#define FLAG_TX_INHIBIT       0x01
+#define FLAG_EXTGPS_ENABLED   0x02
+
 
 //static StationDataPage __page;
 
@@ -62,16 +68,21 @@ void Configuration::init()
 
 void Configuration::enableTX()
 {
-  // For now, the only flag in use is a TX switch bit which is set to 0
-  mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  // Clear TX inhibit bit (bit 0 in flags[0]) while preserving other flags.
+  if ( mFlags.magic != CONFIG_FLAGS_MAGIC ) {
+    mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  }
+  mFlags.flags[0] &= ~FLAG_TX_INHIBIT;
   bsp_write_config_flags(mFlags);
 }
 
 void Configuration::disableTX()
 {
-  // For now, the only flag in use is a TX switch bit which is set to 1
-  mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
-  mFlags.flags[0] = 0x01;
+  // Set TX inhibit bit (bit 0 in flags[0]) while preserving other flags.
+  if ( mFlags.magic != CONFIG_FLAGS_MAGIC ) {
+    mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  }
+  mFlags.flags[0] |= FLAG_TX_INHIBIT;
   bsp_write_config_flags(mFlags);
 }
 
@@ -81,7 +92,44 @@ bool Configuration::isTXEnabled()
     return true;
 
   // Bit 0 in word 0 inhibits transmission
-  return (mFlags.flags[0] & 0x01) == 0;
+  return (mFlags.flags[0] & FLAG_TX_INHIBIT) == 0;
+}
+
+void Configuration::enableExtGPS()
+{
+  if ( mFlags.magic != CONFIG_FLAGS_MAGIC ) {
+    mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  }
+  mFlags.flags[0] |= FLAG_EXTGPS_ENABLED;
+  bsp_write_config_flags(mFlags);
+}
+
+void Configuration::disableExtGPS()
+{
+  if ( mFlags.magic != CONFIG_FLAGS_MAGIC ) {
+    mFlags = {CONFIG_FLAGS_MAGIC, 0, {0}};
+  }
+  mFlags.flags[0] &= ~FLAG_EXTGPS_ENABLED;
+  bsp_write_config_flags(mFlags);
+}
+
+bool Configuration::isExtGPSEnabled()
+{
+  if ( mFlags.magic != CONFIG_FLAGS_MAGIC )
+    return false;  // default OFF
+
+  return (mFlags.flags[0] & FLAG_EXTGPS_ENABLED) != 0;
+}
+
+void Configuration::reportExtGPSStatus()
+{
+  Event *e = EventPool::instance().newEvent(PROPR_NMEA_SENTENCE);
+  if ( !e )
+    return;
+
+  sprintf(e->nmeaBuffer.sentence, "$PAIEGPS,%d*", isExtGPSEnabled() ? 1 : 0);
+  Utils::completeNMEA(e->nmeaBuffer.sentence);
+  EventQueue::instance().push(e);
 }
 
 const char *Configuration::hwRev()

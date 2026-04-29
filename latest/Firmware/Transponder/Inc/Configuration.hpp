@@ -53,6 +53,16 @@ public:
   uint8_t getXOTrimValue();
   void reportXOTrimValue();
 
+  // External GPS feature (off by default).
+  // When enabled, NMEA sentences ($GP*/$GN*/$GL*) received on USART1 (host
+  // terminal) are forwarded to the GPS parser instead of being treated as
+  // commands. This allows feeding GPS from an external source (Signal K,
+  // chartplotter, etc) without the internal u-blox.
+  bool isExtGPSEnabled();
+  void enableExtGPS();
+  void disableExtGPS();
+  void reportExtGPSStatus();
+
   void factoryReset();
 private:
 
