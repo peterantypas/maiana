@@ -25,6 +25,7 @@
 #include "GPS.hpp"
 #include "LEDManager.hpp"
 #include "CommandProcessor.hpp"
+#include "Configuration.hpp"
 #include "bsp.hpp"
 
 
@@ -67,7 +68,17 @@ void mainLoop()
     {
       if ( RadioManager::instance().initialized() )
         {
-          GPS::instance().enable();
+          // External GPS feature: when enabled, leave the internal u-blox
+          // powered off and rely on NMEA fed via USART1 (see DataTerminal.cpp
+          // and Configuration.cpp).
+          if ( Configuration::instance().isExtGPSEnabled() )
+            {
+              bsp_gnss_off();
+            }
+          else
+            {
+              GPS::instance().enable();
+            }
           RadioManager::instance().start();
         }
     }

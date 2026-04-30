@@ -22,6 +22,7 @@
 #include "Events.hpp"
 #include "Utils.hpp"
 #include "bsp.hpp"
+#include "Configuration.hpp"
 
 static char __rxbuff[80];
 static uint8_t __rxpos = 0;
@@ -96,6 +97,14 @@ void DataTerminal::_write(const char *s)
 }
 
 
+// Detect if a line buffer holds a standard NMEA0183 GPS sentence header
+// ($GP, $GN or $GL — covers GPS, GNSS multi-constellation, GLONASS).
+static inline bool isExternalGpsSentence(const char *buf)
+{
+  return buf[0] == '$' && buf[1] == 'G' &&
+         (buf[2] == 'P' || buf[2] == 'N' || buf[2] == 'L');
+}
+
 void termInputCB(char c)
 {
   if ( c == '\r' )
@@ -111,9 +120,24 @@ void termInputCB(char c)
   else if ( c == '\n' )
     {
       __rxbuff[__rxpos++] = 0;
-      Event *e = EventPool::instance().newEvent(COMMAND_EVENT);
-      strlcpy(e->command.buffer, __rxbuff, sizeof e->command.buffer);
-      EventQueue::instance().push(e);
+
+      // Optional: route GPS NMEA from host UART to GPS parser when the
+      // "extgps" feature is enabled. Off by default — preserves stock behavior.
+      if ( Configuration::instance().isExtGPSEnabled() && isExternalGpsSentence(__rxbuff) )
+        {
+          Event *e = EventPool::instance().newEvent(GPS_NMEA_SENTENCE);
+          if ( e )
+            {
+              strlcpy(e->nmeaBuffer.sentence, __rxbuff, sizeof e->nmeaBuffer.sentence);
+              EventQueue::instance().push(e);
+            }
+        }
+      else
+        {
+          Event *e = EventPool::instance().newEvent(COMMAND_EVENT);
+          strlcpy(e->command.buffer, __rxbuff, sizeof e->command.buffer);
+          EventQueue::instance().push(e);
+        }
       __rxpos = 0;
     }
 }

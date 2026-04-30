@@ -28,6 +28,7 @@
 #include "bsp.hpp"
 #include "GPS.hpp"
 #include "RadioManager.hpp"
+#include "Configuration.hpp"
 #include <stdlib.h>
 
 CommandProcessor &CommandProcessor::instance()
@@ -191,6 +192,24 @@ void CommandProcessor::processCommand(const char *buff)
   else if ( s.find("msg24") == 0 )
     {
       TXScheduler::instance().queueMessage24(CH_87);
+    }
+  else if ( s.find("extgps on") == 0 )
+    {
+      Configuration::instance().enableExtGPS();
+      // Power down internal u-blox to avoid two GPS sources fighting on the parser.
+      bsp_gnss_off();
+      Configuration::instance().reportExtGPSStatus();
+    }
+  else if ( s.find("extgps off") == 0 )
+    {
+      Configuration::instance().disableExtGPS();
+      // Restore internal GPS power.
+      bsp_gnss_on();
+      Configuration::instance().reportExtGPSStatus();
+    }
+  else if ( s.find("extgps?") == 0 )
+    {
+      Configuration::instance().reportExtGPSStatus();
     }
 #if OTP_DATA
   else if ( s.find("otp?") == 0 )
